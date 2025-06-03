@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adivina el Alimento - Juegos Didácticos Don Bosco</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Pacifico&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #E0F2FE; /* Azul claro (cielo) */
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+        }
+        header {
+            background-color: #1E3A8A; /* Azul principal (oscuro) */
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            width: 100%;
+            z-index: 10;
+        }
+        .header-title-font {
+            font-family: 'Pacifico', cursive;
+        }
+        main {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        footer {
+            background-color: #1E3A8A; /* Azul principal (oscuro) */
+            color: white;
+            width: 100%;
+        }
+
+        /* Estilos específicos del juego (similares al de animales) */
+        .game-container, .settings-container, .end-screen-container {
+            background-color: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 550px; /* Ajustado para el contenido */
+            text-align: center;
+        }
+        .food-image {
+            width: 100%;
+            max-width: 300px;
+            height: auto;
+            min-height: 200px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            border: 2px solid #e2e8f0;
+            object-fit: cover;
+            aspect-ratio: 3/2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #e2e8f0;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .name-to-copy {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #1e40af;
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+            padding: 8px;
+            background-color: #e0f2fe;
+            border-radius: 6px;
+            word-break: break-word;
+        }
+        .input-field, .number-input { /* Estilo general para inputs de texto y número */
+            width: 100%;
+            padding: 10px;
+            font-size: 1em;
+            border-radius: 6px;
+            border: 2px solid #93c5fd;
+            margin-bottom: 15px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+        .food-input-field { /* Específico para el input del nombre del alimento */
+            font-size: 1.5em;
+            text-transform: uppercase; /* Mostrar en mayúsculas como en el juego de animales */
+        }
+        .input-field:focus, .number-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        }
+        .button {
+            padding: 12px 24px;
+            font-size: 1.1em;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            border: none;
+            font-weight: 600;
+        }
+        .start-button {
+            background-color: #22c55e;
+            color: white;
+        }
+        .start-button:hover:not(:disabled) {
+            background-color: #16a34a;
+        }
+        .start-button:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+        }
+        .play-again-button {
+            background-color: #3b82f6;
+            color: white;
+        }
+        .play-again-button:hover {
+            background-color: #2563eb;
+        }
+        .message-area {
+            font-size: 1.2em;
+            font-weight: 500;
+            min-height: 2em;
+            margin-top: 10px;
+        }
+        .message-correct { color: #16a34a; }
+        .timer-display {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #ef4444;
+            margin-bottom: 16px;
+        }
+        .welcome-message-area {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #1d4ed8;
+            margin-bottom: 10px;
+        }
+        .error-message {
+            color: #ef4444;
+            font-size: 0.9em;
+            margin-top: -10px;
+            margin-bottom: 10px;
+        }
+        h1.game-title {
+            color: #1e3a8a;
+            margin-bottom: 20px;
+        }
+        .dropdown-menu { z-index: 50; }
+        .radio-group label { margin-left: 0.5rem; margin-right: 1rem; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container mx-auto px-6 py-4 sm:py-6 flex flex-col sm:flex-row justify-between items-center">
+            <a href="../index.html" class="flex items-center hover:opacity-90 transition-opacity duration-200">
+                <img src="../logo.png" alt="Logo Don Bosco Pampahasi" class="h-12 w-12 sm:h-16 sm:w-16 mr-3 sm:mr-4 rounded-full bg-white p-1" 
+                     onerror="this.onerror=null; this.src='https://placehold.co/64x64/FFFFFF/1E3A8A?text=Logo'; this.alt='Logo Don Bosco Pampahasi (Error)';">
+                <div>
+                    <h1 class="header-title-font text-2xl sm:text-4xl text-yellow-400">Juegos Didácticos</h1>
+                    <p class="text-sm sm:text-lg font-semibold">DON BOSCO PAMPAHASI</p>
+                </div>
+            </a>
+            <nav class="mt-4 sm:mt-0">
+                <div class="relative">
+                    <button id="games-dropdown-button" class="bg-yellow-400 text-blue-800 font-semibold py-2 px-4 rounded-lg hover:bg-yellow-300 transition-colors duration-200 flex items-center">
+                        Juegos
+                        <svg class="w-4 h-4 ml-2 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+                    </button>
+                    <div id="games-dropdown-menu" class="dropdown-menu absolute right-0 mt-2 w-56 bg-white rounded-md shadow-xl py-1 hidden">
+                        <a href="../animales/animales.html" class="block px-4 py-2 text-sm text-blue-800 hover:bg-sky-100 hover:text-blue-700">Adivina el Animal</a>
+                        <a href="../multiplicacion/multiplicacion.html" class="block px-4 py-2 text-sm text-blue-800 hover:bg-sky-100 hover:text-blue-700">Tablas de Multiplicar</a>
+                        <a href="../alimentos/alimentos.html" class="block px-4 py-2 text-sm text-blue-800 hover:bg-sky-100 hover:text-blue-700">Adivina el Alimento</a>
+                        </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div id="settings-screen" class="settings-container">
+            <h1 class="text-3xl font-bold game-title">¡Adivina el Alimento!</h1>
+            <input type="text" id="player-name-input" class="input-field" placeholder="Escribe tu nombre aquí">
+            
+            <div class="my-4 text-left">
+                <p class="font-semibold mb-2 text-gray-700">¿Cuántos alimentos quieres adivinar?</p>
+                <div class="radio-group">
+                    <input type="radio" id="all-items" name="item-quantity-option" value="all" checked>
+                    <label for="all-items">Todos los elementos</label>
+                </div>
+                <div class="radio-group mt-1">
+                    <input type="radio" id="specific-quantity" name="item-quantity-option" value="specific">
+                    <label for="specific-quantity">Cantidad específica:</label>
+                </div>
+                <input type="number" id="num-items-input" class="number-input mt-1 w-1/2 mx-auto" value="10" min="1" disabled>
+            </div>
+
+            <p id="settings-error" class="error-message hidden"></p>
+            <button id="start-button" class="button start-button">Empezar Juego</button>
+        </div>
+
+        <div id="game-screen" class="game-container hidden">
+            <div id="welcome-message" class="welcome-message-area"></div>
+            <div id="timer" class="timer-display">Tiempo: 00:00</div>
+            <img id="food-image" src="" alt="Alimento" class="food-image">
+            <div id="food-name-display" class="name-to-copy">ALIMENTO</div>
+            <input type="text" id="food-input" class="input-field food-input-field" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+            <div id="message-area" class="message-area"></div>
+        </div>
+
+        <div id="end-screen" class="end-screen-container hidden">
+            <h1 class="text-3xl font-bold game-title">¡Juego Terminado!</h1>
+            <p id="final-time" class="text-xl my-4"></p>
+            <button id="play-again-button" class="button play-again-button">Jugar de Nuevo</button>
+        </div>
+    </main>
+
+    <footer class="mt-auto py-6 sm:py-8 text-center">
+        <div class="container mx-auto px-6">
+            <p>&copy; 2025 Juegos Didácticos Don Bosco Pampahasi. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- Script para Dropdown del Header ---
+        const gamesDropdownButton = document.getElementById('games-dropdown-button');
+        const gamesDropdownMenu = document.getElementById('games-dropdown-menu');
+        if (gamesDropdownButton && gamesDropdownMenu) {
+            gamesDropdownButton.addEventListener('click', (event) => {
+                event.stopPropagation();
+                gamesDropdownMenu.classList.toggle('hidden');
+            });
+            document.addEventListener('click', (event) => {
+                if (!gamesDropdownMenu.classList.contains('hidden') && !gamesDropdownButton.contains(event.target) && !gamesDropdownMenu.contains(event.target)) {
+                    gamesDropdownMenu.classList.add('hidden');
+                }
+            });
+        }
+
+        // --- Script del Juego Adivina el Alimento ---
+        const allFoods = [
+            { name: "Achachairú" }, { name: "Arándano" }, { name: "Aceituna" }, { name: "Almendras" }, { name: "Ajo" },
+            { name: "Aguacate" }, { name: "Apio" }, { name: "Acelga" }, { name: "Avena" }, { name: "Arroz" },
+            { name: "Azúcar" }, { name: "Anís" }, { name: "Arvejas" }, { name: "Agua" }, { name: "Alfajores" },
+            { name: "Beterraga" }, { name: "Brócoli" }, { name: "Bicarbonato" }, { name: "Vainitas" }, // Asumiendo Vainitas
+            { name: "Carambola" }, { name: "Cerezas" }, { name: "Ciruelo" }, { name: "Coco" }, { name: "Cebolla" },
+            { name: "Coliflor" }, { name: "Carnes" }, { name: "Cupcakes" }, { name: "Caña" }, { name: "Cebada" },
+            { name: "Clavo de olor" }, { name: "Canela" }, { name: "Chirimoya" }, { name: "Camote" },
+            { name: "Cereales" }, { name: "Café" }, { name: "Chocolate" }, { name: "Choclo" }, { name: "Chuño" },
+            { name: "Chorizo" }, { name: "Durazno" }, { name: "Damasco" }, { name: "Donas" }, { name: "Empanadas" },
+            { name: "Espinaca" }, { name: "Espárragos" }, { name: "Fresa" }, { name: "Frutilla" }, { name: "Frambuesa" },
+            { name: "Frijoles" }, { name: "Fideos" }, { name: "Fiambres" }, { name: "Flan" }, { name: "Galletas" },
+            { name: "Gelatina" }, { name: "Guinda" }, { name: "Guayaba" }, { name: "Granada" }, { name: "Higo" },
+            { name: "Harina" }, { name: "Habas" }, { name: "Hinojo" }, { name: "Huevos" }, { name: "Helados" },
+            { name: "Hamburguesas" }, { name: "Jengibre" }, { name: "Kiwi" }, { name: "Lima" }, { name: "Limón" },
+            { name: "Lúcuma" }, { name: "Locoto" }, { name: "Lechuga" }, { name: "Lenteja" }, { name: "Lacayote" }, // Asumiendo Lúcuma y Lacayote
+            { name: "Leche" }, { name: "Mantequilla" }, { name: "Mermelada" }, { name: "Manzana" }, { name: "Mandarina" },
+            { name: "Maracuyá" }, { name: "Mango" }, { name: "Melón" }, { name: "Mora" }, { name: "Miel" },
+            { name: "Maíz" }, { name: "Manzanilla" }, { name: "Mote" }, { name: "Naranja" }, { name: "Noni" },
+            { name: "Nabo" }, { name: "Oca" }, { name: "Pan" }, { name: "Plátano" }, { name: "Papaya" },
+            { name: "Pera" }, { name: "Piña" }, { name: "Pacay" }, { name: "Pistacho" }, { name: "Palta" },
+            { name: "Pasas" }, { name: "Papa" }, { name: "Pepino" }, { name: "Perejil" }, { name: "Pimiento" },
+            { name: "Pollo" }, { name: "Pescado" }, { name: "Pasteles" }, { name: "Queques" }, { name: "Queso" }, // Quisa omitida por ambigüedad, se puede añadir si se clarifica
+            { name: "Quinua" }, { name: "Quirquiña" }, { name: "Rábano" }, { name: "Remolacha" }, { name: "Repollo" },
+            { name: "Romero" }, { name: "Rollo de queso" }, { name: "Refrescos" }, { name: "Sábila" }, { name: "Sandía" },
+            { name: "Sal" }, { name: "Salchichas" }, { name: "Sémola" }, { name: "Salteñas" }, { name: "Tucumanas" },
+            { name: "Té" }, { name: "Toddy" }, { name: "Tamarindo" }, { name: "Toronja" }, { name: "Tumbo" },
+            { name: "Tuna" }, { name: "Tomate" }, { name: "Tunta" }, { name: "Torta" }, { name: "Trigo" },
+            { name: "Uva" }, { name: "Yogurt" }, { name: "Yuca" }, { name: "Zanahoria" }, { name: "Zapallo" }
+        ].map(food => {
+            // Función para normalizar texto para nombres de archivo
+            const normalizeForFileName = (text) => 
+                text.toLowerCase()
+                    .normalize("NFD") // Descomponer acentos
+                    .replace(/[\u0300-\u036f]/g, "") // Quitar diacríticos
+                    .replace(/\s+/g, '') // Quitar espacios
+                    .replace(/[^a-z0-9]/gi, ''); // Quitar caracteres no alfanuméricos
+            return { ...food, fileName: normalizeForFileName(food.name) + ".png" };
+        });
+
+        let currentItemIndex = 0;
+        let timerInterval;
+        let secondsElapsed = 0;
+        let itemsToGuess = [];
+        let playerName = "";
+
+        const settingsScreen = document.getElementById('settings-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const endScreen = document.getElementById('end-screen');
+        
+        const playerNameInput = document.getElementById('player-name-input');
+        const settingsError = document.getElementById('settings-error');
+        const startButton = document.getElementById('start-button');
+        
+        const allItemsRadio = document.getElementById('all-items');
+        const specificQuantityRadio = document.getElementById('specific-quantity');
+        const numItemsInput = document.getElementById('num-items-input');
+
+        const welcomeMessage = document.getElementById('welcome-message');
+        const playAgainButton = document.getElementById('play-again-button');
+        const foodImage = document.getElementById('food-image');
+        const foodNameDisplay = document.getElementById('food-name-display');
+        const foodInput = document.getElementById('food-input');
+        const timerDisplay = document.getElementById('timer');
+        const messageArea = document.getElementById('message-area');
+        const finalTimeDisplay = document.getElementById('final-time');
+
+        // Event listeners para opciones de cantidad
+        allItemsRadio.addEventListener('change', () => {
+            if (allItemsRadio.checked) {
+                numItemsInput.disabled = true;
+                numItemsInput.classList.add('bg-gray-100');
+            }
+        });
+        specificQuantityRadio.addEventListener('change', () => {
+            if (specificQuantityRadio.checked) {
+                numItemsInput.disabled = false;
+                numItemsInput.classList.remove('bg-gray-100');
+                numItemsInput.focus();
+            }
+        });
+         // Inicializar estado del input numérico
+        if (allItemsRadio.checked) {
+            numItemsInput.disabled = true;
+            numItemsInput.classList.add('bg-gray-100');
+        }
+
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function formatTime(totalSeconds) {
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            return `Tiempo: ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+
+        function updateTimer() {
+            secondsElapsed++;
+            timerDisplay.textContent = formatTime(secondsElapsed);
+        }
+
+        function startTimer() {
+            secondsElapsed = 0;
+            timerDisplay.textContent = formatTime(secondsElapsed);
+            clearInterval(timerInterval);
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+        function stopTimer() { clearInterval(timerInterval); }
+
+        function loadFoodItem() {
+            if (currentItemIndex < itemsToGuess.length) {
+                const item = itemsToGuess[currentItemIndex];
+                foodNameDisplay.textContent = item.name.toUpperCase(); // Mostrar nombre original con acentos
+                foodInput.value = '';
+                foodInput.disabled = false;
+                foodInput.focus();
+                messageArea.textContent = '';
+                messageArea.className = 'message-area';
+                
+                foodImage.src = '';
+                foodImage.alt = 'Cargando imagen...';
+                const imageUrl = `../src/${item.fileName}`;
+                console.log("Cargando imagen:", imageUrl);
+                foodImage.src = imageUrl;
+                foodImage.alt = item.name;
+            } else {
+                endGame();
+            }
+        }
+
+        function handleCorrectAnswer() {
+            messageArea.textContent = '¡Correcto!';
+            messageArea.className = 'message-area message-correct';
+            foodInput.disabled = true;
+            setTimeout(() => {
+                currentItemIndex++;
+                loadFoodItem();
+            }, 1500);
+        }
+
+        foodInput.addEventListener('input', () => {
+            if (currentItemIndex >= itemsToGuess.length) return;
+            const correctName = itemsToGuess[currentItemIndex].name;
+            let currentTypedValue = foodInput.value;
+            let validPart = "";
+
+            for (let i = 0; i < currentTypedValue.length; i++) {
+                // Normalizar ambos para comparación sin acentos y en minúsculas
+                const typedCharNorm = currentTypedValue[i].toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                const correctCharNorm = correctName[i].toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+                if (i < correctName.length && typedCharNorm === correctCharNorm) {
+                    validPart += currentTypedValue[i]; // Mantener el carácter original tipeado
+                } else {
+                    break;
+                }
+            }
+            if (foodInput.value !== validPart) { foodInput.value = validPart; }
+
+            // Comparación final también normalizada
+            const typedFullNorm = validPart.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            const correctFullNorm = correctName.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+            if (typedFullNorm === correctFullNorm && validPart.length === correctName.length) {
+                handleCorrectAnswer();
+            }
+        });
+        
+        function validateGameSettings() {
+            playerName = playerNameInput.value.trim();
+            if (!playerName) {
+                settingsError.textContent = "Por favor, escribe tu nombre.";
+                settingsError.classList.remove('hidden');
+                return false;
+            }
+
+            if (specificQuantityRadio.checked) {
+                const num = parseInt(numItemsInput.value);
+                if (isNaN(num) || num < 1 || num > allFoods.length) {
+                    settingsError.textContent = `Por favor, ingresa una cantidad válida (1-${allFoods.length}).`;
+                    settingsError.classList.remove('hidden');
+                    return false;
+                }
+            }
+            settingsError.classList.add('hidden');
+            return true;
+        }
+
+        function startGame() {
+            if (!validateGameSettings()) return;
+
+            let selectedFoods = [...allFoods]; // Copia para no modificar el original
+            if (specificQuantityRadio.checked) {
+                const quantity = parseInt(numItemsInput.value);
+                selectedFoods = shuffleArray(selectedFoods).slice(0, quantity);
+            }
+            itemsToGuess = shuffleArray(selectedFoods); // Volver a barajar por si acaso o si es "todos"
+
+            if (itemsToGuess.length === 0) {
+                 settingsError.textContent = "No hay alimentos para adivinar con la configuración actual.";
+                 settingsError.classList.remove('hidden');
+                 return;
+            }
+
+
+            currentItemIndex = 0;
+            welcomeMessage.textContent = `¡Vamos, ${playerName}!`;
+            
+            settingsScreen.classList.add('hidden');
+            endScreen.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+            
+            loadFoodItem(); 
+            startTimer();
+        }
+
+        function endGame() {
+            stopTimer();
+            gameScreen.classList.add('hidden');
+            endScreen.classList.remove('hidden');
+            finalTimeDisplay.textContent = `¡${playerName}, terminaste en ${formatTime(secondsElapsed).replace('Tiempo: ', '')}! Adivinaste ${itemsToGuess.length} alimentos.`;
+        }
+
+        startButton.addEventListener('click', startGame);
+        playAgainButton.addEventListener('click', () => {
+            endScreen.classList.add('hidden');
+            settingsScreen.classList.remove('hidden');
+            playerNameInput.focus(); 
+        });
+
+        foodImage.onerror = function() {
+            const genericErrorImageUrl = 'https://placehold.co/400x300/FF7F7F/FFFFFF?text=Imagen+No+Encontrada';
+            if (this.src === '' || this.src === window.location.href) return;
+            console.warn("Error al cargar la imagen:", this.src);
+            const currentItemForError = (itemsToGuess && currentItemIndex < itemsToGuess.length) ? itemsToGuess[currentItemIndex] : null;
+            const itemNameForAlt = currentItemForError ? currentItemForError.name : "Alimento Desconocido";
+            if (this.src === genericErrorImageUrl) {
+                this.alt = `${itemNameForAlt} (Error Imagen Crítico)`;
+                return; 
+            }
+            this.src = genericErrorImageUrl;
+            this.alt = `${itemNameForAlt} (Imagen no encontrada en '../src/')`;
+        };
+
+        playerNameInput.focus();
+    </script>
+</body>
+</html>
