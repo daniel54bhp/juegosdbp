@@ -250,7 +250,7 @@
             { name: "Achachairú" }, { name: "Arándano" }, { name: "Aceituna" }, { name: "Almendras" }, { name: "Ajo" },
             { name: "Aguacate" }, { name: "Apio" }, { name: "Acelga" }, { name: "Avena" }, { name: "Arroz" },
             { name: "Azúcar" }, { name: "Anís" }, { name: "Arvejas" }, { name: "Agua" }, { name: "Alfajores" },
-            { name: "Beterraga" }, { name: "Brócoli" }, { name: "Bicarbonato" }, { name: "Vainitas" }, // Asumiendo Vainitas
+            { name: "Beterraga" }, { name: "Brócoli" }, { name: "Bicarbonato" }, { name: "Vainitas" },
             { name: "Carambola" }, { name: "Cerezas" }, { name: "Ciruelo" }, { name: "Coco" }, { name: "Cebolla" },
             { name: "Coliflor" }, { name: "Carnes" }, { name: "Cupcakes" }, { name: "Caña" }, { name: "Cebada" },
             { name: "Clavo de olor" }, { name: "Canela" }, { name: "Chirimoya" }, { name: "Camote" },
@@ -261,14 +261,14 @@
             { name: "Gelatina" }, { name: "Guinda" }, { name: "Guayaba" }, { name: "Granada" }, { name: "Higo" },
             { name: "Harina" }, { name: "Habas" }, { name: "Hinojo" }, { name: "Huevos" }, { name: "Helados" },
             { name: "Hamburguesas" }, { name: "Jengibre" }, { name: "Kiwi" }, { name: "Lima" }, { name: "Limón" },
-            { name: "Lúcuma" }, { name: "Locoto" }, { name: "Lechuga" }, { name: "Lenteja" }, { name: "Lacayote" }, // Asumiendo Lúcuma y Lacayote
+            { name: "Lúcuma" }, { name: "Locoto" }, { name: "Lechuga" }, { name: "Lenteja" }, { name: "Lacayote" }, 
             { name: "Leche" }, { name: "Mantequilla" }, { name: "Mermelada" }, { name: "Manzana" }, { name: "Mandarina" },
             { name: "Maracuyá" }, { name: "Mango" }, { name: "Melón" }, { name: "Mora" }, { name: "Miel" },
             { name: "Maíz" }, { name: "Manzanilla" }, { name: "Mote" }, { name: "Naranja" }, { name: "Noni" },
             { name: "Nabo" }, { name: "Oca" }, { name: "Pan" }, { name: "Plátano" }, { name: "Papaya" },
             { name: "Pera" }, { name: "Piña" }, { name: "Pacay" }, { name: "Pistacho" }, { name: "Palta" },
             { name: "Pasas" }, { name: "Papa" }, { name: "Pepino" }, { name: "Perejil" }, { name: "Pimiento" },
-            { name: "Pollo" }, { name: "Pescado" }, { name: "Pasteles" }, { name: "Queques" }, { name: "Queso" }, // Quisa omitida por ambigüedad, se puede añadir si se clarifica
+            { name: "Pollo" }, { name: "Pescado" }, { name: "Pasteles" }, { name: "Queques" }, { name: "Queso" },
             { name: "Quinua" }, { name: "Quirquiña" }, { name: "Rábano" }, { name: "Remolacha" }, { name: "Repollo" },
             { name: "Romero" }, { name: "Rollo de queso" }, { name: "Refrescos" }, { name: "Sábila" }, { name: "Sandía" },
             { name: "Sal" }, { name: "Salchichas" }, { name: "Sémola" }, { name: "Salteñas" }, { name: "Tucumanas" },
@@ -276,14 +276,13 @@
             { name: "Tuna" }, { name: "Tomate" }, { name: "Tunta" }, { name: "Torta" }, { name: "Trigo" },
             { name: "Uva" }, { name: "Yogurt" }, { name: "Yuca" }, { name: "Zanahoria" }, { name: "Zapallo" }
         ].map(food => {
-            // Función para normalizar texto para nombres de archivo
             const normalizeForFileName = (text) => 
                 text.toLowerCase()
                     .normalize("NFD") // Descomponer acentos
                     .replace(/[\u0300-\u036f]/g, "") // Quitar diacríticos
                     .replace(/\s+/g, '') // Quitar espacios
                     .replace(/[^a-z0-9]/gi, ''); // Quitar caracteres no alfanuméricos
-            return { ...food, fileName: normalizeForFileName(food.name) + ".png" };
+            return { ...food, baseFileName: normalizeForFileName(food.name) }; // Almacena el nombre base sin extensión
         });
 
         let currentItemIndex = 0;
@@ -313,7 +312,6 @@
         const messageArea = document.getElementById('message-area');
         const finalTimeDisplay = document.getElementById('final-time');
 
-        // Event listeners para opciones de cantidad
         allItemsRadio.addEventListener('change', () => {
             if (allItemsRadio.checked) {
                 numItemsInput.disabled = true;
@@ -327,12 +325,10 @@
                 numItemsInput.focus();
             }
         });
-         // Inicializar estado del input numérico
         if (allItemsRadio.checked) {
             numItemsInput.disabled = true;
             numItemsInput.classList.add('bg-gray-100');
         }
-
 
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
@@ -364,18 +360,20 @@
         function loadFoodItem() {
             if (currentItemIndex < itemsToGuess.length) {
                 const item = itemsToGuess[currentItemIndex];
-                foodNameDisplay.textContent = item.name.toUpperCase(); // Mostrar nombre original con acentos
+                foodNameDisplay.textContent = item.name.toUpperCase();
                 foodInput.value = '';
                 foodInput.disabled = false;
                 foodInput.focus();
                 messageArea.textContent = '';
                 messageArea.className = 'message-area';
                 
-                foodImage.src = '';
+                foodImage.src = ''; // Limpiar para que onerror se active correctamente si la nueva imagen falla
                 foodImage.alt = 'Cargando imagen...';
-                const imageUrl = `../src/${item.fileName}`;
-                console.log("Cargando imagen:", imageUrl);
-                foodImage.src = imageUrl;
+                
+                // Intentar cargar .jpg primero
+                const imageUrlJpg = `../src/${item.baseFileName}.jpg`;
+                console.log("Intentando cargar imagen .jpg:", imageUrlJpg);
+                foodImage.src = imageUrlJpg;
                 foodImage.alt = item.name;
             } else {
                 endGame();
@@ -399,22 +397,18 @@
             let validPart = "";
 
             for (let i = 0; i < currentTypedValue.length; i++) {
-                // Normalizar ambos para comparación sin acentos y en minúsculas
                 const typedCharNorm = currentTypedValue[i].toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
                 const correctCharNorm = correctName[i].toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-
                 if (i < correctName.length && typedCharNorm === correctCharNorm) {
-                    validPart += currentTypedValue[i]; // Mantener el carácter original tipeado
+                    validPart += currentTypedValue[i];
                 } else {
                     break;
                 }
             }
             if (foodInput.value !== validPart) { foodInput.value = validPart; }
-
-            // Comparación final también normalizada
+            
             const typedFullNorm = validPart.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
             const correctFullNorm = correctName.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-
             if (typedFullNorm === correctFullNorm && validPart.length === correctName.length) {
                 handleCorrectAnswer();
             }
@@ -427,7 +421,6 @@
                 settingsError.classList.remove('hidden');
                 return false;
             }
-
             if (specificQuantityRadio.checked) {
                 const num = parseInt(numItemsInput.value);
                 if (isNaN(num) || num < 1 || num > allFoods.length) {
@@ -442,28 +435,22 @@
 
         function startGame() {
             if (!validateGameSettings()) return;
-
-            let selectedFoods = [...allFoods]; // Copia para no modificar el original
+            let selectedFoods = [...allFoods];
             if (specificQuantityRadio.checked) {
                 const quantity = parseInt(numItemsInput.value);
                 selectedFoods = shuffleArray(selectedFoods).slice(0, quantity);
             }
-            itemsToGuess = shuffleArray(selectedFoods); // Volver a barajar por si acaso o si es "todos"
-
+            itemsToGuess = shuffleArray(selectedFoods);
             if (itemsToGuess.length === 0) {
                  settingsError.textContent = "No hay alimentos para adivinar con la configuración actual.";
                  settingsError.classList.remove('hidden');
                  return;
             }
-
-
             currentItemIndex = 0;
             welcomeMessage.textContent = `¡Vamos, ${playerName}!`;
-            
             settingsScreen.classList.add('hidden');
             endScreen.classList.add('hidden');
             gameScreen.classList.remove('hidden');
-            
             loadFoodItem(); 
             startTimer();
         }
@@ -484,18 +471,44 @@
 
         foodImage.onerror = function() {
             const genericErrorImageUrl = 'https://placehold.co/400x300/FF7F7F/FFFFFF?text=Imagen+No+Encontrada';
-            if (this.src === '' || this.src === window.location.href) return;
-            console.warn("Error al cargar la imagen:", this.src);
             const currentItemForError = (itemsToGuess && currentItemIndex < itemsToGuess.length) ? itemsToGuess[currentItemIndex] : null;
             const itemNameForAlt = currentItemForError ? currentItemForError.name : "Alimento Desconocido";
-            if (this.src === genericErrorImageUrl) {
-                this.alt = `${itemNameForAlt} (Error Imagen Crítico)`;
-                return; 
-            }
-            this.src = genericErrorImageUrl;
-            this.alt = `${itemNameForAlt} (Imagen no encontrada en '../src/')`;
-        };
 
+            if (!this.src || this.src === window.location.href || this.src.endsWith(genericErrorImageUrl)) {
+                if (this.src.endsWith(genericErrorImageUrl)) {
+                    console.error("La imagen de error genérica (" + genericErrorImageUrl + ") tampoco se pudo cargar.");
+                    this.alt = `${itemNameForAlt} (Error Imagen Crítico)`;
+                }
+                return;
+            }
+            console.warn("Error al cargar la imagen:", this.src);
+
+            if (currentItemForError) {
+                const baseFileName = currentItemForError.baseFileName;
+                const jpgSrc = `../src/${baseFileName}.jpg`;
+                const jpegSrc = `../src/${baseFileName}.jpeg`;
+
+                if (this.src.toLowerCase().endsWith(".jpg")) { // Si falló .jpg
+                    console.log(`Fallo al cargar ${jpgSrc}. Intentando ${jpegSrc}`);
+                    this.src = jpegSrc; // Intentar .jpeg
+                    this.alt = `${itemNameForAlt} (Intentando .jpeg)`;
+                } else if (this.src.toLowerCase().endsWith(".jpeg")) { // Si falló .jpeg (después de .jpg)
+                    console.warn(`Fallo al cargar ${jpegSrc} también. Mostrando imagen de error genérica.`);
+                    this.src = genericErrorImageUrl;
+                    this.alt = `${itemNameForAlt} (Imagen no encontrada en '../src/')`;
+                } else { 
+                    // Si la URL original no era ni .jpg ni .jpeg (no debería pasar con la lógica actual)
+                    console.warn(`Fuente de imagen desconocida (${this.src}) falló. Mostrando imagen de error genérica.`);
+                    this.src = genericErrorImageUrl;
+                    this.alt = `${itemNameForAlt} (Error Inesperado al Cargar Imagen)`;
+                }
+            } else {
+                if (this.src !== genericErrorImageUrl) {
+                    this.src = genericErrorImageUrl;
+                    this.alt = "Error General al Cargar Imagen";
+                }
+            }
+        };
         playerNameInput.focus();
     </script>
 </body>
