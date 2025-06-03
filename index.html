@@ -21,7 +21,7 @@
             width: 100%;
             z-index: 10;
         }
-        .header-title-font { /* Renombrado para evitar conflicto con clase de index si se combinan estilos */
+        .header-title-font { 
             font-family: 'Pacifico', cursive;
         }
         main {
@@ -54,6 +54,7 @@
 </head>
 <body class="text-gray-800">
 
+    <!-- Encabezado -->
     <header>
         <div class="container mx-auto px-6 py-4 sm:py-6 flex flex-col sm:flex-row justify-between items-center">
             <a href="index.html" class="flex items-center hover:opacity-90 transition-opacity duration-200">
@@ -74,16 +75,21 @@
                         <a href="animales/animales.html" class="block px-4 py-2 text-sm text-blue-800 hover:bg-sky-100 hover:text-blue-700">Adivina el Animal</a>
                         <a href="multiplicacion/multiplicacion.html" class="block px-4 py-2 text-sm text-blue-800 hover:bg-sky-100 hover:text-blue-700">Tablas de Multiplicar</a>
                         <a href="alimentos/alimentos.html" class="block px-4 py-2 text-sm text-blue-800 hover:bg-sky-100 hover:text-blue-700">Adivina el Alimento</a>
-                        </div>
+                        <a href="sumas/sumas.html" class="block px-4 py-2 text-sm text-blue-800 hover:bg-sky-100 hover:text-blue-700">Juego de Sumas</a>
+                        <a href="restas/restas.html" class="block px-4 py-2 text-sm text-blue-800 hover:bg-sky-100 hover:text-blue-700">Juego de Restas</a>
+                        <a href="divisiones/divisiones.html" class="block px-4 py-2 text-sm text-blue-800 hover:bg-sky-100 hover:text-blue-700">Juego de Divisiones</a>
+                    </div>
                 </div>
             </nav>
         </div>
     </header>
 
+    <!-- Sección Principal de Juegos -->
     <main class="container mx-auto px-6 py-12">
         <h2 class="text-3xl font-bold text-center text-blue-800 mb-10">Nuestros Juegos</h2>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            <!-- Tarjeta Juego 1: Adivina el Animal -->
             <div class="card bg-white rounded-xl shadow-lg overflow-hidden flex flex-col">
                 <img src="src/animales.png" alt="Miniatura Juego Adivina el Animal" class="w-full h-56 object-cover" onerror="this.onerror=null; this.src='https://placehold.co/600x400/A8DADC/1D3557?text=Animales';">
                 <div class="p-6 flex flex-col flex-grow">
@@ -98,6 +104,7 @@
                 </div>
             </div>
 
+            <!-- Tarjeta Juego 2: Tablas de Multiplicar -->
             <div class="card bg-white rounded-xl shadow-lg overflow-hidden flex flex-col">
                 <img src="src/mult.png" alt="Miniatura Juego Tablas de Multiplicar" class="w-full h-56 object-cover" onerror="this.onerror=null; this.src='https://placehold.co/600x400/F4A261/264653?text=Multiplicar';">
                 <div class="p-6 flex flex-col flex-grow">
@@ -112,6 +119,7 @@
                 </div>
             </div>
 
+            <!-- Tarjeta Juego 3: Adivina el Alimento -->
             <div class="card bg-white rounded-xl shadow-lg overflow-hidden flex flex-col">
                 <img src="src/alimentos.png" alt="Miniatura Juego Adivina el Alimento" class="w-full h-56 object-cover" onerror="this.onerror=null; this.src='https://placehold.co/600x400/E9C46A/2A9D8F?text=Alimentos';">
                 <div class="p-6 flex flex-col flex-grow">
@@ -126,9 +134,55 @@
                 </div>
             </div>
 
+            <!-- Tarjeta Juego 4: Juego de Sumas -->
+            <div class="card bg-white rounded-xl shadow-lg overflow-hidden flex flex-col">
+                <img src="src/sumas.png" alt="Miniatura Juego de Sumas" class="w-full h-56 object-cover" onerror="this.onerror=null; this.src='https://placehold.co/600x400/8ECAE6/023047?text=Sumas';">
+                <div class="p-6 flex flex-col flex-grow">
+                    <h3 class="text-2xl font-semibold text-blue-800 mb-3">Juego de Sumas</h3>
+                    <p class="text-gray-600 mb-4 flex-grow">
+                        Practica tus habilidades de suma con números de hasta dos cifras. ¡Resuelve la tabla!
+                    </p>
+                    <a href="sumas/sumas.html" 
+                       class="btn-jugar mt-auto inline-block text-center font-bold py-3 px-6 rounded-lg text-lg shadow-md hover:shadow-lg transition-all duration-300 ease-in-out">
+                        ¡Jugar Ahora!
+                    </a>
+                </div>
+            </div>
+
+            <!-- Tarjeta Juego 5: Juego de Restas -->
+            <div class="card bg-white rounded-xl shadow-lg overflow-hidden flex flex-col">
+                <img src="src/restas.png" alt="Miniatura Juego de Restas" class="w-full h-56 object-cover" onerror="this.onerror=null; this.src='https://placehold.co/600x400/FFB703/023047?text=Restas';">
+                <div class="p-6 flex flex-col flex-grow">
+                    <h3 class="text-2xl font-semibold text-blue-800 mb-3">Juego de Restas</h3>
+                    <p class="text-gray-600 mb-4 flex-grow">
+                        ¡Pon a prueba tu habilidad con las restas! Asegúrate de que el resultado no sea negativo.
+                    </p>
+                    <a href="restas/restas.html" 
+                       class="btn-jugar mt-auto inline-block text-center font-bold py-3 px-6 rounded-lg text-lg shadow-md hover:shadow-lg transition-all duration-300 ease-in-out">
+                        ¡Jugar Ahora!
+                    </a>
+                </div>
+            </div>
+
+            <!-- Tarjeta Juego 6: Juego de Divisiones -->
+            <div class="card bg-white rounded-xl shadow-lg overflow-hidden flex flex-col">
+                <img src="src/divisiones.png" alt="Miniatura Juego de Divisiones" class="w-full h-56 object-cover" onerror="this.onerror=null; this.src='https://placehold.co/600x400/2A9D8F/E9C46A?text=Divisiones';">
+                <div class="p-6 flex flex-col flex-grow">
+                    <h3 class="text-2xl font-semibold text-blue-800 mb-3">Juego de Divisiones</h3>
+                    <p class="text-gray-600 mb-4 flex-grow">
+                        Practica divisiones exactas. ¡Encuentra el cociente correcto para cada operación!
+                    </p>
+                    <a href="divisiones/divisiones.html" 
+                       class="btn-jugar mt-auto inline-block text-center font-bold py-3 px-6 rounded-lg text-lg shadow-md hover:shadow-lg transition-all duration-300 ease-in-out">
+                        ¡Jugar Ahora!
+                    </a>
+                </div>
+            </div>
+
         </div>
     </main>
 
+    <!-- Pie de Página -->
     <footer class="bg-blue-800 text-white mt-auto py-8 text-center">
         <div class="container mx-auto px-6">
             <p>&copy; 2025 Juegos Didácticos Don Bosco Pampahasi. Todos los derechos reservados.</p>
