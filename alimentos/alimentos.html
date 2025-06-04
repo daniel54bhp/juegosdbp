@@ -350,17 +350,17 @@
         let secondsElapsed = 0;
         let itemsToGuess = [];
         let playerName = "";
-        let currentFoodName = ""; // Cambiado de currentAnimalName
+        let currentFoodName = ""; 
         let letterDisplayElements = [];
         let letterInputElements = [];
         let correctlyGuessedLettersCount = 0;
 
-        const settingsScreen = document.getElementById('settings-screen'); // Usar el ID correcto
+        const settingsScreen = document.getElementById('settings-screen'); 
         const gameScreen = document.getElementById('game-screen');
         const endScreen = document.getElementById('end-screen');
         
         const playerNameInput = document.getElementById('player-name-input');
-        const settingsError = document.getElementById('settings-error'); // Renombrado de nameError
+        const settingsError = document.getElementById('settings-error'); 
         const startButton = document.getElementById('start-button');
         
         const allItemsRadio = document.getElementById('all-items');
@@ -369,7 +369,7 @@
 
         const welcomeMessage = document.getElementById('welcome-message');
         const playAgainButton = document.getElementById('play-again-button');
-        const foodImage = document.getElementById('food-image'); // Renombrado
+        const foodImage = document.getElementById('food-image'); 
         
         const letterDisplayContainer = document.getElementById('letter-display-container');
         const letterInputContainer = document.getElementById('letter-input-container');
@@ -423,7 +423,7 @@
         }
         function stopTimer() { clearInterval(timerInterval); }
 
-        function setupLetterBoxes(itemName) { // Renombrado de animalName
+        function setupLetterBoxes(itemName) { 
             letterDisplayContainer.innerHTML = '';
             letterInputContainer.innerHTML = '';
             letterDisplayElements = [];
@@ -477,7 +477,7 @@
             }
         }
 
-        function loadFoodItem() { // Renombrado de loadAnimal
+        function loadFoodItem() { 
             if (currentItemIndex < itemsToGuess.length) {
                 const item = itemsToGuess[currentItemIndex];
                 currentFoodName = item.name; 
@@ -489,11 +489,13 @@
                 
                 foodImage.src = '';
                 foodImage.alt = 'Cargando imagen...';
+                foodImage.removeAttribute('data-attempt'); // Reset attempt tracker for new image
+                foodImage.removeAttribute('data-placeholder-logged'); // Reset placeholder log tracker
                 
                 const imageUrlJpg = `../src/${item.baseFileName}.jpg`;
                 console.log("Intentando cargar imagen .jpg:", imageUrlJpg);
-                foodImage.src = imageUrlJpg; // Intenta .jpg primero
-                foodImage.alt = item.name; // El alt siempre es el nombre del alimento
+                foodImage.src = imageUrlJpg; 
+                foodImage.alt = item.name; 
 
                 if (letterInputElements.length > 0) {
                     letterInputElements[0].focus(); 
@@ -580,39 +582,38 @@
             const placeholderBaseUrl = 'https://placehold.co/300x200/E2E8F0/1E3A8A?text=';
             const fallbackImageUrlWithName = `${placeholderBaseUrl}${encodeURIComponent(itemNameForAlt)}`;
 
-            if (!this.src || this.src === window.location.href || this.src.startsWith('data:image') || this.src === fallbackImageUrlWithName) {
-                 // Si ya es el placeholder con nombre o src vacío, no hacer nada más para evitar bucles.
-                if (this.src === fallbackImageUrlWithName) {
+            if (!this.src || this.src === window.location.href || this.src.startsWith('data:') || this.src === fallbackImageUrlWithName) {
+                if (this.src === fallbackImageUrlWithName && !this.dataset.placeholderLogged) {
                     console.warn("El placeholder con nombre también falló o ya está puesto:", this.src);
-                } else {
-                    console.log("foodImage.onerror: src vacío, data URI o ya es el fallback con nombre. No se reintentará.");
+                    this.dataset.placeholderLogged = 'true';
                 }
                 return;
             }
-            
+            this.dataset.placeholderLogged = 'false';
+
             console.warn("Error al cargar la imagen:", this.src);
 
             if (currentItemForError) {
                 const baseFileName = currentItemForError.baseFileName;
-                const jpgSrc = `../src/${baseFileName}.jpg`;
-                const jpegSrc = `../src/${baseFileName}.jpeg`;
+                const attemptedJpegPath = `../src/${baseFileName}.jpeg`;
 
-                if (this.src.toLowerCase().endsWith(".jpg")) { 
-                    console.log(`Fallo al cargar ${jpgSrc}. Intentando ${jpegSrc}`);
-                    this.src = jpegSrc; 
+                if (this.dataset.attempt !== 'jpeg') { // Si no hemos intentado JPEG para ESTA imagen
+                    console.log(`Fallo al cargar ${this.src}. Intentando ${attemptedJpegPath}`);
+                    this.dataset.attempt = 'jpeg'; 
+                    this.src = attemptedJpegPath;
                     this.alt = `${itemNameForAlt} (Intentando .jpeg)`;
-                } else if (this.src.toLowerCase().endsWith(".jpeg")) { 
-                    console.warn(`Fallo al cargar ${jpegSrc} también. Mostrando nombre del alimento como fallback.`);
+                } 
+                else { // Ya intentamos JPEG y también falló
+                    console.warn(`Fallo al cargar ${this.src} (probablemente ${attemptedJpegPath}). Ambas extensiones (.jpg y .jpeg) fallaron para el nombre base '${baseFileName}'. Mostrando nombre del alimento como fallback. Asegúrese que los archivos en 'src/' sean '${baseFileName}.jpg' o '${baseFileName}.jpeg' (todo en minúsculas y normalizado).`);
+                    this.dataset.attempt = 'fallback'; 
                     this.src = fallbackImageUrlWithName;
                     this.alt = itemNameForAlt; 
-                } else { 
-                    console.warn(`Fuente de imagen desconocida (${this.src}) falló. Mostrando nombre del alimento como fallback.`);
-                    this.src = fallbackImageUrlWithName;
-                    this.alt = itemNameForAlt;
                 }
-            } else { // No debería ocurrir si el juego está en curso
-                if (this.src !== fallbackImageUrlWithName) { // Evitar bucle si el placeholder genérico también falla
-                    this.src = `${placeholderBaseUrl}Error`;
+            } else {
+                console.error("foodImage.onerror: No hay 'currentItemForError' definido.");
+                 if (this.src !== fallbackImageUrlWithName && this.dataset.attempt !== 'fallback_unknown') {
+                    this.dataset.attempt = 'fallback_unknown';
+                    this.src = `${placeholderBaseUrl}ErrorDesconocido`;
                     this.alt = "Error General al Cargar Imagen";
                 }
             }
@@ -622,4 +623,4 @@
         }
     </script>
 </body>
-</html>
+</ht
