@@ -19,8 +19,10 @@
             background-color: #1E3A8A; /* Azul principal (oscuro) */
             color: white;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            width: 100%; /* Asegurar que el header ocupe todo el ancho */
+            z-index: 10;
         }
-        .header-title-font { /* Renombrado para evitar conflicto con clase de index si se combinan estilos */
+        .header-title-font { 
             font-family: 'Pacifico', cursive;
         }
         main {
@@ -28,14 +30,14 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px; /* Padding para el contenido principal */
+            padding: 20px; 
         }
         footer {
             background-color: #1E3A8A; /* Azul principal (oscuro) */
             color: white;
+            width: 100%; /* Asegurar que el footer ocupe todo el ancho */
         }
 
-        /* Estilos específicos del juego de animales (ya existentes) */
         .game-container {
             background-color: #ffffff;
             padding: 20px;
@@ -59,17 +61,62 @@
             justify-content: center;
             align-items: center;
             background-color: #e2e8f0;
+            margin-left: auto;
+            margin-right: auto;
         }
-        .name-to-copy {
+        
+        /* Contenedores para las letras */
+        #letter-display-container, #letter-input-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap; /* Para que las letras pasen a la siguiente línea si no caben */
+            margin-bottom: 15px;
+            gap: 5px; /* Espacio entre cajas */
+        }
+
+        /* Cajas de visualización de letras */
+        .letter-display-box {
+            width: 40px;
+            height: 40px;
+            background-color: white;
+            border: 2px solid #93c5fd; /* Borde azul claro */
+            border-radius: 6px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             font-size: 1.8em;
             font-weight: bold;
-            color: #1e40af;
-            margin-bottom: 12px;
-            letter-spacing: 2px;
-            padding: 8px;
-            background-color: #e0f2fe;
-            border-radius: 6px;
+            color: #1e40af; /* Azul oscuro */
+            text-transform: uppercase;
+            transition: background-color 0.3s ease;
         }
+        .letter-display-box.correct {
+            background-color: #dcfce7; /* Verde claro */
+            color: #166534; /* Verde oscuro */
+            border-color: #16a34a; /* Borde verde */
+        }
+
+        /* Cajas de entrada de letras */
+        .letter-input-box {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #93c5fd; /* Borde azul claro */
+            border-radius: 6px;
+            text-align: center;
+            font-size: 1.5em;
+            text-transform: uppercase;
+            outline: none;
+        }
+        .letter-input-box:focus {
+            border-color: #3b82f6; /* Borde azul más oscuro al enfocar */
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        }
+        .letter-input-box:disabled {
+            background-color: #f3f4f6; /* Gris claro para deshabilitado */
+            color: #9ca3af;
+        }
+
+
         .input-field { /* Estilo general, usado por player-name-input */
             width: 100%;
             padding: 12px;
@@ -80,11 +127,7 @@
             text-align: center;
             box-sizing: border-box;
         }
-        .animal-input-field { /* Estilo específico para la entrada del nombre del animal */
-            font-size: 1.5em;
-            text-transform: uppercase;
-        }
-        .input-field:focus { /* Aplica a ambos por herencia de clase */
+        .input-field:focus { 
             outline: none;
             border-color: #3b82f6;
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
@@ -138,16 +181,25 @@
             margin-bottom: 10px;
         }
 
-        @media (max-width: 400px) {
-            .game-container { padding: 15px; }
-            .name-to-copy { font-size: 1.5em; }
-            .input-field { font-size: 1.1em; }
-            .animal-input-field { font-size: 1.3em; }
-            .button { font-size: 1em; padding: 10px 20px; }
-            .welcome-message-area { font-size: 1.1em; }
+        @media (max-width: 480px) { /* Ajuste para que quepan más letras en pantallas pequeñas */
+            .letter-display-box, .letter-input-box {
+                width: 35px;
+                height: 35px;
+                font-size: 1.5em;
+            }
+             #letter-display-container, #letter-input-container {
+                gap: 3px;
+            }
+        }
+        @media (max-width: 380px) {
+             .letter-display-box, .letter-input-box {
+                width: 30px;
+                height: 30px;
+                font-size: 1.3em;
+            }
         }
         .dropdown-menu {
-            z-index: 50; /* Para que aparezca sobre otros elementos */
+            z-index: 50; 
         }
     </style>
 </head>
@@ -173,7 +225,11 @@
                     <div id="games-dropdown-menu" class="dropdown-menu absolute right-0 mt-2 w-56 bg-white rounded-md shadow-xl py-1 hidden">
                         <a href="../animales/animales.html" class="block px-4 py-2 text-sm text-blue-800 hover:bg-sky-100 hover:text-blue-700">Adivina el Animal</a>
                         <a href="../multiplicacion/multiplicacion.html" class="block px-4 py-2 text-sm text-blue-800 hover:bg-sky-100 hover:text-blue-700">Tablas de Multiplicar</a>
-                        </div>
+                        <a href="../alimentos/alimentos.html" class="block px-4 py-2 text-sm text-blue-800 hover:bg-sky-100 hover:text-blue-700">Adivina el Alimento</a>
+                        <a href="../sumas/sumas.html" class="block px-4 py-2 text-sm text-blue-800 hover:bg-sky-100 hover:text-blue-700">Juego de Sumas</a>
+                        <a href="../restas/restas.html" class="block px-4 py-2 text-sm text-blue-800 hover:bg-sky-100 hover:text-blue-700">Juego de Restas</a>
+                        <a href="../divisiones/divisiones.html" class="block px-4 py-2 text-sm text-blue-800 hover:bg-sky-100 hover:text-blue-700">Juego de Divisiones</a>
+                    </div>
                 </div>
             </nav>
         </div>
@@ -185,7 +241,7 @@
                 <h1 class="text-3xl font-bold mb-6 text-slate-700">¡Adivina el Animal!</h1>
                 <input type="text" id="player-name-input" class="input-field mb-2" placeholder="Escribe tu nombre aquí">
                 <p id="name-error" class="text-red-500 text-sm mb-4 hidden">Por favor, escribe tu nombre para empezar.</p>
-                <p class="mb-6 text-slate-600">Escribe el nombre del animal que veas. ¡El tiempo corre!</p>
+                <p class="mb-6 text-slate-600">Escribe el nombre del animal letra por letra. ¡El tiempo corre!</p>
                 <button id="start-button" class="button start-button">Empezar Juego</button>
             </div>
 
@@ -193,8 +249,17 @@
                 <div id="welcome-message" class="welcome-message-area"></div>
                 <div id="timer" class="timer-display">Tiempo: 00:00</div>
                 <img id="animal-image" src="" alt="Animal" class="animal-image mx-auto">
-                <div id="animal-name-display" class="name-to-copy">ANIMAL</div>
-                <input type="text" id="animal-input" class="input-field animal-input-field" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+                
+                <!-- Contenedor para las cajas de visualización de letras -->
+                <div id="letter-display-container" class="my-4">
+                    <!-- Las cajas de letras se generarán aquí por JS -->
+                </div>
+                
+                <!-- Contenedor para las cajas de entrada de letras -->
+                <div id="letter-input-container" class="my-4">
+                    <!-- Los inputs de letras se generarán aquí por JS -->
+                </div>
+                
                 <div id="message-area" class="message-area"></div>
             </div>
 
@@ -209,66 +274,52 @@
     <footer class="mt-auto py-6 sm:py-8 text-center">
         <div class="container mx-auto px-6">
             <p>&copy; 2025 Juegos Didácticos Don Bosco Pampahasi. Todos los derechos reservados.</p>
-            <p>&copy; Desarrollado por Ing. Paulo Daniel Batuani Hurtado</p>
+             <p class="text-sm mt-1 opacity-75">&copy; Desarrollado por Ing. Paulo Daniel Batuani Hurtado</p>
         </div>
     </footer>
 
     <script>
-        // --- Inicio Script para Dropdown del Header ---
+        // --- Script para Dropdown del Header ---
         const gamesDropdownButton = document.getElementById('games-dropdown-button');
         const gamesDropdownMenu = document.getElementById('games-dropdown-menu');
-
         if (gamesDropdownButton && gamesDropdownMenu) {
             gamesDropdownButton.addEventListener('click', (event) => {
-                event.stopPropagation(); // Prevenir que el click se propague al document
+                event.stopPropagation();
                 gamesDropdownMenu.classList.toggle('hidden');
             });
-
-            // Cerrar el menú si se hace clic fuera de él
             document.addEventListener('click', (event) => {
-                if (!gamesDropdownMenu.classList.contains('hidden') && 
-                    !gamesDropdownButton.contains(event.target) && 
-                    !gamesDropdownMenu.contains(event.target)) {
+                if (!gamesDropdownMenu.classList.contains('hidden') && !gamesDropdownButton.contains(event.target) && !gamesDropdownMenu.contains(event.target)) {
                     gamesDropdownMenu.classList.add('hidden');
                 }
             });
         }
-        // --- Fin Script para Dropdown del Header ---
 
-        // --- Inicio Script del Juego Adivina el Animal (existente) ---
+        // --- Script del Juego Adivina el Animal ---
         const animals = [
-            { name: "Perro", fileName: "perro.png" },
-            { name: "Gato", fileName: "gato.png" },
-            { name: "Leon", fileName: "leon.png" }, // Corregido
-            { name: "Tigre", fileName: "tigre.png" },
-            { name: "Elefante", fileName: "elefante.png" },
-            { name: "Jirafa", fileName: "jirafa.png" },
-            { name: "Mono", fileName: "mono.png" },
-            { name: "Oso", fileName: "oso.png" },
-            { name: "Cebra", fileName: "cebra.png" },
-            { name: "Caballo", fileName: "caballo.png" },
-            { name: "Vaca", fileName: "vaca.png" },
-            { name: "Oveja", fileName: "oveja.png" },
-            { name: "Cerdo", fileName: "cerdo.png" },
-            { name: "Pato", fileName: "pato.png" },
-            { name: "Gallina", fileName: "gallina.png" },
-            { name: "Conejo", fileName: "conejo.png" },
-            { name: "Serpiente", fileName: "serpiente.png" },
-            { name: "Rana", fileName: "rana.png" },
-            { name: "Pez", fileName: "pez.png" },
-            { name: "Buho", fileName: "buho.png" }, // Corregido
-            { name: "Ardilla", fileName: "ardilla.png" },
-            { name: "Asno", fileName: "asno.png" },
-            { name: "Avestruz", fileName: "avestruz.png" },
-            { name: "Ballena", fileName: "ballena.png" }
+            { name: "Perro", fileName: "perro.png" }, { name: "Gato", fileName: "gato.png" },
+            { name: "León", fileName: "león.png" },  { name: "Tigre", fileName: "tigre.png" },
+            { name: "Elefante", fileName: "elefante.png" }, { name: "Jirafa", fileName: "jirafa.png" },
+            { name: "Mono", fileName: "mono.png" }, { name: "Oso", fileName: "oso.png" },
+            { name: "Cebra", fileName: "cebra.png" }, { name: "Caballo", fileName: "caballo.png" },
+            { name: "Vaca", fileName: "vaca.png" }, { name: "Oveja", fileName: "oveja.png" },
+            { name: "Cerdo", fileName: "cerdo.png" }, { name: "Pato", fileName: "pato.png" },
+            { name: "Gallina", fileName: "gallina.png" }, { name: "Conejo", fileName: "conejo.png" },
+            { name: "Serpiente", fileName: "serpiente.png" }, { name: "Rana", fileName: "rana.png" },
+            { name: "Pez", fileName: "pez.png" }, { name: "Búho", fileName: "búho.png" }, 
+            { name: "Ardilla", fileName: "ardilla.png" }, { name: "Asno", fileName: "asno.png" },
+            { name: "Avestruz", fileName: "avestruz.png" }, { name: "Ballena", fileName: "ballena.png" }
         ];
         let currentAnimalIndex = 0;
         let timerInterval;
         let secondsElapsed = 0;
         let shuffledAnimals = [];
         let playerName = "";
+        let currentAnimalName = "";
+        let letterDisplayElements = [];
+        let letterInputElements = [];
+        let correctlyGuessedLettersCount = 0;
 
-        const startScreen = document.getElementById('start-screen');
+        const startScreen = document.getElementById('start-screen'); // Correctamente definido
         const gameScreen = document.getElementById('game-screen');
         const endScreen = document.getElementById('end-screen');
         
@@ -279,8 +330,10 @@
         const welcomeMessage = document.getElementById('welcome-message');
         const playAgainButton = document.getElementById('play-again-button');
         const animalImage = document.getElementById('animal-image');
-        const animalNameDisplay = document.getElementById('animal-name-display');
-        const animalInput = document.getElementById('animal-input');
+        
+        const letterDisplayContainer = document.getElementById('letter-display-container');
+        const letterInputContainer = document.getElementById('letter-input-container');
+
         const timerDisplay = document.getElementById('timer');
         const messageArea = document.getElementById('message-area');
         const finalTimeDisplay = document.getElementById('final-time');
@@ -310,74 +363,106 @@
             clearInterval(timerInterval);
             timerInterval = setInterval(updateTimer, 1000);
         }
+        function stopTimer() { clearInterval(timerInterval); }
 
-        function stopTimer() {
-            clearInterval(timerInterval);
+        function setupLetterBoxes(animalName) {
+            letterDisplayContainer.innerHTML = '';
+            letterInputContainer.innerHTML = '';
+            letterDisplayElements = [];
+            letterInputElements = [];
+            correctlyGuessedLettersCount = 0;
+
+            for (let i = 0; i < animalName.length; i++) {
+                const char = animalName[i];
+
+                // Crear caja de visualización
+                const displayBox = document.createElement('div');
+                displayBox.classList.add('letter-display-box');
+                displayBox.textContent = char.toUpperCase();
+                letterDisplayContainer.appendChild(displayBox);
+                letterDisplayElements.push(displayBox);
+
+                // Crear caja de entrada
+                const inputBox = document.createElement('input');
+                inputBox.type = 'text';
+                inputBox.maxLength = 1;
+                inputBox.classList.add('letter-input-box');
+                inputBox.dataset.index = i; // Guardar índice para referencia
+                inputBox.addEventListener('input', handleLetterInput);
+                letterInputContainer.appendChild(inputBox);
+                letterInputElements.push(inputBox);
+            }
         }
+
+        function handleLetterInput(event) {
+            const inputElement = event.target;
+            const index = parseInt(inputElement.dataset.index);
+            const typedChar = inputElement.value.toUpperCase();
+            
+            const correctCharNormalized = currentAnimalName[index].toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            const typedCharNormalized = typedChar.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+            if (typedCharNormalized === correctCharNormalized && typedChar !== '') {
+                letterDisplayElements[index].classList.add('correct');
+                inputElement.disabled = true;
+                correctlyGuessedLettersCount++;
+
+                if (correctlyGuessedLettersCount === currentAnimalName.length) {
+                    handleCorrectAnswer();
+                } else {
+                    for (let i = index + 1; i < letterInputElements.length; i++) {
+                        if (!letterInputElements[i].disabled) {
+                            letterInputElements[i].focus();
+                            break;
+                        }
+                    }
+                }
+            } else if (typedChar !== '') { 
+                inputElement.value = ''; 
+            }
+        }
+
 
         async function loadAnimal() {
             if (currentAnimalIndex < shuffledAnimals.length) {
                 const animal = shuffledAnimals[currentAnimalIndex];
-                animalNameDisplay.textContent = animal.name.toUpperCase();
-                animalInput.value = '';
-                animalInput.disabled = false;
-                animalInput.focus();
+                currentAnimalName = animal.name; 
+                
+                setupLetterBoxes(currentAnimalName);
+
                 messageArea.textContent = '';
                 messageArea.className = 'message-area';
                 
                 animalImage.src = '';
                 animalImage.alt = 'Cargando imagen...';
-
-                // Asumiendo que 'animales.html' está en la carpeta 'animales'
-                // y la carpeta 'src' está al mismo nivel que 'animales' y 'multiplicacion'
-                // es decir, en la raíz del proyecto.
-                // Si 'src' está dentro de 'animales', la ruta sería 'src/${animal.fileName}'
-                // Si 'src' está en la raíz, la ruta desde 'animales/animales.html' es '../src/${animal.fileName}'
-                // Voy a asumir que 'src' está en la raíz del proyecto.
                 const imageUrl = `../src/${animal.fileName}`; 
                 console.log("Intentando cargar imagen local para", animal.name, "desde:", imageUrl);
                 animalImage.src = imageUrl;
                 animalImage.alt = animal.name;
 
-            } else {
-                endGame();
+                if (letterInputElements.length > 0) {
+                    letterInputElements[0].focus(); 
+                }
+
+            } else { 
+                console.log("No más animales, pero el juego no terminó. Esto es un error.");
             }
         }
 
         function handleCorrectAnswer() {
-            messageArea.textContent = '¡Correcto!';
+            messageArea.textContent = '¡Nombre Completo Correcto!';
             messageArea.className = 'message-area message-correct';
-            animalInput.disabled = true;
+            letterInputElements.forEach(input => input.disabled = true);
             
             setTimeout(() => {
                 currentAnimalIndex++;
-                loadAnimal();
+                if (currentAnimalIndex < shuffledAnimals.length) {
+                    loadAnimal();
+                } else {
+                    endGame(); 
+                }
             }, 1500);
         }
-
-        animalInput.addEventListener('input', () => {
-            if (currentAnimalIndex >= shuffledAnimals.length) return;
-
-            const correctName = shuffledAnimals[currentAnimalIndex].name;
-            let currentTypedValue = animalInput.value;
-            let validPart = "";
-
-            for (let i = 0; i < currentTypedValue.length; i++) {
-                if (i < correctName.length && currentTypedValue[i].toLowerCase() === correctName[i].toLowerCase()) {
-                    validPart += currentTypedValue[i];
-                } else {
-                    break;
-                }
-            }
-            
-            if (animalInput.value !== validPart) {
-                 animalInput.value = validPart;
-            }
-
-            if (validPart.toLowerCase() === correctName.toLowerCase()) {
-                handleCorrectAnswer();
-            }
-        });
         
         function startGame() {
             playerName = playerNameInput.value.trim();
@@ -393,7 +478,7 @@
             
             welcomeMessage.textContent = `¡Vamos, ${playerName}!`;
             
-            startScreen.classList.add('hidden');
+            startScreen.classList.add('hidden'); // Usar la variable correcta 'startScreen'
             endScreen.classList.add('hidden');
             gameScreen.classList.remove('hidden');
             
@@ -414,35 +499,32 @@
             messageArea.textContent = '';
             messageArea.className = 'message-area';
             endScreen.classList.add('hidden');
-            startScreen.classList.remove('hidden');
+            startScreen.classList.remove('hidden'); // Usar la variable correcta 'startScreen'
+            playerNameInput.value = ""; 
             playerNameInput.focus(); 
         });
 
         animalImage.onerror = function() {
             const genericErrorImageUrl = 'https://placehold.co/400x300/FF7F7F/FFFFFF?text=Imagen+No+Encontrada';
-            
-            if (this.src === '' || this.src === window.location.href) {
-                console.log("animalImage.onerror: src está vacío o es la URL base, esperando asignación de URL de imagen.");
-                return;
-            }
-
+            if (this.src === '' || this.src === window.location.href) return;
             console.warn("Error al cargar la imagen:", this.src);
             const currentAnimalForError = (shuffledAnimals && currentAnimalIndex < shuffledAnimals.length) ? shuffledAnimals[currentAnimalIndex] : null;
             const animalNameForAlt = currentAnimalForError ? currentAnimalForError.name : "Animal Desconocido";
-
             if (this.src === genericErrorImageUrl) {
-                console.error("La imagen de error genérica (" + genericErrorImageUrl + ") tampoco se pudo cargar.");
                 this.alt = `${animalNameForAlt} (Error Imagen Crítico)`;
                 return; 
             }
-
-            console.log(`Fallo al cargar ${this.src}. Mostrando imagen de error genérica.`);
             this.src = genericErrorImageUrl;
             this.alt = `${animalNameForAlt} (Imagen no encontrada en '../src/')`;
         };
 
-        playerNameInput.focus();
-        // --- Fin Script del Juego Adivina el Animal ---
+        // El foco inicial ya está en playerNameInput, pero esta verificación es para asegurar que el elemento existe.
+        if (playerNameInput) { // El elemento con ID 'player-name-input' existe en la pantalla de inicio.
+             playerNameInput.focus();
+        } else {
+            console.error("Elemento con ID 'player-name-input' no encontrado para el foco inicial.");
+        }
+       
     </script>
 </body>
 </html>
