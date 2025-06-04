@@ -238,7 +238,7 @@
     </header>
 
     <main>
-        <div id="settings-screen" class="settings-container"> <!-- ID 'settings-screen' para la pantalla inicial -->
+        <div id="settings-screen" class="settings-container"> 
             <h1 class="text-3xl font-bold game-title">¡Adivina el Alimento!</h1>
             <input type="text" id="player-name-input" class="input-field" placeholder="Escribe tu nombre aquí">
             
@@ -489,8 +489,7 @@
                 
                 foodImage.src = '';
                 foodImage.alt = 'Cargando imagen...';
-                foodImage.removeAttribute('data-attempt'); // Reset attempt tracker for new image
-                foodImage.removeAttribute('data-placeholder-logged'); // Reset placeholder log tracker
+                foodImage.dataset.extensionAttempt = 'jpg'; // Indicar que el primer intento será JPG
                 
                 const imageUrlJpg = `../src/${item.baseFileName}.jpg`;
                 console.log("Intentando cargar imagen .jpg:", imageUrlJpg);
@@ -500,8 +499,6 @@
                 if (letterInputElements.length > 0) {
                     letterInputElements[0].focus(); 
                 }
-            } else { 
-                console.log("No más alimentos, pero el juego no terminó.");
             }
         }
 
@@ -579,42 +576,48 @@
         foodImage.onerror = function() {
             const currentItemForError = (itemsToGuess && currentItemIndex < itemsToGuess.length) ? itemsToGuess[currentItemIndex] : null;
             const itemNameForAlt = currentItemForError ? currentItemForError.name : "Alimento Desconocido";
-            const placeholderBaseUrl = 'https://placehold.co/300x200/E2E8F0/1E3A8A?text=';
+            const placeholderBaseUrl = 'https://placehold.co/300x200/E2E8F0/1E3A8A?text='; // Azul oscuro para texto
             const fallbackImageUrlWithName = `${placeholderBaseUrl}${encodeURIComponent(itemNameForAlt)}`;
 
-            if (!this.src || this.src === window.location.href || this.src.startsWith('data:') || this.src === fallbackImageUrlWithName) {
-                if (this.src === fallbackImageUrlWithName && !this.dataset.placeholderLogged) {
-                    console.warn("El placeholder con nombre también falló o ya está puesto:", this.src);
-                    this.dataset.placeholderLogged = 'true';
+            // Evitar bucles si ya estamos en el fallback final o si el src está vacío/inválido inicialmente
+            if (!this.src || this.src === window.location.href || this.src.startsWith('data:') || this.dataset.extensionAttempt === 'fallback') {
+                if (this.src === fallbackImageUrlWithName && this.dataset.extensionAttempt !== 'logged_fallback') {
+                     console.warn(`El placeholder con nombre '${itemNameForAlt}' se está mostrando o también falló.`);
+                     this.dataset.extensionAttempt = 'logged_fallback'; // Evitar logs repetidos para el mismo fallback
                 }
                 return;
             }
-            this.dataset.placeholderLogged = 'false';
-
+            
             console.warn("Error al cargar la imagen:", this.src);
 
             if (currentItemForError) {
                 const baseFileName = currentItemForError.baseFileName;
-                const attemptedJpegPath = `../src/${baseFileName}.jpeg`;
+                const attemptedExtension = this.dataset.extensionAttempt;
 
-                if (this.dataset.attempt !== 'jpeg') { // Si no hemos intentado JPEG para ESTA imagen
-                    console.log(`Fallo al cargar ${this.src}. Intentando ${attemptedJpegPath}`);
-                    this.dataset.attempt = 'jpeg'; 
-                    this.src = attemptedJpegPath;
-                    this.alt = `${itemNameForAlt} (Intentando .jpeg)`;
-                } 
-                else { // Ya intentamos JPEG y también falló
-                    console.warn(`Fallo al cargar ${this.src} (probablemente ${attemptedJpegPath}). Ambas extensiones (.jpg y .jpeg) fallaron para el nombre base '${baseFileName}'. Mostrando nombre del alimento como fallback. Asegúrese que los archivos en 'src/' sean '${baseFileName}.jpg' o '${baseFileName}.jpeg' (todo en minúsculas y normalizado).`);
-                    this.dataset.attempt = 'fallback'; 
+                if (attemptedExtension === 'jpg') { 
+                    const jpegSrc = `../src/${baseFileName}.jpeg`;
+                    console.log(`Fallo al cargar .jpg (${this.src}). Intentando .jpeg: ${jpegSrc}`);
+                    this.dataset.extensionAttempt = 'jpeg'; 
+                    this.src = jpegSrc;
+                    // No cambiar alt aquí, ya está puesto a item.name
+                } else if (attemptedExtension === 'jpeg') { 
+                    console.warn(`Fallo al cargar .jpeg (${this.src}). Ambas extensiones (.jpg y .jpeg) fallaron para '${baseFileName}'. Mostrando nombre del alimento como fallback.`);
+                    console.warn(`IMPORTANTE: Asegúrese de que el archivo exista en la carpeta '../src/' como '${baseFileName}.jpg' o '${baseFileName}.jpeg'. Los nombres deben estar en minúsculas y normalizados (sin acentos ni espacios).`);
+                    this.dataset.extensionAttempt = 'fallback'; 
                     this.src = fallbackImageUrlWithName;
-                    this.alt = itemNameForAlt; 
+                    // this.alt ya es itemNameForAlt
+                } else {
+                     // Estado inesperado o primer error no fue .jpg (no debería pasar)
+                    console.error("Estado de intento de extensión inesperado o URL inicial no era .jpg. Forzando fallback con nombre.");
+                    this.dataset.extensionAttempt = 'fallback';
+                    this.src = fallbackImageUrlWithName;
                 }
             } else {
-                console.error("foodImage.onerror: No hay 'currentItemForError' definido.");
-                 if (this.src !== fallbackImageUrlWithName && this.dataset.attempt !== 'fallback_unknown') {
-                    this.dataset.attempt = 'fallback_unknown';
-                    this.src = `${placeholderBaseUrl}ErrorDesconocido`;
-                    this.alt = "Error General al Cargar Imagen";
+                console.error("foodImage.onerror: No hay 'currentItemForError' definido. Mostrando error genérico.");
+                if (this.dataset.extensionAttempt !== 'fallback_unknown') {
+                    this.dataset.extensionAttempt = 'fallback_unknown';
+                    this.src = `${placeholderBaseUrl}Error`;
+                    this.alt = "Error General";
                 }
             }
         };
@@ -623,4 +626,4 @@
         }
     </script>
 </body>
-</ht
+</html>
