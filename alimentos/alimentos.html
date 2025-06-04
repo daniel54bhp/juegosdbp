@@ -38,16 +38,16 @@
             width: 100%; 
         }
 
-        .game-container, .settings-container, .end-screen-container { /* .settings-container es para la pantalla inicial */
+        .game-container, .settings-container, .end-screen-container { 
             background-color: #ffffff;
             padding: 20px;
             border-radius: 12px;
             box-shadow: 0 8px 16px rgba(0,0,0,0.1);
             width: 100%;
-            max-width: 550px; /* Ajustado para el contenido del juego de alimentos */
+            max-width: 550px; 
             text-align: center;
         }
-        .food-image { /* Renombrado de animal-image */
+        .food-image { 
             width: 100%;
             max-width: 300px;
             height: auto;
@@ -113,7 +113,7 @@
             color: #9ca3af;
         }
 
-        .input-field, .number-input { /* Estilo general para inputs de texto y número */
+        .input-field, .number-input { 
             width: 100%;
             padding: 10px;
             font-size: 1em;
@@ -180,7 +180,7 @@
             margin-top: -10px;
             margin-bottom: 10px;
         }
-        h1.game-title { /* Para los H1 dentro del game-container */
+        h1.game-title { 
             color: #1e3a8a;
             margin-bottom: 20px;
         }
@@ -342,7 +342,7 @@
                     .replace(/[\u0300-\u036f]/g, "") 
                     .replace(/\s+/g, '') 
                     .replace(/[^a-z0-9]/gi, ''); 
-            return { ...food, baseFileName: normalizeForFileName(food.name) }; 
+            return { ...food, fileName: normalizeForFileName(food.name) + ".png" }; // Siempre espera .png
         });
 
         let currentItemIndex = 0;
@@ -489,11 +489,11 @@
                 
                 foodImage.src = '';
                 foodImage.alt = 'Cargando imagen...';
-                foodImage.dataset.extensionAttempt = 'jpg'; // Indicar que el primer intento será JPG
                 
-                const imageUrlJpg = `../src/${item.baseFileName}.jpg`;
-                console.log("Intentando cargar imagen .jpg:", imageUrlJpg);
-                foodImage.src = imageUrlJpg; 
+                // La propiedad item.fileName ya incluye .png debido al .map() en allFoods
+                const imageUrl = `../src/${item.fileName}`; 
+                console.log("Intentando cargar imagen .png:", imageUrl);
+                foodImage.src = imageUrl; 
                 foodImage.alt = item.name; 
 
                 if (letterInputElements.length > 0) {
@@ -580,47 +580,21 @@
             const fallbackImageUrlWithName = `${placeholderBaseUrl}${encodeURIComponent(itemNameForAlt)}`;
 
             // Evitar bucles si ya estamos en el fallback final o si el src está vacío/inválido inicialmente
-            if (!this.src || this.src === window.location.href || this.src.startsWith('data:') || this.dataset.extensionAttempt === 'fallback') {
-                if (this.src === fallbackImageUrlWithName && this.dataset.extensionAttempt !== 'logged_fallback') {
-                     console.warn(`El placeholder con nombre '${itemNameForAlt}' se está mostrando o también falló.`);
-                     this.dataset.extensionAttempt = 'logged_fallback'; // Evitar logs repetidos para el mismo fallback
+            if (!this.src || this.src === window.location.href || this.src.startsWith('data:') || this.src === fallbackImageUrlWithName) {
+                 if (this.src === fallbackImageUrlWithName && !this.dataset.placeholderLogged) { // Evitar logs repetidos si el placeholder ya está puesto
+                    console.warn(`El placeholder con nombre '${itemNameForAlt}' se está mostrando o también falló.`);
+                    this.dataset.placeholderLogged = 'true'; // Marcar que ya se registró este fallback
                 }
                 return;
             }
+            this.removeAttribute('data-placeholder-logged'); // Resetear para la próxima imagen
+
+            console.warn(`Error al cargar la imagen: ${this.src}. Se esperaba un archivo .png con nombre normalizado (ej. '${currentItemForError ? currentItemForError.fileName : 'nombre_alimento.png'}') en la carpeta '../src/'.`);
             
-            console.warn("Error al cargar la imagen:", this.src);
-
-            if (currentItemForError) {
-                const baseFileName = currentItemForError.baseFileName;
-                const attemptedExtension = this.dataset.extensionAttempt;
-
-                if (attemptedExtension === 'jpg') { 
-                    const jpegSrc = `../src/${baseFileName}.jpeg`;
-                    console.log(`Fallo al cargar .jpg (${this.src}). Intentando .jpeg: ${jpegSrc}`);
-                    this.dataset.extensionAttempt = 'jpeg'; 
-                    this.src = jpegSrc;
-                    // No cambiar alt aquí, ya está puesto a item.name
-                } else if (attemptedExtension === 'jpeg') { 
-                    console.warn(`Fallo al cargar .jpeg (${this.src}). Ambas extensiones (.jpg y .jpeg) fallaron para '${baseFileName}'. Mostrando nombre del alimento como fallback.`);
-                    console.warn(`IMPORTANTE: Asegúrese de que el archivo exista en la carpeta '../src/' como '${baseFileName}.jpg' o '${baseFileName}.jpeg'. Los nombres deben estar en minúsculas y normalizados (sin acentos ni espacios).`);
-                    this.dataset.extensionAttempt = 'fallback'; 
-                    this.src = fallbackImageUrlWithName;
-                    // this.alt ya es itemNameForAlt
-                } else {
-                     // Estado inesperado o primer error no fue .jpg (no debería pasar)
-                    console.error("Estado de intento de extensión inesperado o URL inicial no era .jpg. Forzando fallback con nombre.");
-                    this.dataset.extensionAttempt = 'fallback';
-                    this.src = fallbackImageUrlWithName;
-                }
-            } else {
-                console.error("foodImage.onerror: No hay 'currentItemForError' definido. Mostrando error genérico.");
-                if (this.dataset.extensionAttempt !== 'fallback_unknown') {
-                    this.dataset.extensionAttempt = 'fallback_unknown';
-                    this.src = `${placeholderBaseUrl}Error`;
-                    this.alt = "Error General";
-                }
-            }
+            this.src = fallbackImageUrlWithName;
+            this.alt = itemNameForAlt; 
         };
+
         if (playerNameInput) {
             playerNameInput.focus();
         }
