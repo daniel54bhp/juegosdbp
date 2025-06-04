@@ -19,10 +19,10 @@
             background-color: #1E3A8A; /* Azul principal (oscuro) */
             color: white;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            width: 100%;
+            width: 100%; 
             z-index: 10;
         }
-        .header-title-font {
+        .header-title-font { 
             font-family: 'Pacifico', cursive;
         }
         main {
@@ -30,27 +30,24 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            width: 100%;
-            padding: 20px;
-            box-sizing: border-box;
+            padding: 20px; 
         }
         footer {
-            background-color: #1E3A8A; /* Azul principal (oscuro) */
+            background-color: #1E3A8A; 
             color: white;
-            width: 100%;
+            width: 100%; 
         }
 
-        /* Estilos específicos del juego (similares al de animales) */
-        .game-container, .settings-container, .end-screen-container {
+        .game-container, .settings-container, .end-screen-container { 
             background-color: #ffffff;
-            padding: 25px;
+            padding: 20px;
             border-radius: 12px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
             width: 100%;
-            max-width: 550px; /* Ajustado para el contenido */
+            max-width: 550px; 
             text-align: center;
         }
-        .food-image {
+        .food-image { 
             width: 100%;
             max-width: 300px;
             height: auto;
@@ -67,18 +64,56 @@
             margin-left: auto;
             margin-right: auto;
         }
-        .name-to-copy {
+        
+        #letter-display-container, #letter-input-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+            gap: 5px;
+        }
+
+        .letter-display-box {
+            width: 40px;
+            height: 40px;
+            background-color: white;
+            border: 2px solid #93c5fd;
+            border-radius: 6px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             font-size: 1.8em;
             font-weight: bold;
             color: #1e40af;
-            margin-bottom: 12px;
-            letter-spacing: 1px;
-            padding: 8px;
-            background-color: #e0f2fe;
-            border-radius: 6px;
-            word-break: break-word;
+            text-transform: uppercase;
+            transition: background-color 0.3s ease;
         }
-        .input-field, .number-input { /* Estilo general para inputs de texto y número */
+        .letter-display-box.correct {
+            background-color: #dcfce7;
+            color: #166534;
+            border-color: #16a34a;
+        }
+
+        .letter-input-box {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #93c5fd;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 1.5em;
+            text-transform: uppercase;
+            outline: none;
+        }
+        .letter-input-box:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        }
+        .letter-input-box:disabled {
+            background-color: #f3f4f6;
+            color: #9ca3af;
+        }
+
+        .input-field, .number-input { 
             width: 100%;
             padding: 10px;
             font-size: 1em;
@@ -88,11 +123,7 @@
             text-align: center;
             box-sizing: border-box;
         }
-        .food-input-field { /* Específico para el input del nombre del alimento */
-            font-size: 1.5em;
-            text-transform: uppercase; /* Mostrar en mayúsculas como en el juego de animales */
-        }
-        .input-field:focus, .number-input:focus {
+        .input-field:focus, .number-input:focus { 
             outline: none;
             border-color: #3b82f6;
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
@@ -149,12 +180,30 @@
             margin-top: -10px;
             margin-bottom: 10px;
         }
-        h1.game-title {
+        h1.game-title { 
             color: #1e3a8a;
             margin-bottom: 20px;
         }
         .dropdown-menu { z-index: 50; }
         .radio-group label { margin-left: 0.5rem; margin-right: 1rem; }
+
+        @media (max-width: 480px) { 
+            .letter-display-box, .letter-input-box {
+                width: 35px;
+                height: 35px;
+                font-size: 1.5em;
+            }
+             #letter-display-container, #letter-input-container {
+                gap: 3px;
+            }
+        }
+        @media (max-width: 380px) {
+             .letter-display-box, .letter-input-box {
+                width: 30px;
+                height: 30px;
+                font-size: 1.3em;
+            }
+        }
     </style>
 </head>
 <body>
@@ -179,14 +228,17 @@
                         <a href="../animales/animales.html" class="block px-4 py-2 text-sm text-blue-800 hover:bg-sky-100 hover:text-blue-700">Adivina el Animal</a>
                         <a href="../multiplicacion/multiplicacion.html" class="block px-4 py-2 text-sm text-blue-800 hover:bg-sky-100 hover:text-blue-700">Tablas de Multiplicar</a>
                         <a href="../alimentos/alimentos.html" class="block px-4 py-2 text-sm text-blue-800 hover:bg-sky-100 hover:text-blue-700">Adivina el Alimento</a>
-                        </div>
+                        <a href="../sumas/sumas.html" class="block px-4 py-2 text-sm text-blue-800 hover:bg-sky-100 hover:text-blue-700">Juego de Sumas</a>
+                        <a href="../restas/restas.html" class="block px-4 py-2 text-sm text-blue-800 hover:bg-sky-100 hover:text-blue-700">Juego de Restas</a>
+                        <a href="../divisiones/divisiones.html" class="block px-4 py-2 text-sm text-blue-800 hover:bg-sky-100 hover:text-blue-700">Juego de Divisiones</a>
+                    </div>
                 </div>
             </nav>
         </div>
     </header>
 
     <main>
-        <div id="settings-screen" class="settings-container">
+        <div id="settings-screen" class="settings-container"> 
             <h1 class="text-3xl font-bold game-title">¡Adivina el Alimento!</h1>
             <input type="text" id="player-name-input" class="input-field" placeholder="Escribe tu nombre aquí">
             
@@ -211,8 +263,15 @@
             <div id="welcome-message" class="welcome-message-area"></div>
             <div id="timer" class="timer-display">Tiempo: 00:00</div>
             <img id="food-image" src="" alt="Alimento" class="food-image">
-            <div id="food-name-display" class="name-to-copy">ALIMENTO</div>
-            <input type="text" id="food-input" class="input-field food-input-field" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+            
+            <div id="letter-display-container" class="my-4">
+                <!-- Las cajas de letras se generarán aquí por JS -->
+            </div>
+            
+            <div id="letter-input-container" class="my-4">
+                <!-- Los inputs de letras se generarán aquí por JS -->
+            </div>
+            
             <div id="message-area" class="message-area"></div>
         </div>
 
@@ -226,6 +285,7 @@
     <footer class="mt-auto py-6 sm:py-8 text-center">
         <div class="container mx-auto px-6">
             <p>&copy; 2025 Juegos Didácticos Don Bosco Pampahasi. Todos los derechos reservados.</p>
+            <p class="text-sm mt-1 opacity-75">&copy; Desarrollado por Ing. Paulo Daniel Batuani Hurtado</p>
         </div>
     </footer>
 
@@ -278,11 +338,11 @@
         ].map(food => {
             const normalizeForFileName = (text) => 
                 text.toLowerCase()
-                    .normalize("NFD") // Descomponer acentos
-                    .replace(/[\u0300-\u036f]/g, "") // Quitar diacríticos
-                    .replace(/\s+/g, '') // Quitar espacios
-                    .replace(/[^a-z0-9]/gi, ''); // Quitar caracteres no alfanuméricos
-            return { ...food, baseFileName: normalizeForFileName(food.name) }; // Almacena el nombre base sin extensión
+                    .normalize("NFD") 
+                    .replace(/[\u0300-\u036f]/g, "") 
+                    .replace(/\s+/g, '') 
+                    .replace(/[^a-z0-9]/gi, ''); 
+            return { ...food, fileName: normalizeForFileName(food.name) + ".png" }; // Siempre espera .png
         });
 
         let currentItemIndex = 0;
@@ -290,13 +350,17 @@
         let secondsElapsed = 0;
         let itemsToGuess = [];
         let playerName = "";
+        let currentFoodName = ""; 
+        let letterDisplayElements = [];
+        let letterInputElements = [];
+        let correctlyGuessedLettersCount = 0;
 
-        const settingsScreen = document.getElementById('settings-screen');
+        const settingsScreen = document.getElementById('settings-screen'); 
         const gameScreen = document.getElementById('game-screen');
         const endScreen = document.getElementById('end-screen');
         
         const playerNameInput = document.getElementById('player-name-input');
-        const settingsError = document.getElementById('settings-error');
+        const settingsError = document.getElementById('settings-error'); 
         const startButton = document.getElementById('start-button');
         
         const allItemsRadio = document.getElementById('all-items');
@@ -305,9 +369,11 @@
 
         const welcomeMessage = document.getElementById('welcome-message');
         const playAgainButton = document.getElementById('play-again-button');
-        const foodImage = document.getElementById('food-image');
-        const foodNameDisplay = document.getElementById('food-name-display');
-        const foodInput = document.getElementById('food-input');
+        const foodImage = document.getElementById('food-image'); 
+        
+        const letterDisplayContainer = document.getElementById('letter-display-container');
+        const letterInputContainer = document.getElementById('letter-input-container');
+
         const timerDisplay = document.getElementById('timer');
         const messageArea = document.getElementById('message-area');
         const finalTimeDisplay = document.getElementById('final-time');
@@ -357,62 +423,99 @@
         }
         function stopTimer() { clearInterval(timerInterval); }
 
-        function loadFoodItem() {
+        function setupLetterBoxes(itemName) { 
+            letterDisplayContainer.innerHTML = '';
+            letterInputContainer.innerHTML = '';
+            letterDisplayElements = [];
+            letterInputElements = [];
+            correctlyGuessedLettersCount = 0;
+
+            for (let i = 0; i < itemName.length; i++) {
+                const char = itemName[i];
+                const displayBox = document.createElement('div');
+                displayBox.classList.add('letter-display-box');
+                displayBox.textContent = char.toUpperCase();
+                letterDisplayContainer.appendChild(displayBox);
+                letterDisplayElements.push(displayBox);
+
+                const inputBox = document.createElement('input');
+                inputBox.type = 'text';
+                inputBox.maxLength = 1;
+                inputBox.classList.add('letter-input-box');
+                inputBox.dataset.index = i;
+                inputBox.addEventListener('input', handleLetterInput);
+                letterInputContainer.appendChild(inputBox);
+                letterInputElements.push(inputBox);
+            }
+        }
+
+        function handleLetterInput(event) {
+            const inputElement = event.target;
+            const index = parseInt(inputElement.dataset.index);
+            const typedChar = inputElement.value.toUpperCase();
+            
+            const correctCharNormalized = currentFoodName[index].toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            const typedCharNormalized = typedChar.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+            if (typedCharNormalized === correctCharNormalized && typedChar !== '') {
+                letterDisplayElements[index].classList.add('correct');
+                inputElement.disabled = true;
+                correctlyGuessedLettersCount++;
+
+                if (correctlyGuessedLettersCount === currentFoodName.length) {
+                    handleCorrectAnswer();
+                } else {
+                    for (let i = index + 1; i < letterInputElements.length; i++) {
+                        if (!letterInputElements[i].disabled) {
+                            letterInputElements[i].focus();
+                            break;
+                        }
+                    }
+                }
+            } else if (typedChar !== '') { 
+                inputElement.value = ''; 
+            }
+        }
+
+        function loadFoodItem() { 
             if (currentItemIndex < itemsToGuess.length) {
                 const item = itemsToGuess[currentItemIndex];
-                foodNameDisplay.textContent = item.name.toUpperCase();
-                foodInput.value = '';
-                foodInput.disabled = false;
-                foodInput.focus();
+                currentFoodName = item.name; 
+                
+                setupLetterBoxes(currentFoodName);
+
                 messageArea.textContent = '';
                 messageArea.className = 'message-area';
                 
-                foodImage.src = ''; // Limpiar para que onerror se active correctamente si la nueva imagen falla
+                foodImage.src = '';
                 foodImage.alt = 'Cargando imagen...';
                 
-                // Intentar cargar .jpg primero
-                const imageUrlJpg = `../src/${item.baseFileName}.jpg`;
-                console.log("Intentando cargar imagen .jpg:", imageUrlJpg);
-                foodImage.src = imageUrlJpg;
-                foodImage.alt = item.name;
-            } else {
-                endGame();
+                // La propiedad item.fileName ya incluye .png debido al .map() en allFoods
+                const imageUrl = `../src/${item.fileName}`; 
+                console.log("Intentando cargar imagen .png:", imageUrl);
+                foodImage.src = imageUrl; 
+                foodImage.alt = item.name; 
+
+                if (letterInputElements.length > 0) {
+                    letterInputElements[0].focus(); 
+                }
             }
         }
 
         function handleCorrectAnswer() {
-            messageArea.textContent = '¡Correcto!';
+            messageArea.textContent = '¡Nombre Correcto!';
             messageArea.className = 'message-area message-correct';
-            foodInput.disabled = true;
+            letterInputElements.forEach(input => input.disabled = true);
+            
             setTimeout(() => {
                 currentItemIndex++;
-                loadFoodItem();
+                if (currentItemIndex < itemsToGuess.length) {
+                    loadFoodItem();
+                } else {
+                    endGame(); 
+                }
             }, 1500);
         }
-
-        foodInput.addEventListener('input', () => {
-            if (currentItemIndex >= itemsToGuess.length) return;
-            const correctName = itemsToGuess[currentItemIndex].name;
-            let currentTypedValue = foodInput.value;
-            let validPart = "";
-
-            for (let i = 0; i < currentTypedValue.length; i++) {
-                const typedCharNorm = currentTypedValue[i].toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-                const correctCharNorm = correctName[i].toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-                if (i < correctName.length && typedCharNorm === correctCharNorm) {
-                    validPart += currentTypedValue[i];
-                } else {
-                    break;
-                }
-            }
-            if (foodInput.value !== validPart) { foodInput.value = validPart; }
-            
-            const typedFullNorm = validPart.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-            const correctFullNorm = correctName.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-            if (typedFullNorm === correctFullNorm && validPart.length === correctName.length) {
-                handleCorrectAnswer();
-            }
-        });
         
         function validateGameSettings() {
             playerName = playerNameInput.value.trim();
@@ -466,50 +569,35 @@
         playAgainButton.addEventListener('click', () => {
             endScreen.classList.add('hidden');
             settingsScreen.classList.remove('hidden');
+            playerNameInput.value = "";
             playerNameInput.focus(); 
         });
 
         foodImage.onerror = function() {
-            const genericErrorImageUrl = 'https://placehold.co/400x300/FF7F7F/FFFFFF?text=Imagen+No+Encontrada';
             const currentItemForError = (itemsToGuess && currentItemIndex < itemsToGuess.length) ? itemsToGuess[currentItemIndex] : null;
             const itemNameForAlt = currentItemForError ? currentItemForError.name : "Alimento Desconocido";
+            const placeholderBaseUrl = 'https://placehold.co/300x200/E2E8F0/1E3A8A?text='; // Azul oscuro para texto
+            const fallbackImageUrlWithName = `${placeholderBaseUrl}${encodeURIComponent(itemNameForAlt)}`;
 
-            if (!this.src || this.src === window.location.href || this.src.endsWith(genericErrorImageUrl)) {
-                if (this.src.endsWith(genericErrorImageUrl)) {
-                    console.error("La imagen de error genérica (" + genericErrorImageUrl + ") tampoco se pudo cargar.");
-                    this.alt = `${itemNameForAlt} (Error Imagen Crítico)`;
+            // Evitar bucles si ya estamos en el fallback final o si el src está vacío/inválido inicialmente
+            if (!this.src || this.src === window.location.href || this.src.startsWith('data:') || this.src === fallbackImageUrlWithName) {
+                 if (this.src === fallbackImageUrlWithName && !this.dataset.placeholderLogged) { // Evitar logs repetidos si el placeholder ya está puesto
+                    console.warn(`El placeholder con nombre '${itemNameForAlt}' se está mostrando o también falló.`);
+                    this.dataset.placeholderLogged = 'true'; // Marcar que ya se registró este fallback
                 }
                 return;
             }
-            console.warn("Error al cargar la imagen:", this.src);
+            this.removeAttribute('data-placeholder-logged'); // Resetear para la próxima imagen
 
-            if (currentItemForError) {
-                const baseFileName = currentItemForError.baseFileName;
-                const jpgSrc = `../src/${baseFileName}.jpg`;
-                const jpegSrc = `../src/${baseFileName}.jpeg`;
-
-                if (this.src.toLowerCase().endsWith(".jpg")) { // Si falló .jpg
-                    console.log(`Fallo al cargar ${jpgSrc}. Intentando ${jpegSrc}`);
-                    this.src = jpegSrc; // Intentar .jpeg
-                    this.alt = `${itemNameForAlt} (Intentando .jpeg)`;
-                } else if (this.src.toLowerCase().endsWith(".jpeg")) { // Si falló .jpeg (después de .jpg)
-                    console.warn(`Fallo al cargar ${jpegSrc} también. Mostrando imagen de error genérica.`);
-                    this.src = genericErrorImageUrl;
-                    this.alt = `${itemNameForAlt} (Imagen no encontrada en '../src/')`;
-                } else { 
-                    // Si la URL original no era ni .jpg ni .jpeg (no debería pasar con la lógica actual)
-                    console.warn(`Fuente de imagen desconocida (${this.src}) falló. Mostrando imagen de error genérica.`);
-                    this.src = genericErrorImageUrl;
-                    this.alt = `${itemNameForAlt} (Error Inesperado al Cargar Imagen)`;
-                }
-            } else {
-                if (this.src !== genericErrorImageUrl) {
-                    this.src = genericErrorImageUrl;
-                    this.alt = "Error General al Cargar Imagen";
-                }
-            }
+            console.warn(`Error al cargar la imagen: ${this.src}. Se esperaba un archivo .png con nombre normalizado (ej. '${currentItemForError ? currentItemForError.fileName : 'nombre_alimento.png'}') en la carpeta '../src/'.`);
+            
+            this.src = fallbackImageUrlWithName;
+            this.alt = itemNameForAlt; 
         };
-        playerNameInput.focus();
+
+        if (playerNameInput) {
+            playerNameInput.focus();
+        }
     </script>
 </body>
 </html>
