@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multiplicación Aleatoria - Juegos Didácticos Don Bosco</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Pacifico&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #E0F2FE;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+        }
+        header {
+            background-color: #1E3A8A;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            width: 100%;
+            z-index: 10;
+        }
+        .header-title-font {
+            font-family: 'Pacifico', cursive;
+        }
+        main {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center; 
+            align-items: center; 
+            width: 100%;
+            padding: 20px; 
+            box-sizing: border-box;
+        }
+        footer {
+            background-color: #1E3A8A;
+            color: white;
+            width: 100%;
+        }
+
+        /* Estilos específicos del juego */
+        .game-container, .settings-container, .end-screen-container {
+            background-color: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 700px; 
+            text-align: center;
+        }
+        .input-field, .number-input {
+            width: 100%;
+            padding: 10px;
+            font-size: 1em;
+            border-radius: 6px;
+            border: 2px solid #93c5fd;
+            margin-bottom: 15px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+        .input-field:focus, .number-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        }
+        .button {
+            padding: 12px 28px;
+            font-size: 1.1em;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            border: none;
+            font-weight: 600;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .button:active {
+            transform: translateY(1px);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        .button:disabled {
+            background-color: #9ca3af; 
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        .start-button {
+            background-color: #22c55e; 
+            color: white;
+        }
+        .start-button:hover:not(:disabled) {
+            background-color: #16a34a;
+        }
+        .play-again-button {
+            background-color: #3b82f6; 
+            color: white;
+            margin-top:10px;
+        }
+        .play-again-button:hover {
+            background-color: #2563eb;
+        }
+        .finish-game-button {
+            background-color: #f97316; 
+            color: white;
+            margin-top: 20px; 
+        }
+        .finish-game-button:hover:not(:disabled) {
+            background-color: #ea580c; 
+        }
+        .timer-display, .stats-display {
+            font-size: 1.4em;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .timer-display { color: #ef4444; }
+        .stats-display { color: #1d4ed8; }
+
+        .multiplication-table {
+            border-collapse: collapse;
+            margin: 20px auto;
+            box-shadow: 0 0 10px rgba(0,0,0,0.05);
+            overflow-x: auto; 
+            display: block; 
+            max-width: 100%;
+        }
+        .multiplication-table th, .multiplication-table td {
+            border: 1px solid #cbd5e1; 
+            text-align: center;
+            font-weight: 500;
+        }
+        .multiplication-table th {
+            background-color: #f1f5f9; 
+            padding: 8px 10px;
+            font-size: 0.9em; 
+            min-width: 45px; 
+        }
+        .multiplication-table td {
+            padding: 0; 
+            height: 50px; 
+            min-width: 50px; 
+        }
+        .multiplication-table input[type="number"] {
+            width: 100%;
+            height: 100%;
+            border: none;
+            text-align: center;
+            font-size: 1.1em;
+            padding: 5px;
+            box-sizing: border-box;
+            -moz-appearance: textfield; 
+        }
+        .multiplication-table input[type="number"]::-webkit-outer-spin-button,
+        .multiplication-table input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .multiplication-table input.correct {
+            background-color: #dcfce7; 
+            color: #166534; 
+            font-weight: bold;
+        }
+        .multiplication-table input.incorrect {
+            background-color: #fee2e2; 
+            color: #991b1b; 
+            font-weight: bold;
+        }
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+        .settings-grid-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .settings-grid label {
+            font-weight: 500;
+            color: #374151; 
+            margin-bottom: 5px;
+        }
+        .error-message {
+            color: #ef4444; 
+            font-size: 0.9em;
+            margin-top: -10px;
+            margin-bottom: 10px;
+        }
+        .welcome-message {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #1e3a8a; 
+            margin-bottom: 15px;
+        }
+        h1.game-title { 
+            color: #1e3a8a; 
+            margin-bottom: 20px;
+        }
+        .dropdown-menu {
+            z-index: 50;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container mx-auto px-6 py-4 sm:py-6 flex flex-col sm:flex-row justify-between items-center">
+            <a href="../index.html" class="flex items-center hover:opacity-90 transition-opacity duration-200">
+                <img src="../logo.png" alt="Logo Don Bosco Pampahasi" class="h-12 w-12 sm:h-16 sm:w-16 mr-3 sm:mr-4 rounded-full bg-white p-1" 
+                     onerror="this.onerror=null; this.src='https://placehold.co/64x64/FFFFFF/1E3A8A?text=Logo'; this.alt='Logo Don Bosco Pampahasi (Error)';">
+                <div>
+                    <h1 class="header-title-font text-2xl sm:text-4xl text-yellow-400">Juegos Didácticos</h1>
+                    <p class="text-sm sm:text-lg font-semibold">DON BOSCO PAMPAHASI</p>
+                </div>
+            </a>
+            <nav class="mt-4 sm:mt-0">
+                <div class="relative">
+                    <button id="games-dropdown-button" class="bg-yellow-400 text-blue-800 font-semibold py-2 px-4 rounded-lg hover:bg-yellow-300 transition-colors duration-200 flex items-center">
+                        Juegos
+                        <svg class="w-4 h-4 ml-2 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+                    </button>
+                    <div id="games-dropdown-menu" class="dropdown-menu absolute right-0 mt-2 w-56 bg-white rounded-md shadow-xl py-1 hidden">
+                        <a href="../animales/animales.html" class="block px-4 py-2 text-sm text-blue-800 hover:bg-sky-100 hover:text-blue-700">Adivina el Animal</a>
+                        <a href="../multiplicacion/multiplicacion.html" class="block px-4 py-2 text-sm text-blue-800 hover:bg-sky-100 hover:text-blue-700">Tablas de Multiplicar</a>
+                        <a href="../alimentos/alimentos.html" class="block px-4 py-2 text-sm text-blue-800 hover:bg-sky-100 hover:text-blue-700">Adivina el Alimento</a>
+                        <a href="../sumas/sumas.html" class="block px-4 py-2 text-sm text-blue-800 hover:bg-sky-100 hover:text-blue-700">Juego de Sumas</a>
+                        <a href="../restas/restas.html" class="block px-4 py-2 text-sm text-blue-800 hover:bg-sky-100 hover:text-blue-700">Juego de Restas</a>
+                        <a href="../divisiones/divisiones.html" class="block px-4 py-2 text-sm text-blue-800 hover:bg-sky-100 hover:text-blue-700">Juego de Divisiones</a>
+                        <a href="../multiplicacion_aleatoria/multiplicacion_aleatoria.html" class="block px-4 py-2 text-sm text-blue-800 hover:bg-sky-100 hover:text-blue-700">Multiplicación Aleatoria</a>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div id="settings-screen" class="settings-container">
+            <h1 class="text-3xl font-bold game-title">Multiplicación Aleatoria</h1>
+            <input type="text" id="player-name" class="input-field" placeholder="Escribe tu nombre">
+            <div class="settings-grid">
+                <div class="settings-grid-item">
+                    <label for="rows">Filas (2-12):</label>
+                    <input type="number" id="rows" class="number-input" value="5" min="2" max="12"> 
+                </div>
+                <div class="settings-grid-item">
+                    <label for="cols">Columnas (2-12):</label>
+                    <input type="number" id="cols" class="number-input" value="5" min="2" max="12"> 
+                </div>
+                <div class="settings-grid-item col-span-full"> <!-- Ocupa todo el ancho en la grid -->
+                    <label for="digits">Cifras de los números (1-3):</label>
+                    <input type="number" id="digits" class="number-input" value="1" min="1" max="3">
+                </div>
+            </div>
+            <div id="settings-error" class="error-message hidden"></div>
+            <button id="start-game-button" class="button start-button">Empezar Juego</button>
+        </div>
+    
+        <div id="game-screen" class="game-container hidden">
+            <div id="welcome-message" class="welcome-message"></div>
+            <div class="flex justify-between items-center mb-4">
+                <div id="timer" class="timer-display">Tiempo: 00:00</div>
+                <div id="failures" class="stats-display">Fallos: 0</div>
+            </div>
+            <div id="multiplication-table-container">
+                <!-- La tabla de multiplicación se generará aquí -->
+            </div>
+            <button id="finish-game-button" class="button finish-game-button" disabled>Finalizar Juego</button>
+        </div>
+    
+        <div id="end-screen" class="end-screen-container hidden">
+            <h1 class="text-3xl font-bold game-title">¡Juego Terminado!</h1>
+            <p id="final-message" class="text-xl my-4"></p>
+            <button id="play-again-button" class="button play-again-button">Jugar de Nuevo</button>
+        </div>
+    </main>
+
+    <footer class="mt-auto py-6 sm:py-8 text-center">
+        <div class="container mx-auto px-6">
+            <p>&copy; 2025 Juegos Didácticos Don Bosco Pampahasi. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- Script para Dropdown del Header ---
+        const gamesDropdownButton = document.getElementById('games-dropdown-button');
+        const gamesDropdownMenu = document.getElementById('games-dropdown-menu');
+        if (gamesDropdownButton && gamesDropdownMenu) {
+            gamesDropdownButton.addEventListener('click', (event) => {
+                event.stopPropagation();
+                gamesDropdownMenu.classList.toggle('hidden');
+            });
+            document.addEventListener('click', (event) => {
+                if (!gamesDropdownMenu.classList.contains('hidden') && !gamesDropdownButton.contains(event.target) && !gamesDropdownMenu.contains(event.target)) {
+                    gamesDropdownMenu.classList.add('hidden');
+                }
+            });
+        }
+
+        // --- Script del Juego de Multiplicación Aleatoria ---
+        const settingsScreen = document.getElementById('settings-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const endScreen = document.getElementById('end-screen');
+        const playerNameInput = document.getElementById('player-name');
+        const rowsInput = document.getElementById('rows');
+        const colsInput = document.getElementById('cols');
+        const digitsInput = document.getElementById('digits'); // Nuevo input para las cifras
+        const startGameButton = document.getElementById('start-game-button');
+        const settingsError = document.getElementById('settings-error');
+        
+        const welcomeMessageDisplay = document.getElementById('welcome-message');
+        const timerDisplay = document.getElementById('timer');
+        const failuresDisplay = document.getElementById('failures');
+        const tableContainer = document.getElementById('multiplication-table-container');
+        const finishGameButton = document.getElementById('finish-game-button');
+        
+        const finalMessageDisplay = document.getElementById('final-message');
+        const playAgainButton = document.getElementById('play-again-button');
+
+        let timerInterval;
+        let secondsElapsed = 0;
+        let failureCount = 0;
+        let totalCells = 0;
+        let correctCells = 0;
+        let playerName = "";
+        let numRows, numCols, numDigits; // Variables para la configuración del juego
+
+        let rowHeaderNumbers = [];
+        let colHeaderNumbers = [];
+
+        function getRandomNumberByDigits(digits) {
+            if (digits === 1) {
+                return Math.floor(Math.random() * 9) + 1; // 1-9
+            }
+            const min = Math.pow(10, digits - 1);
+            const max = Math.pow(10, digits) - 1;
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function formatTime(totalSeconds) {
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            return `Tiempo: ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+
+        function updateTimer() {
+            secondsElapsed++;
+            timerDisplay.textContent = formatTime(secondsElapsed);
+        }
+
+        function startTimer() {
+            secondsElapsed = 0;
+            timerDisplay.textContent = formatTime(secondsElapsed);
+            clearInterval(timerInterval);
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+        function stopTimer() { clearInterval(timerInterval); }
+
+        function validateSettings() {
+            const rows = parseInt(rowsInput.value);
+            const cols = parseInt(colsInput.value);
+            const digits = parseInt(digitsInput.value);
+            let isValid = true;
+            let errorMessage = "";
+
+            if (playerNameInput.value.trim() === "") {
+                errorMessage = "Por favor, ingresa tu nombre.";
+                isValid = false;
+            } else if (isNaN(rows) || rows < 2 || rows > 12) {
+                errorMessage = "Las filas deben ser un número entre 2 y 12.";
+                isValid = false;
+            } else if (isNaN(cols) || cols < 2 || cols > 12) {
+                errorMessage = "Las columnas deben ser un número entre 2 y 12.";
+                isValid = false;
+            } else if (isNaN(digits) || digits < 1 || digits > 3) {
+                errorMessage = "El número de cifras debe ser entre 1 y 3.";
+                isValid = false;
+            }
+
+            if (!isValid) {
+                settingsError.textContent = errorMessage;
+                settingsError.classList.remove('hidden');
+            } else {
+                settingsError.classList.add('hidden');
+            }
+            return isValid;
+        }
+
+        function createRandomMultiplicationTable(rows, cols, digits) {
+            tableContainer.innerHTML = ''; 
+            rowHeaderNumbers = [];
+            colHeaderNumbers = [];
+
+            for(let i = 0; i < rows; i++) rowHeaderNumbers.push(getRandomNumberByDigits(digits));
+            for(let i = 0; i < cols; i++) colHeaderNumbers.push(getRandomNumberByDigits(digits));
+
+            const table = document.createElement('table');
+            table.className = 'multiplication-table';
+
+            const headerRow = table.insertRow();
+            const cornerCell = headerRow.insertCell(); 
+            cornerCell.textContent = "×"; // Símbolo de multiplicación
+            cornerCell.className = "bg-amber-200 text-amber-800";
+
+
+            for (let j = 0; j < cols; j++) {
+                const th = document.createElement('th');
+                th.textContent = colHeaderNumbers[j];
+                headerRow.appendChild(th);
+            }
+
+            for (let i = 0; i < rows; i++) {
+                const row = table.insertRow();
+                const th = document.createElement('th'); 
+                th.textContent = rowHeaderNumbers[i];
+                row.appendChild(th);
+
+                for (let j = 0; j < cols; j++) {
+                    const cell = row.insertCell();
+                    const input = document.createElement('input');
+                    input.type = 'number';
+                    input.dataset.expected = rowHeaderNumbers[i] * colHeaderNumbers[j];
+                    input.addEventListener('input', handleCellInput);
+                    input.addEventListener('blur', handleCellBlur); 
+                    cell.appendChild(input);
+                }
+            }
+            tableContainer.appendChild(table);
+            totalCells = rows * cols;
+            correctCells = 0;
+            finishGameButton.disabled = true; 
+        }
+        
+        function handleCellBlur(event) { 
+            const input = event.target;
+            if (input.value !== "") { 
+                 checkAnswer(input);
+            }
+        }
+
+        function handleCellInput(event) {
+            const input = event.target;
+            if (input.value !== "") {
+                input.classList.remove('incorrect', 'correct'); 
+            }
+        }
+
+        function checkAnswer(inputElement) {
+            const userAnswer = parseInt(inputElement.value);
+            const expectedAnswer = parseInt(inputElement.dataset.expected);
+            const isAlreadyCorrect = inputElement.classList.contains('correct');
+
+            if (isNaN(userAnswer)) { 
+                inputElement.classList.remove('correct', 'incorrect');
+                return;
+            }
+
+            if (userAnswer === expectedAnswer) {
+                if (!isAlreadyCorrect) {
+                    inputElement.classList.remove('incorrect');
+                    inputElement.classList.add('correct');
+                    inputElement.disabled = true; 
+                    correctCells++;
+                    if (correctCells === totalCells) {
+                        finishGameButton.disabled = false; 
+                    }
+                }
+            } else {
+                if (!isAlreadyCorrect) { 
+                    inputElement.classList.remove('correct');
+                    inputElement.classList.add('incorrect');
+                    failureCount++;
+                    failuresDisplay.textContent = `Fallos: ${failureCount}`;
+                }
+            }
+        }
+
+        function startGame() {
+            if (!validateSettings()) return;
+
+            playerName = playerNameInput.value.trim();
+            numRows = parseInt(rowsInput.value);
+            numCols = parseInt(colsInput.value);
+            numDigits = parseInt(digitsInput.value);
+
+            settingsScreen.classList.add('hidden');
+            endScreen.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+
+            welcomeMessageDisplay.textContent = `¡Hola, ${playerName}! Resuelve las multiplicaciones.`;
+            failureCount = 0;
+            failuresDisplay.textContent = `Fallos: ${failureCount}`;
+            
+            createRandomMultiplicationTable(numRows, numCols, numDigits);
+            startTimer();
+        }
+
+        function endGame() {
+            stopTimer();
+            gameScreen.classList.add('hidden');
+            endScreen.classList.remove('hidden');
+            finalMessageDisplay.textContent = `¡Felicidades, ${playerName}! Completaste la tabla en ${formatTime(secondsElapsed).replace('Tiempo: ', '')} con ${failureCount} fallos.`;
+        }
+
+        startGameButton.addEventListener('click', startGame);
+        finishGameButton.addEventListener('click', endGame); 
+
+        playAgainButton.addEventListener('click', () => {
+            endScreen.classList.add('hidden');
+            settingsScreen.classList.remove('hidden');
+            finishGameButton.disabled = true; 
+        });
+
+        [rowsInput, colsInput, digitsInput].forEach(input => {
+            input.addEventListener('input', () => {
+                let val = parseInt(input.value);
+                if (isNaN(val)) val = ""; 
+                else if (val < parseInt(input.min)) val = parseInt(input.min);
+                else if (val > parseInt(input.max)) val = parseInt(input.max);
+                input.value = val; 
+            });
+        });
+    </script>
+</body>
+</html>
