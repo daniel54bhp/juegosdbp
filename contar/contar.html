@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contar hasta 100 - Juegos Didácticos Don Bosco</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Pacifico&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #E0F2FE;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+        }
+        header {
+            background-color: #1E3A8A;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            width: 100%;
+            z-index: 10;
+        }
+        .header-title-font {
+            font-family: 'Pacifico', cursive;
+        }
+        main {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        footer {
+            background-color: #1E3A8A;
+            color: white;
+            width: 100%;
+        }
+        .game-container, .settings-container, .end-screen-container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+        }
+        .number-display {
+            font-size: 8em; 
+            font-weight: 900; 
+            color: #3b82f6;
+            margin-bottom: 20px;
+            line-height: 1;
+            transition: transform 0.2s ease-in-out;
+        }
+        .number-input {
+            width: 80%;
+            max-width: 250px;
+            padding: 15px;
+            font-size: 2.5em;
+            font-weight: bold;
+            text-align: center;
+            border-radius: 8px;
+            border: 3px solid #93c5fd;
+            margin-bottom: 20px;
+            transition: all 0.2s ease;
+             -moz-appearance: textfield;
+        }
+        .number-input::-webkit-outer-spin-button,
+        .number-input::-webkit-inner-spin-button {
+             -webkit-appearance: none;
+             margin: 0;
+        }
+        .number-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.3);
+        }
+        .number-input.correct {
+            background-color: #dcfce7;
+            border-color: #16a34a;
+            color: #166534;
+        }
+        .number-input.incorrect {
+            background-color: #fee2e2;
+            border-color: #ef4444;
+            color: #991b1b;
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+
+        .button {
+            padding: 15px 40px;
+            font-size: 1.5em;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            border: none;
+            font-weight: 700;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            color: white;
+        }
+        .button:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 3px rgba(0,0,0,0.1);
+        }
+        .play-again-button {
+            background-color: #3b82f6; 
+        }
+        .play-again-button:hover {
+            background-color: #2563eb;
+        }
+        .end-message {
+            font-size: 2.2em;
+            font-weight: bold;
+            color: #16a34a;
+            margin-top: 20px;
+        }
+        .dropdown-menu {
+            z-index: 50;
+        }
+         h1.game-title { 
+            color: #1e3a8a; 
+            margin-bottom: 20px;
+        }
+        .input-field {
+            width: 100%;
+            padding: 10px;
+            font-size: 1em;
+            border-radius: 6px;
+            border: 2px solid #93c5fd;
+            margin-bottom: 15px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container mx-auto px-6 py-4 sm:py-6 flex flex-col sm:flex-row justify-between items-center">
+            <a href="../index.html" class="flex items-center hover:opacity-90 transition-opacity duration-200">
+                <img src="../logo.png" alt="Logo Don Bosco Pampahasi" class="h-12 w-12 sm:h-16 sm:w-16 mr-3 sm:mr-4 rounded-full bg-white p-1"
+                     onerror="this.onerror=null; this.src='https://placehold.co/64x64/FFFFFF/1E3A8A?text=Logo'; this.alt='Logo Don Bosco Pampahasi (Error)';">
+                <div>
+                    <h1 class="header-title-font text-2xl sm:text-4xl text-yellow-400">Juegos Didácticos</h1>
+                    <p class="text-sm sm:text-lg font-semibold">DON BOSCO PAMPAHASI</p>
+                </div>
+            </a>
+            <nav class="mt-4 sm:mt-0">
+                <div class="relative">
+                    <button id="games-dropdown-button" class="bg-yellow-400 text-blue-800 font-semibold py-2 px-4 rounded-lg hover:bg-yellow-300 transition-colors duration-200 flex items-center">
+                        Juegos
+                        <svg class="w-4 h-4 ml-2 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+                    </button>
+                    <div id="games-dropdown-menu" class="dropdown-menu absolute right-0 mt-2 w-56 bg-white rounded-md shadow-xl py-1 hidden">
+                        <!-- Llenado dinámico por JS -->
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+         <div id="settings-screen" class="settings-container">
+            <h1 class="text-3xl font-bold game-title">Contar hasta 100</h1>
+            <p class="text-gray-600 mb-6">Escribe el número que ves para avanzar.</p>
+            <input type="text" id="player-name" class="input-field" placeholder="Escribe tu nombre">
+            <button id="start-game-button" class="button bg-green-500 hover:bg-green-600">Empezar</button>
+        </div>
+
+        <div id="game-screen" class="game-container hidden">
+             <div class="text-xl font-semibold text-blue-700 mb-4" id="welcome-message"></div>
+            <div class="number-display" id="current-number">1</div>
+            <input type="number" id="number-input" class="number-input" placeholder="?">
+            <p id="message-area" class="text-lg font-semibold min-h-[1.5em]"></p>
+        </div>
+
+        <div id="end-screen" class="end-screen-container hidden">
+             <h1 class="text-3xl font-bold game-title">¡Felicidades!</h1>
+            <p id="final-message" class="end-message"></p>
+            <button id="play-again-button" class="button play-again-button">Jugar de Nuevo</button>
+        </div>
+    </main>
+
+    <footer class="mt-auto py-6 sm:py-8 text-center">
+        <div class="container mx-auto px-6">
+            <p>&copy; 2025 Juegos Didácticos Don Bosco Pampahasi. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- Script para Dropdown del Header ---
+        const gamesDropdownButton = document.getElementById('games-dropdown-button');
+        const gamesDropdownMenu = document.getElementById('games-dropdown-menu');
+        if (gamesDropdownButton && gamesDropdownMenu) {
+            gamesDropdownButton.addEventListener('click', (event) => {
+                event.stopPropagation();
+                gamesDropdownMenu.classList.toggle('hidden');
+            });
+            document.addEventListener('click', (event) => {
+                if (!gamesDropdownMenu.classList.contains('hidden') && !gamesDropdownButton.contains(event.target) && !gamesDropdownMenu.contains(event.target)) {
+                    gamesDropdownMenu.classList.add('hidden');
+                }
+            });
+        }
+        const menu = document.getElementById('games-dropdown-menu');
+        const games = [
+            { name: "Adivina el Animal", path: "../animales/animales.html" },
+            { name: "Tablas de Multiplicar", path: "../multiplicacion/multiplicacion.html" },
+            { name: "Adivina el Alimento", path: "../alimentos/alimentos.html" },
+            { name: "Juego de Sumas", path: "../sumas/sumas.html" },
+            { name: "Juego de Restas", path: "../restas/restas.html" },
+            { name: "Juego de Divisiones", path: "../divisiones/divisiones.html" },
+            { name: "Multiplicación Aleatoria", path: "../multiplicacion_aleatoria/multiplicacion_aleatoria.html" },
+            { name: "Mecanografía y Ortografía", path: "../mecanografia/mecanografia.html" },
+            { name: "Juego de Trazos", path: "../trazos/trazos.html" },
+            { name: "Inglés y Español", path: "../ingles/ingles.html"},
+            { name: "Contar hasta 100", path: "../contar/contar.html"}
+        ];
+        menu.innerHTML = '';
+        games.forEach(game => {
+             const link = document.createElement('a');
+             link.href = game.path;
+             link.textContent = game.name;
+             link.className = 'block px-4 py-2 text-sm text-blue-800 hover:bg-sky-100 hover:text-blue-700';
+             menu.appendChild(link);
+        });
+
+        // --- Script del Juego de Contar ---
+        const settingsScreen = document.getElementById('settings-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const endScreen = document.getElementById('end-screen');
+        const playerNameInput = document.getElementById('player-name');
+        const startGameButton = document.getElementById('start-game-button');
+        const welcomeMessageDisplay = document.getElementById('welcome-message');
+        
+        const currentNumberDisplay = document.getElementById('current-number');
+        const numberInput = document.getElementById('number-input');
+        const messageArea = document.getElementById('message-area');
+        const finalMessage = document.getElementById('final-message');
+        const playAgainButton = document.getElementById('play-again-button');
+        
+        let count = 1;
+        let playerName = "";
+        
+        function startGame() {
+            playerName = playerNameInput.value.trim();
+            if (!playerName) {
+                alert("Por favor, ingresa tu nombre para empezar.");
+                return;
+            }
+            
+            settingsScreen.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+            endScreen.classList.add('hidden');
+            welcomeMessageDisplay.textContent = `¡Vamos a contar, ${playerName}!`;
+            
+            count = 1;
+            resetLevel();
+        }
+
+        function resetLevel() {
+            currentNumberDisplay.textContent = count;
+            numberInput.value = '';
+            numberInput.disabled = false;
+            numberInput.classList.remove('correct', 'incorrect');
+            messageArea.textContent = '';
+            numberInput.focus();
+        }
+
+        function handleCorrectAnswer() {
+            messageArea.textContent = "¡Correcto!";
+            messageArea.classList.remove('text-red-500');
+            messageArea.classList.add('text-green-500');
+            numberInput.classList.add('correct');
+            numberInput.disabled = true;
+
+            setTimeout(() => {
+                count++;
+                if (count > 100) {
+                    endGame();
+                } else {
+                    currentNumberDisplay.style.transform = 'scale(0)';
+                    setTimeout(() => {
+                        resetLevel();
+                        currentNumberDisplay.style.transform = 'scale(1)';
+                    }, 200);
+                }
+            }, 1000);
+        }
+
+        function handleIncorrectAnswer() {
+             numberInput.classList.add('incorrect');
+             messageArea.textContent = "Intenta de nuevo";
+             messageArea.classList.remove('text-green-500');
+             messageArea.classList.add('text-red-500');
+             setTimeout(() => {
+                 numberInput.classList.remove('incorrect');
+                 numberInput.value = '';
+             }, 500);
+        }
+
+        function endGame() {
+            gameScreen.classList.add('hidden');
+            endScreen.classList.remove('hidden');
+            finalMessage.textContent = `¡Muy bien, ${playerName}! ¡Llegaste al 100!`;
+        }
+
+        numberInput.addEventListener('input', () => {
+            const typedNumber = parseInt(numberInput.value);
+            if(isNaN(typedNumber)) return;
+
+            if (typedNumber === count) {
+                handleCorrectAnswer();
+            } else if (String(typedNumber).length >= String(count).length) {
+                handleIncorrectAnswer();
+            }
+        });
+
+        startGameButton.addEventListener('click', startGame);
+        playAgainButton.addEventListener('click', () => {
+            settingsScreen.classList.remove('hidden');
+            endScreen.classList.add('hidden');
+        });
+
+    </script>
+</body>
+</html>
