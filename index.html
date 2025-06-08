@@ -78,6 +78,8 @@
                         <a href="sumas/sumas.html" class="block px-4 py-2 text-sm text-blue-800 hover:bg-sky-100 hover:text-blue-700">Juego de Sumas</a>
                         <a href="restas/restas.html" class="block px-4 py-2 text-sm text-blue-800 hover:bg-sky-100 hover:text-blue-700">Juego de Restas</a>
                         <a href="divisiones/divisiones.html" class="block px-4 py-2 text-sm text-blue-800 hover:bg-sky-100 hover:text-blue-700">Juego de Divisiones</a>
+                        <a href="multiplicacion_aleatoria/multiplicacion_aleatoria.html" class="block px-4 py-2 text-sm text-blue-800 hover:bg-sky-100 hover:text-blue-700">Multiplicación Aleatoria</a>
+                        <a href="mecanografia/mecanografia.html" class="block px-4 py-2 text-sm text-blue-800 hover:bg-sky-100 hover:text-blue-700">Mecanografía y Ortografía</a>
                     </div>
                 </div>
             </nav>
@@ -88,7 +90,7 @@
     <main class="container mx-auto px-6 py-12">
         <h2 class="text-3xl font-bold text-center text-blue-800 mb-10">Nuestros Juegos</h2>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
             <!-- Tarjeta Juego 1: Adivina el Animal -->
             <div class="card bg-white rounded-xl shadow-lg overflow-hidden flex flex-col">
                 <img src="src/animales.png" alt="Miniatura Juego Adivina el Animal" class="w-full h-56 object-cover" onerror="this.onerror=null; this.src='https://placehold.co/600x400/A8DADC/1D3557?text=Animales';">
@@ -178,6 +180,37 @@
                     </a>
                 </div>
             </div>
+            
+            <!-- Tarjeta Juego 7: Multiplicación Aleatoria -->
+            <div class="card bg-white rounded-xl shadow-lg overflow-hidden flex flex-col">
+                <img src="src/mult_random.png" alt="Miniatura Juego Multiplicación Aleatoria" class="w-full h-56 object-cover" onerror="this.onerror=null; this.src='https://placehold.co/600x400/D00000/FFBA08?text=X+?';">
+                <div class="p-6 flex flex-col flex-grow">
+                    <h3 class="text-2xl font-semibold text-blue-800 mb-3">Multiplicación Aleatoria</h3>
+                    <p class="text-gray-600 mb-4 flex-grow">
+                        Multiplica números aleatorios y elige la cantidad de cifras. ¡Un desafío diferente cada vez!
+                    </p>
+                    <a href="multiplicacion_aleatoria/multiplicacion_aleatoria.html" 
+                       class="btn-jugar mt-auto inline-block text-center font-bold py-3 px-6 rounded-lg text-lg shadow-md hover:shadow-lg transition-all duration-300 ease-in-out">
+                        ¡Jugar Ahora!
+                    </a>
+                </div>
+            </div>
+
+            <!-- Tarjeta Juego 8: Mecanografía y Ortografía -->
+            <div class="card bg-white rounded-xl shadow-lg overflow-hidden flex flex-col">
+                <img src="src/mecanografia.png" alt="Miniatura Juego de Mecanografía" class="w-full h-56 object-cover" onerror="this.onerror=null; this.src='https://placehold.co/600x400/5E548E/9F86C0?text=AaBb';">
+                <div class="p-6 flex flex-col flex-grow">
+                    <h3 class="text-2xl font-semibold text-blue-800 mb-3">Mecanografía y Ortografía</h3>
+                    <p class="text-gray-600 mb-4 flex-grow">
+                        Observa la imagen y escribe la palabra correspondiente. ¡Mejora tu velocidad y precisión!
+                    </p>
+                    <a href="mecanografia/mecanografia.html" 
+                       class="btn-jugar mt-auto inline-block text-center font-bold py-3 px-6 rounded-lg text-lg shadow-md hover:shadow-lg transition-all duration-300 ease-in-out">
+                        ¡Jugar Ahora!
+                    </a>
+                </div>
+            </div>
+
 
         </div>
     </main>
