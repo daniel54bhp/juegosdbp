@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inglés y Español - Juegos Didácticos Don Bosco</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Pacifico&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #E0F2FE;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+        }
+        header {
+            background-color: #1E3A8A;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            width: 100%;
+            z-index: 10;
+        }
+        .header-title-font {
+            font-family: 'Pacifico', cursive;
+        }
+        main {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center; 
+            align-items: center; 
+            width: 100%;
+            padding: 20px; 
+            box-sizing: border-box;
+        }
+        footer {
+            background-color: #1E3A8A;
+            color: white;
+            width: 100%;
+        }
+        .game-container, .settings-container, .end-screen-container {
+            background-color: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 700px; 
+            text-align: center;
+        }
+        .display-image {
+            width: 100%;
+            height: 250px;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border: 2px solid #e2e8f0;
+            object-fit: cover;
+            background-color: #e2e8f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: #4b5563;
+        }
+        .input-area-label {
+            font-weight: 600;
+            color: #1e3a8a;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+        .letter-display-container, .letter-input-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px; 
+            min-height: 50px;
+        }
+        .letter-display-container {
+            margin-bottom: 10px;
+        }
+        .letter-input-container {
+            margin-bottom: 1.5rem;
+        }
+        .letter-display-box {
+            width: 45px;
+            height: 50px;
+            background-color: white;
+            border: 2px solid #d1d5db;
+            border-radius: 6px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2em;
+            font-weight: bold;
+            color: #1e3a8a;
+            text-transform: uppercase;
+            transition: all 0.2s ease;
+        }
+        .letter-display-box.correct {
+            border-color: #22c55e;
+            background-color: #dcfce7;
+        }
+        .letter-input-box {
+            width: 45px;
+            height: 50px;
+            border: 2px solid #93c5fd;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 1.5em;
+            text-transform: uppercase;
+            outline: none;
+        }
+        .letter-input-box:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        }
+        .letter-input-box:disabled {
+             background-color: #dcfce7;
+             color: #166534;
+        }
+        .input-field, .number-input {
+            width: 100%;
+            padding: 10px;
+            font-size: 1em;
+            border-radius: 6px;
+            border: 2px solid #93c5fd;
+            margin-bottom: 15px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+        .button {
+            padding: 12px 28px;
+            font-size: 1.1em;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            border: none;
+            font-weight: 600;
+        }
+        .play-again-button {
+            background-color: #3b82f6; 
+            color: white;
+            margin-top:10px;
+        }
+        h1.game-title { 
+            color: #1e3a8a; 
+            margin-bottom: 20px;
+        }
+        .dropdown-menu {
+            z-index: 50;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container mx-auto px-6 py-4 sm:py-6 flex flex-col sm:flex-row justify-between items-center">
+            <a href="../index.html" class="flex items-center hover:opacity-90 transition-opacity duration-200">
+                <img src="../logo.png" alt="Logo Don Bosco Pampahasi" class="h-12 w-12 sm:h-16 sm:w-16 mr-3 sm:mr-4 rounded-full bg-white p-1" 
+                     onerror="this.onerror=null; this.src='https://placehold.co/64x64/FFFFFF/1E3A8A?text=Logo'; this.alt='Logo Don Bosco Pampahasi (Error)';">
+                <div>
+                    <h1 class="header-title-font text-2xl sm:text-4xl text-yellow-400">Juegos Didácticos</h1>
+                    <p class="text-sm sm:text-lg font-semibold">DON BOSCO PAMPAHASI</p>
+                </div>
+            </a>
+            <nav class="mt-4 sm:mt-0">
+                <div class="relative">
+                    <button id="games-dropdown-button" class="bg-yellow-400 text-blue-800 font-semibold py-2 px-4 rounded-lg hover:bg-yellow-300 transition-colors duration-200 flex items-center">
+                        Juegos
+                        <svg class="w-4 h-4 ml-2 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+                    </button>
+                    <div id="games-dropdown-menu" class="dropdown-menu absolute right-0 mt-2 w-56 bg-white rounded-md shadow-xl py-1 hidden">
+                        <!-- Llenado dinámico por JS -->
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div id="settings-screen" class="settings-container">
+            <h1 class="text-3xl font-bold game-title">Inglés y Español</h1>
+            <p class="text-gray-600 mb-4">Aprende vocabulario viendo una imagen y escribiendo la palabra en ambos idiomas.</p>
+            <input type="text" id="player-name" class="input-field" placeholder="Escribe tu nombre">
+            <div class="my-4">
+                 <label for="word-count" class="block font-semibold mb-2 text-gray-700">Cantidad de Palabras:</label>
+                 <input type="number" id="word-count" class="number-input w-1/2 mx-auto" value="200" min="20">
+            </div>
+            <button id="start-game-button" class="button bg-blue-500 hover:bg-blue-600 text-white">Empezar a Jugar</button>
+             <p class="text-xs text-gray-500 mt-4">Este juego usa la API de Unsplash para las imágenes.</p>
+        </div>
+    
+        <div id="game-screen" class="game-container hidden">
+            <div id="welcome-message" class="text-lg font-semibold text-blue-700 mb-2"></div>
+            <div id="timer" class="text-2xl font-bold text-red-500 mb-4">Tiempo: 0s</div>
+            
+            <img id="display-image" src="" alt="Cargando imagen..." class="display-image">
+            
+            <div class="input-area">
+                <p class="input-area-label">Palabra en Inglés:</p>
+                <div id="english-display-container" class="letter-display-container"></div>
+                <div id="english-input-container" class="letter-input-container"></div>
+            </div>
+
+            <div class="input-area">
+                <p class="input-area-label">Palabra en Español:</p>
+                <div id="spanish-display-container" class="letter-display-container"></div>
+                <div id="spanish-input-container" class="letter-input-container"></div>
+            </div>
+            
+            <p id="message-area" class="mt-4 text-lg font-semibold"></p>
+        </div>
+    
+        <div id="end-screen" class="end-screen-container hidden">
+            <h1 class="text-3xl font-bold game-title">¡Juego Terminado!</h1>
+            <p id="final-message" class="text-xl my-4"></p>
+            <button id="play-again-button" class="button play-again-button">Jugar de Nuevo</button>
+        </div>
+    </main>
+
+    <footer class="mt-auto py-6 sm:py-8 text-center">
+        <div class="container mx-auto px-6">
+            <p>&copy; 2025 Juegos Didácticos Don Bosco Pampahasi. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- Script para Dropdown del Header ---
+        const gamesDropdownButton = document.getElementById('games-dropdown-button');
+        const gamesDropdownMenu = document.getElementById('games-dropdown-menu');
+        if (gamesDropdownButton && gamesDropdownMenu) {
+            gamesDropdownButton.addEventListener('click', (event) => {
+                event.stopPropagation();
+                gamesDropdownMenu.classList.toggle('hidden');
+            });
+            document.addEventListener('click', (event) => {
+                if (!gamesDropdownMenu.classList.contains('hidden') && !gamesDropdownButton.contains(event.target) && !gamesDropdownMenu.contains(event.target)) {
+                    gamesDropdownMenu.classList.add('hidden');
+                }
+            });
+        }
+        const menu = document.getElementById('games-dropdown-menu');
+        const games = [
+            { name: "Adivina el Animal", path: "../animales/animales.html" },
+            { name: "Tablas de Multiplicar", path: "../multiplicacion/multiplicacion.html" },
+            { name: "Adivina el Alimento", path: "../alimentos/alimentos.html" },
+            { name: "Juego de Sumas", path: "../sumas/sumas.html" },
+            { name: "Juego de Restas", path: "../restas/restas.html" },
+            { name: "Juego de Divisiones", path: "../divisiones/divisiones.html" },
+            { name: "Multiplicación Aleatoria", path: "../multiplicacion_aleatoria/multiplicacion_aleatoria.html" },
+            { name: "Mecanografía y Ortografía", path: "../mecanografia/mecanografia.html" },
+            { name: "Juego de Trazos", path: "../trazos/trazos.html" },
+            { name: "Inglés y Español", path: "../ingles/ingles.html"}
+        ];
+        menu.innerHTML = ''; 
+        games.forEach(game => {
+             const link = document.createElement('a');
+             link.href = game.path;
+             link.textContent = game.name;
+             link.className = 'block px-4 py-2 text-sm text-blue-800 hover:bg-sky-100 hover:text-blue-700';
+             menu.appendChild(link);
+        });
+
+        // --- Script del Juego de Inglés y Español ---
+        const YOUR_UNSPLASH_ACCESS_KEY = "3Xy9unvCyaYf_mBpb9B9f46H9yvfKpOGPNm8Fd5u8c8"; 
+
+        const vocabulary = ["apple/manzana", "car/coche", "house/casa", "tree/árbol", "book/libro", "water/agua", "sun/sol", "moon/luna", "computer/computadora", "keyboard/teclado", "mountain/montaña", "beach/playa", "city/ciudad", "cat/gato", "dog/perro", "flower/flor", "river/río", "bridge/puente", "bicycle/bicicleta", "food/comida", "friend/amigo", "family/familia", "love/amor", "life/vida", "time/tiempo", "world/mundo", "school/escuela", "student/estudiante", "teacher/profesor", "music/música", "movie/película", "game/juego", "sport/deporte", "ball/pelota", "sky/cielo", "earth/tierra", "fire/fuego", "air/aire", "head/cabeza", "eye/ojo", "hand/mano", "foot/pie", "heart/corazón", "mind/mente", "body/cuerpo", "color/color", "red/rojo", "blue/azul", "green/verde", "yellow/amarillo", "white/blanco", "black/negro", "day/día", "night/noche", "morning/mañana", "afternoon/tarde", "evening/noche", "week/semana", "month/mes", "year/año", "hour/hora", "minute/minuto", "second/segundo", "hello/hola", "goodbye/adiós", "yes/sí", "no/no", "please/por favor", "thank you/gracias", "sorry/lo siento", "name/nombre", "number/número", "letter/letra", "word/palabra", "sentence/oración", "question/pregunta", "answer/respuesta", "big/grande", "small/pequeño", "hot/caliente", "cold/frío", "new/nuevo", "old/viejo", "good/bueno", "bad/malo", "happy/feliz", "sad/triste", "beautiful/hermoso", "ugly/feo", "rich/rico", "poor/pobre", "easy/fácil", "difficult/difícil", "right/correcto", "wrong/incorrecto", "light/luz", "dark/oscuro", "fast/rápido", "slow/lento", "open/abrir", "close/cerrar", "come/venir", "go/ir", "eat/comer", "drink/beber", "sleep/dormir", "run/correr", "walk/caminar", "talk/hablar", "read/leer", "write/escribir", "learn/aprender", "teach/enseñar", "play/jugar", "work/trabajar", "love/amar", "hate/odiar", "think/pensar", "know/saber", "understand/entender", "help/ayudar", "wait/esperar", "look/mirar", "see/ver", "listen/escuchar", "hear/oír", "speak/hablar", "tell/decir", "ask/preguntar", "give/dar", "take/tomar", "make/hacer", "break/romper", "fix/arreglar", "clean/limpiar", "wash/lavar", "cook/cocinar", "buy/comprar", "sell/vender", "pay/pagar", "cost/costar", "price/precio", "money/dinero", "store/tienda", "market/mercado", "hospital/hospital", "doctor/doctor", "nurse/enfermera", "police/policía", "firefighter/bombero", "artist/artista", "singer/cantante", "writer/escritor", "farmer/granjero", "engineer/ingeniero", "lawyer/abogado", "scientist/científico", "king/rey", "queen/reina", "prince/príncipe", "princess/princesa", "castle/castillo", "palace/palacio", "kingdom/reino", "war/guerra", "peace/paz", "freedom/libertad", "justice/justicia", "law/ley", "president/presidente", "country/país", "capital/capital", "flag/bandera", "language/idioma", "people/gente", "man/hombre", "woman/mujer", "child/niño", "boy/chico", "girl/chica", "baby/bebé", "father/padre", "mother/madre", "son/hijo", "daughter/hija", "brother/hermano", "sister/hermana", "grandfather/abuelo", "grandmother/abuela", "uncle/tío", "aunt/tía", "cousin/primo", "husband/esposo", "wife/esposa", "summer/verano", "winter/invierno", "spring/primavera", "autumn/otoño", "rain/lluvia", "snow/nieve", "wind/viento", "cloud/nube", "storm/tormenta", "ice/hielo", "road/camino", "street/calle", "highway/autopista", "car/coche", "bus/autobús", "train/tren", "airplane/avión", "ship/barco", "boat/bote", "port/puerto", "airport/aeropuerto", "station/estación", "ticket/boleto", "passenger/pasajero", "driver/conductor", "pilot/piloto", "captain/capitán", "bed/cama", "chair/silla", "table/mesa", "door/puerta", "window/ventana", "wall/pared", "floor/suelo", "ceiling/techo", "roof/tejado", "kitchen/cocina", "bathroom/baño", "room/habitación", "garden/jardín", "park/parque", "square/plaza", "museum/museo", "theater/teatro", "cinema/cine", "restaurant/restaurante", "hotel/hotel", "bank/banco", "office/oficina", "factory/fábrica", "farm/granja", "zoo/zoológico", "circus/circo", "library/biblioteca", "university/universidad", "college/colegio", "class/clase", "lesson/lección", "homework/tarea", "exam/examen", "grade/nota", "pen/bolígrafo", "pencil/lápiz", "paper/papel", "notebook/cuaderno", "backpack/mochila", "desk/escritorio", "uniform/uniforme", "shirt/camisa", "pants/pantalones", "shoes/zapatos", "socks/calcetines", "hat/sombrero", "coat/abrigo", "jacket/chaqueta", "dress/vestido", "skirt/falda", "gloves/guantes", "scarf/bufanda", "glasses/gafas", "watch/reloj", "ring/anillo", "necklace/collar", "bracelet/pulsera", "earring/pendiente", "bag/bolso", "wallet/cartera", "key/llave", "lock/cerradura", "phone/teléfono", "email/correo electrónico", "website/sitio web", "password/contraseña", "photo/foto", "video/video", "file/archivo", "folder/carpeta", "screen/pantalla", "mouse/ratón", "internet/internet", "network/red", "software/software", "hardware/hardware", "program/programa", "code/código", "developer/desarrollador", "design/diseño", "idea/idea", "plan/plan", "project/proyecto", "goal/meta", "dream/sueño", "success/éxito", "failure/fracaso", "problem/problema", "solution/solución", "challenge/desafío", "opportunity/oportunidad", "risk/riesgo", "advantage/ventaja", "disadvantage/desventaja", "opinion/opinión", "fact/hecho", "truth/verdad", "lie/mentira", "story/historia", "news/noticias", "information/información", "knowledge/conocimiento", "wisdom/sabiduría", "experience/experiencia", "skill/habilidad", "talent/talento", "art/arte", "painting/pintura", "sculpture/escultura", "drawing/dibujo", "dance/baile", "poem/poema", "novel/novela", "song/canción", "melody/melodía", "rhythm/ritmo", "instrument/instrumento", "voice/voz", "health/salud", "sickness/enfermedad", "pain/dolor", "medicine/medicina", "hospital/hospital", "emergency/emergencia", "accident/accidente", "injury/herida", "blood/sangre", "bone/hueso", "muscle/músculo", "skin/piel", "hair/cabello", "brain/cerebro", "stomach/estómago", "lung/pulmón", "liver/hígado", "kidney/riñón", "emotion/emoción", "feeling/sentimiento", "joy/alegría", "fear/miedo", "anger/ira", "surprise/sorpresa", "disgust/asco", "interest/interés", "curiosity/curiosidad", "boredom/aburrimiento", "excitement/emoción", "calm/calma", "stress/estrés", "energy/energía", "fatigue/fatiga", "sleepiness/sueño", "hunger/hambre", "thirst/sed", "color/color", "shape/forma", "size/tamaño", "weight/peso", "height/altura", "width/ancho", "depth/profundidad", "circle/círculo", "square/cuadrado", "triangle/triángulo", "rectangle/rectángulo", "star/estrella", "line/línea", "point/punto", "angle/ángulo", "curve/curva", "edge/borde", "center/centro", "top/arriba", "bottom/abajo", "left/izquierda", "right/derecha", "front/frente", "back/atrás", "inside/adentro", "outside/afuera", "above/encima", "below/debajo", "near/cerca", "far/lejos", "beginning/principio", "middle/medio", "end/fin", "part/parte", "whole/todo", "half/mitad", "quarter/cuarto", "piece/trozo", "slice/rebanada", "group/grupo", "team/equipo", "member/miembro", "leader/líder", "boss/jefe", "employee/empleado", "client/cliente", "customer/cliente", "partner/socio", "competitor/competidor", "industry/industria", "company/empresa", "brand/marca", "product/producto", "service/servicio", "quality/calidad", "quantity/cantidad", "deal/trato", "offer/oferta", "contract/contrato", "meeting/reunión", "presentation/presentación", "report/informe", "document/documento", "signature/firma", "business/negocio", "career/carrera", "profession/profesión", "goal/objetivo", "mission/misión", "vision/visión", "strategy/estrategia", "tactic/táctica", "process/proceso", "system/sistema", "tool/herramienta", "machine/máquina", "engine/motor", "device/dispositivo", "gadget/aparato", "invention/invento", "discovery/descubrimiento", "research/investigación", "analysis/análisis", "data/datos", "graph/gráfico", "chart/tabla", "statistic/estadística", "probability/probabilidad", "theory/teoría", "hypothesis/hipótesis", "evidence/evidencia", "proof/prueba", "logic/lógica", "reason/razón", "argument/argumento", "debate/debate", "discussion/discusión", "dialogue/diálogo", "monologue/monólogo", "speech/discurso", "lecture/conferencia", "class/clase", "course/curso", "subject/materia", "topic/tema", "title/título", "chapter/capítulo", "page/página", "paragraph/párrafo", "line/línea", "letter/letra", "character/personaje", "symbol/símbolo", "sign/señal", "gesture/gesto", "expression/expresión", "smile/sonrisa", "frown/ceño", "laugh/risa", "cry/llanto", "shout/grito", "whisper/susurro", "silence/silencio", "noise/ruido", "sound/sonido", "echo/eco", "smell/olor", "taste/sabor", "touch/tacto", "sight/vista", "hearing/oído", "sense/sentido", "perception/percepción", "intuition/intuición", "instinct/instinto", "memory/memoria", "imagination/imaginación", "creativity/creatividad", "inspiration/inspiración", "motivation/motivación", "ambition/ambición", "passion/pasión", "desire/deseo", "will/voluntad", "choice/elección", "decision/decisión", "action/acción", "habit/hábito", "routine/rutina", "tradition/tradición", "custom/costumbre", "culture/cultura", "civilization/civilización", "history/historia", "past/pasado", "present/presente", "future/futuro", "age/edad", "era/era", "century/siglo", "decade/década", "generation/generación", "ancestor/antepasado", "descendant/descendiente", "heritage/herencia", "legacy/legado", "monument/monumento", "ruin/ruina", "artifact/artefacto", "fossil/fósil", "dinosaur/dinosaurio", "evolution/evolución", "creation/creación", "myth/mito", "legend/leyenda", "tale/cuento", "fable/fábula", "proverb/proverbio", "riddle/adivinanza", "joke/broma", "magic/magia", "spell/hechizo", "curse/maldición", "blessing/bendición", "miracle/milagro", "fate/destino", "destiny/destino", "luck/suerte", "fortune/fortuna", "chaos/caos", "order/orden", "balance/equilibrio", "harmony/armonía", "conflict/conflicto", "struggle/lucha", "victory/victoria", "defeat/derrota", "success/triunfo", "failure/fracaso", "hero/héroe", "villain/villano", "journey/viaje", "adventure/aventura", "quest/búsqueda", "mission/misión", "task/tarea", "challenge/reto", "obstacle/obstáculo", "danger/peligro", "safety/seguridad", "protection/protección", "shelter/refugio", "weapon/arma", "shield/escudo", "armor/armadura", "battle/batalla", "warrior/guerrero", "soldier/soldado", "army/ejército", "navy/marina", "air force/fuerza aérea", "strategy/estrategia", "tactic/táctica", "peace/paz", "treaty/tratado", "alliance/alianza", "rebellion/rebelión", "revolution/revolución", "independence/independencia", "nation/nación", "state/estado", "government/gobierno", "law/ley", "right/derecho", "duty/deber", "freedom/libertad", "liberty/libertad", "democracy/democracia", "republic/república", "monarchy/monarquía", "empire/imperio", "dictatorship/dictadura", "citizen/ciudadano", "patriot/patriota", "traitor/traidor", "spy/espía", "agent/agente", "leader/líder", "politician/político", "president/presidente", "minister/ministro", "senator/senador", "mayor/alcalde", "judge/juez", "lawyer/abogado", "police/policía", "detective/detective", "criminal/criminal", "thief/ladrón", "murderer/asesino", "victim/víctima", "witness/testigo", "evidence/prueba", "trial/juicio", "sentence/sentencia", "prison/prisión", "jail/cárcel", "cell/celda", "guard/guardia", "escape/escape", "crime/crimen", "sin/pecado", "virtue/virtud", "good/bien", "evil/mal", "moral/moral", "ethic/ética", "principle/principio", "value/valor", "belief/creencia", "faith/fe", "doubt/duda", "hope/esperanza", "despair/desesperación", "love/amor", "hate/odio", "friendship/amistad", "enmity/enemistad", "respect/respeto", "honor/honor", "shame/vergüenza", "pride/orgullo", "humility/humildad", "courage/coraje", "cowardice/cobardía", "patience/paciencia", "impatience/impaciencia", "generosity/generosidad", "selfishness/egoísmo", "kindness/amabilidad", "cruelty/crueldad", "honesty/honestidad", "deceit/engaño", "loyalty/lealtad", "betrayal/traición", "wisdom/sabiduría", "ignorance/ignorancia", "knowledge/conocimiento", "understanding/comprensión", "intelligence/inteligencia", "stupidity/estupidez", "genius/genio", "idiot/idiota", "talent/talento", "skill/destreza", "ability/capacidad", "disability/discapacidad", "strength/fuerza", "weakness/debilidad", "beauty/belleza", "ugliness/fealdad", "health/salud", "disease/enfermedad", "life/vida", "death/muerte", "birth/nacimiento", "growth/crecimiento", "youth/juventud", "adulthood/adultez", "old age/vejez", "childhood/infancia", "adolescence/adolescencia", "baby/bebé", "toddler/niño pequeño", "teenager/adolescente", "adult/adulto", "senior/anciano", "wedding/boda", "marriage/matrimonio", "divorce/divorcio", "funeral/funeral", "celebration/celebración", "party/fiesta", "festival/festival", "holiday/vacaciones", "vacation/vacaciones", "trip/viaje", "journey/travesía", "tour/gira", "excursion/excursión", "adventure/aventura", "exploration/exploración", "discovery/descubrimiento", "souvenir/recuerdo", "photograph/fotografía", "album/álbum", "diary/diario", "journal/diario", "letter/carta", "postcard/postal", "gift/regalo", "present/regalo", "surprise/sorpresa"].map(pair => {
+            const parts = pair.split('/');
+            return { en: parts[0], es: parts[1] };
+        });
+
+        const settingsScreen = document.getElementById('settings-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const endScreen = document.getElementById('end-screen');
+        const playerNameInput = document.getElementById('player-name');
+        const wordCountInput = document.getElementById('word-count');
+        const startGameButton = document.getElementById('start-game-button');
+        
+        const welcomeMessageDisplay = document.getElementById('welcome-message');
+        const timerDisplay = document.getElementById('timer');
+        const displayImage = document.getElementById('display-image');
+        
+        const englishDisplayContainer = document.getElementById('english-display-container');
+        const englishInputContainer = document.getElementById('english-input-container');
+        const spanishDisplayContainer = document.getElementById('spanish-display-container');
+        const spanishInputContainer = document.getElementById('spanish-input-container');
+        const messageArea = document.getElementById('message-area');
+        
+        const finalMessageDisplay = document.getElementById('final-message');
+        const playAgainButton = document.getElementById('play-again-button');
+
+        let timerInterval;
+        let secondsElapsed = 0;
+        let playerName = "";
+        let currentPair = {};
+        let shuffledVocabulary = [];
+        let currentWordIndex = 0;
+        
+        let correctLetterCount = 0;
+        let totalLettersToGuess = 0;
+
+        wordCountInput.max = vocabulary.length;
+        wordCountInput.placeholder = `(5-${vocabulary.length})`;
+
+        function shuffleArray(array) {
+            return [...array].sort(() => Math.random() - 0.5);
+        }
+
+        function updateTimer() {
+            secondsElapsed++;
+            timerDisplay.textContent = `Tiempo: ${secondsElapsed}s`;
+        }
+
+        function setupWordBoxes(displayContainer, inputContainer, word, lang) {
+            displayContainer.innerHTML = '';
+            inputContainer.innerHTML = '';
+            for (let i = 0; i < word.length; i++) {
+                const char = word[i];
+                
+                const displayBox = document.createElement('div');
+                displayBox.className = 'letter-display-box';
+                displayBox.textContent = char;
+                displayBox.dataset.lang = lang;
+                displayBox.dataset.index = i;
+                displayContainer.appendChild(displayBox);
+
+                const inputBox = document.createElement('input');
+                inputBox.type = 'text';
+                inputBox.maxLength = 1;
+                inputBox.className = 'letter-input-box';
+                inputBox.dataset.lang = lang;
+                inputBox.dataset.index = i;
+                inputBox.addEventListener('input', handleLetterInput);
+                inputContainer.appendChild(inputBox);
+            }
+        }
+
+        function handleLetterInput(event) {
+            const inputElement = event.target;
+            const index = parseInt(inputElement.dataset.index);
+            const lang = inputElement.dataset.lang;
+            const typedChar = inputElement.value;
+            const correctWord = currentPair[lang];
+            
+            const correctCharNormalized = correctWord[index].toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            const typedCharNormalized = typedChar.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+            if (typedCharNormalized === correctCharNormalized && typedChar !== '') {
+                const displayBox = document.querySelector(`.letter-display-box[data-lang="${lang}"][data-index="${index}"]`);
+                displayBox.classList.add('correct');
+                inputElement.disabled = true;
+                correctLetterCount++;
+
+                if (correctLetterCount === totalLettersToGuess) {
+                    handleCorrectPair();
+                } else {
+                     const allInputs = document.querySelectorAll('.letter-input-box:not(:disabled)');
+                     if(allInputs.length > 0){
+                         allInputs[0].focus();
+                     }
+                }
+
+            } else if (typedChar !== '') {
+                inputElement.value = '';
+            }
+        }
+
+        function handleCorrectPair() {
+            messageArea.textContent = "¡Excelente!";
+            messageArea.classList.add('text-green-600');
+
+            setTimeout(() => {
+                currentWordIndex++;
+                loadNextWord();
+            }, 1500);
+        }
+
+        async function loadNextWord() {
+            if (currentWordIndex >= shuffledVocabulary.length) {
+                endGame();
+                return;
+            }
+            
+            currentPair = shuffledVocabulary[currentWordIndex];
+            correctLetterCount = 0;
+            totalLettersToGuess = currentPair.en.length + currentPair.es.length;
+
+            messageArea.textContent = "";
+            messageArea.classList.remove('text-green-600');
+            displayImage.src = '';
+            displayImage.alt = `Buscando imagen para "${currentPair.en}"...`;
+            
+            setupWordBoxes(englishDisplayContainer, englishInputContainer, currentPair.en, 'en');
+            setupWordBoxes(spanishDisplayContainer, spanishInputContainer, currentPair.es, 'es');
+
+            const apiUrl = `https://api.unsplash.com/photos/random?query=${encodeURIComponent(currentPair.en)}&client_id=${YOUR_UNSPLASH_ACCESS_KEY}`;
+            try {
+                const response = await fetch(apiUrl);
+                if (!response.ok) throw new Error(`Error de Unsplash: ${response.statusText}`);
+                const data = await response.json();
+                
+                if (data && data.urls && data.urls.regular) {
+                    displayImage.src = data.urls.regular;
+                    displayImage.alt = data.alt_description || `Imagen de ${currentPair.en}`;
+                } else {
+                    throw new Error("Respuesta de API inválida.");
+                }
+            } catch (error) {
+                console.error("Error al obtener la imagen:", error);
+                displayImage.src = `https://placehold.co/800x400/CCCCCC/FFFFFF?text=${encodeURIComponent(currentPair.en)}`;
+                displayImage.alt = `No se pudo cargar la imagen. Palabra: ${currentPair.en}`;
+            } finally {
+                englishInputContainer.querySelector('input').focus();
+            }
+        }
+
+        function startGame() {
+            playerName = playerNameInput.value.trim();
+            if (!playerName) {
+                alert("Por favor, ingresa tu nombre.");
+                return;
+            }
+
+            const wordCount = parseInt(wordCountInput.value);
+            if (isNaN(wordCount) || wordCount < 20 || wordCount > vocabulary.length) {
+                alert(`Por favor, ingresa una cantidad de palabras válida entre 20 y ${vocabulary.length}.`);
+                return;
+            }
+            
+            shuffledVocabulary = shuffleArray(vocabulary).slice(0, wordCount);
+            currentWordIndex = 0;
+            secondsElapsed = 0;
+            
+            welcomeMessageDisplay.textContent = `¡Vamos, ${playerName}!`;
+            settingsScreen.classList.add('hidden');
+            endScreen.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+
+            loadNextWord();
+            clearInterval(timerInterval);
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        function endGame() {
+            clearInterval(timerInterval);
+            gameScreen.classList.add('hidden');
+            endScreen.classList.remove('hidden');
+            finalMessageDisplay.textContent = `¡Felicidades, ${playerName}! Completaste todas las palabras en ${secondsElapsed} segundos.`;
+        }
+
+        startGameButton.addEventListener('click', startGame);
+        playAgainButton.addEventListener('click', () => {
+            endScreen.classList.add('hidden');
+            settingsScreen.classList.remove('hidden');
+        });
+        
+    </script>
+</body>
+</html>
