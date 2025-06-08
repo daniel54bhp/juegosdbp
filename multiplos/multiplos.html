@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego de Múltiplos - Juegos Didácticos Don Bosco</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Pacifico&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #E0F2FE;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+        }
+        header {
+            background-color: #1E3A8A;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            width: 100%;
+            z-index: 10;
+        }
+        .header-title-font {
+            font-family: 'Pacifico', cursive;
+        }
+        main {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center; 
+            align-items: center; 
+            width: 100%;
+            padding: 20px; 
+            box-sizing: border-box;
+        }
+        footer {
+            background-color: #1E3A8A;
+            color: white;
+            width: 100%;
+        }
+        .game-container, .settings-container, .end-screen-container {
+            background-color: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 700px; 
+            text-align: center;
+        }
+        .input-field, .select-field {
+            width: 100%;
+            padding: 10px;
+            font-size: 1em;
+            border-radius: 6px;
+            border: 2px solid #93c5fd;
+            margin-bottom: 15px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+        .input-field:focus, .select-field:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        }
+        .button {
+            padding: 12px 28px;
+            font-size: 1.1em;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            border: none;
+            font-weight: 600;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .button:active {
+            transform: translateY(1px);
+        }
+        .start-button {
+            background-color: #22c55e; 
+            color: white;
+        }
+        .start-button:hover:not(:disabled) {
+            background-color: #16a34a;
+        }
+        .play-again-button {
+            background-color: #3b82f6; 
+            color: white;
+            margin-top:10px;
+        }
+        .play-again-button:hover {
+            background-color: #2563eb;
+        }
+        
+        .stats-container {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+            font-weight: bold;
+        }
+        .stat-item .label { color: #4b5563; }
+        .stat-item .value { color: #1d4ed8; }
+        .timer { color: #ef4444; }
+
+        .multiples-grid {
+            display: grid;
+            gap: 5px;
+            margin: 20px auto;
+        }
+
+        .grid-cell {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid #e5e7eb;
+            background-color: #f9fafb;
+            transition: all 0.2s ease;
+        }
+        .grid-cell:hover {
+            background-color: #fde68a;
+            border-color: #facc15;
+        }
+        .grid-cell.correct {
+            background-color: #22c55e;
+            color: white;
+            border-color: #16a34a;
+            transform: scale(1.05);
+            pointer-events: none; /* No se puede volver a hacer clic */
+        }
+        .grid-cell.incorrect {
+            background-color: #ef4444;
+            color: white;
+            border-color: #b91c1c;
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+        .settings-grid-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .settings-grid label {
+            font-weight: 500;
+            color: #374151; 
+            margin-bottom: 5px;
+        }
+        .error-message {
+            color: #ef4444; 
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            min-height: 1.2em;
+        }
+        .game-instructions {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1e3a8a; 
+            margin-bottom: 15px;
+        }
+        h1.game-title { 
+            color: #1e3a8a; 
+            margin-bottom: 20px;
+        }
+        .dropdown-menu {
+            z-index: 50;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container mx-auto px-6 py-4 sm:py-6 flex flex-col sm:flex-row justify-between items-center">
+            <a href="../index.html" class="flex items-center hover:opacity-90 transition-opacity duration-200">
+                <img src="../logo.png" alt="Logo Don Bosco Pampahasi" class="h-12 w-12 sm:h-16 sm:w-16 mr-3 sm:mr-4 rounded-full bg-white p-1" 
+                     onerror="this.onerror=null; this.src='https://placehold.co/64x64/FFFFFF/1E3A8A?text=Logo'; this.alt='Logo Don Bosco Pampahasi (Error)';">
+                <div>
+                    <h1 class="header-title-font text-2xl sm:text-4xl text-yellow-400">Juegos Didácticos</h1>
+                    <p class="text-sm sm:text-lg font-semibold">DON BOSCO PAMPAHASI</p>
+                </div>
+            </a>
+            <nav class="mt-4 sm:mt-0">
+                <div class="relative">
+                    <button id="games-dropdown-button" class="bg-yellow-400 text-blue-800 font-semibold py-2 px-4 rounded-lg hover:bg-yellow-300 transition-colors duration-200 flex items-center">
+                        Juegos
+                        <svg class="w-4 h-4 ml-2 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+                    </button>
+                    <div id="games-dropdown-menu" class="dropdown-menu absolute right-0 mt-2 w-56 bg-white rounded-md shadow-xl py-1 hidden">
+                        <!-- Llenado dinámico por JS -->
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div id="settings-screen" class="settings-container">
+            <h1 class="text-3xl font-bold game-title">Juego de Múltiplos</h1>
+            <input type="text" id="player-name" class="input-field" placeholder="Escribe tu nombre">
+            <div class="settings-grid">
+                <div class="settings-grid-item">
+                    <label for="multiple-of">Encontrar múltiplos de:</label>
+                    <input type="number" id="multiple-of" class="input-field" value="3" min="2" max="12">
+                </div>
+                <div class="settings-grid-item">
+                    <label for="grid-size">Tamaño de cuadrícula:</label>
+                    <select id="grid-size" class="select-field">
+                        <option value="5">5x5</option>
+                        <option value="6">6x6</option>
+                        <option value="8" selected>8x8</option>
+                        <option value="10">10x10</option>
+                    </select>
+                </div>
+                <div class="settings-grid-item col-span-full">
+                    <label for="number-range">Rango de números (1 a...)</label>
+                    <select id="number-range" class="select-field">
+                        <option value="50">50</option>
+                        <option value="100" selected>100</option>
+                        <option value="200">200</option>
+                    </select>
+                </div>
+            </div>
+            <div id="settings-error" class="error-message"></div>
+            <button id="start-game-button" class="button start-button">Empezar Juego</button>
+        </div>
+    
+        <div id="game-screen" class="game-container hidden">
+            <p id="game-instructions" class="game-instructions"></p>
+            <div class="stats-container">
+                <div class="stat-item timer" id="timer">Tiempo: 0s</div>
+                <div class="stat-item"><span class="label">Fallos:</span> <span id="failures" class="value">0</span></div>
+                <div class="stat-item"><span class="label">Faltan:</span> <span id="remaining" class="value">0</span></div>
+            </div>
+            <div id="multiples-grid" class="multiples-grid">
+                <!-- La cuadrícula se generará aquí -->
+            </div>
+        </div>
+    
+        <div id="end-screen" class="end-screen-container hidden">
+            <h1 class="text-3xl font-bold game-title">¡Felicidades!</h1>
+            <p id="final-message" class="text-xl my-4"></p>
+            <button id="play-again-button" class="button play-again-button">Jugar de Nuevo</button>
+        </div>
+    </main>
+
+    <footer class="mt-auto py-6 sm:py-8 text-center">
+        <div class="container mx-auto px-6">
+            <p>&copy; 2025 Juegos Didácticos Don Bosco Pampahasi. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- Script para Dropdown del Header ---
+        const gamesDropdownButton = document.getElementById('games-dropdown-button');
+        const gamesDropdownMenu = document.getElementById('games-dropdown-menu');
+        if (gamesDropdownButton && gamesDropdownMenu) {
+            gamesDropdownButton.addEventListener('click', (event) => {
+                event.stopPropagation();
+                gamesDropdownMenu.classList.toggle('hidden');
+            });
+            document.addEventListener('click', (event) => {
+                if (!gamesDropdownMenu.classList.contains('hidden') && !gamesDropdownButton.contains(event.target) && !gamesDropdownMenu.contains(event.target)) {
+                    gamesDropdownMenu.classList.add('hidden');
+                }
+            });
+        }
+        const menu = document.getElementById('games-dropdown-menu');
+        const games = [
+            { name: "Adivina el Animal", path: "../animales/animales.html" },
+            { name: "Tablas de Multiplicar", path: "../multiplicacion/multiplicacion.html" },
+            { name: "Adivina el Alimento", path: "../alimentos/alimentos.html" },
+            { name: "Juego de Sumas", path: "../sumas/sumas.html" },
+            { name: "Juego de Restas", path: "../restas/restas.html" },
+            { name: "Juego de Divisiones", path: "../divisiones/divisiones.html" },
+            { name: "Multiplicación Aleatoria", path: "../multiplicacion_aleatoria/multiplicacion_aleatoria.html" },
+            { name: "Mecanografía y Ortografía", path: "../mecanografia/mecanografia.html" },
+            { name: "Juego de Trazos", path: "../trazos/trazos.html" },
+            { name: "Inglés y Español", path: "../ingles/ingles.html"},
+            { name: "Contar hasta 100", path: "../contar/contar.html"},
+            { name: "Juego de Múltiplos", path: "../multiplos/multiplos.html"}
+        ];
+        menu.innerHTML = '';
+        games.forEach(game => {
+             const link = document.createElement('a');
+             link.href = game.path;
+             link.textContent = game.name;
+             link.className = 'block px-4 py-2 text-sm text-blue-800 hover:bg-sky-100 hover:text-blue-700';
+             menu.appendChild(link);
+        });
+
+        // --- Script del Juego de Múltiplos ---
+        const settingsScreen = document.getElementById('settings-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const endScreen = document.getElementById('end-screen');
+        const playerNameInput = document.getElementById('player-name');
+        const multipleOfInput = document.getElementById('multiple-of');
+        const gridSizeSelect = document.getElementById('grid-size');
+        const numberRangeSelect = document.getElementById('number-range');
+        const startGameButton = document.getElementById('start-game-button');
+        const settingsError = document.getElementById('settings-error');
+        
+        const gameInstructions = document.getElementById('game-instructions');
+        const timerDisplay = document.getElementById('timer');
+        const failuresDisplay = document.getElementById('failures');
+        const remainingDisplay = document.getElementById('remaining');
+        const gridContainer = document.getElementById('multiples-grid');
+        
+        const finalMessageDisplay = document.getElementById('final-message');
+        const playAgainButton = document.getElementById('play-again-button');
+
+        let timerInterval;
+        let secondsElapsed = 0;
+        let failureCount = 0;
+        let totalMultiples = 0;
+        let foundMultiples = 0;
+        let playerName = "";
+        let multipleOf = 3;
+
+        function updateTimer() {
+            secondsElapsed++;
+            timerDisplay.textContent = `Tiempo: ${secondsElapsed}s`;
+        }
+        
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function generateGrid() {
+            const size = parseInt(gridSizeSelect.value);
+            const maxNumber = parseInt(numberRangeSelect.value);
+            multipleOf = parseInt(multipleOfInput.value);
+            const totalCells = size * size;
+
+            // Encontrar todos los múltiplos posibles en el rango
+            const possibleMultiples = [];
+            for (let i = multipleOf; i <= maxNumber; i += multipleOf) {
+                possibleMultiples.push(i);
+            }
+            
+            // Determinar cuántos múltiplos poner en la cuadrícula (entre 20% y 40% de las celdas)
+            const minMultiplesInGrid = Math.max(1, Math.floor(totalCells * 0.2));
+            const maxMultiplesInGrid = Math.ceil(totalCells * 0.4);
+            
+            if (possibleMultiples.length < minMultiplesInGrid) {
+                settingsError.textContent = `No hay suficientes múltiplos de ${multipleOf} hasta ${maxNumber}. Prueba un rango mayor o un número más pequeño.`;
+                return null;
+            }
+
+            // Seleccionar un subconjunto de múltiplos para la cuadrícula
+            shuffleArray(possibleMultiples);
+            const numMultiplesToPlace = Math.min(possibleMultiples.length, maxMultiplesInGrid);
+            const multiplesInGrid = possibleMultiples.slice(0, numMultiplesToPlace);
+            totalMultiples = multiplesInGrid.length;
+
+            // Generar los números restantes (no múltiplos)
+            const nonMultiples = [];
+            let neededNonMultiples = totalCells - totalMultiples;
+            let attempts = 0;
+            while(nonMultiples.length < neededNonMultiples && attempts < 1000) {
+                let randNum = Math.floor(Math.random() * maxNumber) + 1;
+                if(randNum % multipleOf !== 0 && !multiplesInGrid.includes(randNum) && !nonMultiples.includes(randNum)) {
+                    nonMultiples.push(randNum);
+                }
+                attempts++;
+            }
+
+            // Crear y barajar la lista final de números para la cuadrícula
+            let gridNumbers = [...multiplesInGrid, ...nonMultiples];
+            // Si faltan números, rellenar con no múltiplos genéricos
+            while(gridNumbers.length < totalCells) {
+                let randNum = Math.floor(Math.random() * maxNumber) + 1;
+                 if(randNum % multipleOf !== 0) gridNumbers.push(randNum);
+            }
+            gridNumbers = gridNumbers.slice(0, totalCells);
+            
+            return shuffleArray(gridNumbers);
+        }
+
+        function createGridUI(numbers) {
+            const size = parseInt(gridSizeSelect.value);
+            gridContainer.innerHTML = '';
+            gridContainer.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+            
+            numbers.forEach(num => {
+                const cell = document.createElement('div');
+                cell.className = 'grid-cell';
+                cell.textContent = num;
+                cell.dataset.number = num;
+                cell.addEventListener('click', handleCellClick);
+                gridContainer.appendChild(cell);
+            });
+        }
+        
+        function handleCellClick(event) {
+            const cell = event.target;
+            const number = parseInt(cell.dataset.number);
+
+            if (cell.classList.contains('correct')) return;
+
+            if (number % multipleOf === 0) {
+                cell.classList.add('correct');
+                foundMultiples++;
+                updateStats();
+                if (foundMultiples === totalMultiples) {
+                    endGame();
+                }
+            } else {
+                failureCount++;
+                failuresDisplay.textContent = failureCount;
+                cell.classList.add('incorrect');
+                setTimeout(() => {
+                    cell.classList.remove('incorrect');
+                }, 500);
+            }
+        }
+        
+        function updateStats() {
+            remainingDisplay.textContent = totalMultiples - foundMultiples;
+        }
+
+        function startGame() {
+            playerName = playerNameInput.value.trim();
+            if (!playerName) {
+                alert("Por favor, ingresa tu nombre.");
+                return;
+            }
+
+            const gridNumbers = generateGrid();
+            if (!gridNumbers) return; // No empezar si la generación falló
+
+            settingsScreen.classList.add('hidden');
+            endScreen.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+
+            gameInstructions.textContent = `Encuentra los múltiplos de ${multipleOf}`;
+            failureCount = 0;
+            foundMultiples = 0;
+            secondsElapsed = 0;
+            
+            failuresDisplay.textContent = failureCount;
+            updateStats();
+            createGridUI(gridNumbers);
+
+            clearInterval(timerInterval);
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        function endGame() {
+            clearInterval(timerInterval);
+            setTimeout(() => {
+                 gameScreen.classList.add('hidden');
+                endScreen.classList.remove('hidden');
+                finalMessageDisplay.textContent = `${playerName}, encontraste todos los múltiplos en ${secondsElapsed} segundos con ${failureCount} fallos.`;
+            }, 500);
+        }
+
+        startGameButton.addEventListener('click', startGame);
+        playAgainButton.addEventListener('click', () => {
+            endScreen.classList.add('hidden');
+            settingsScreen.classList.remove('hidden');
+        });
+        
+    </script>
+</body>
+</html>
