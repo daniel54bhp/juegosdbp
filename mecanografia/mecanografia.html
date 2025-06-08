@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mecanografía y Ortografía - Juegos Didácticos Don Bosco</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Pacifico&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #E0F2FE;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+        }
+        header {
+            background-color: #1E3A8A;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            width: 100%;
+            z-index: 10;
+        }
+        .header-title-font {
+            font-family: 'Pacifico', cursive;
+        }
+        main {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center; 
+            align-items: center; 
+            width: 100%;
+            padding: 20px; 
+            box-sizing: border-box;
+        }
+        footer {
+            background-color: #1E3A8A;
+            color: white;
+            width: 100%;
+        }
+
+        /* Estilos específicos del juego */
+        .game-container, .settings-container, .end-screen-container {
+            background-color: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 700px; 
+            text-align: center;
+        }
+        .display-image {
+            width: 100%;
+            height: 250px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 2px solid #e2e8f0;
+            object-fit: cover;
+            background-color: #e2e8f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: #4b5563;
+        }
+        
+        #letter-display-container, #letter-input-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+            gap: 8px; 
+            min-height: 50px;
+        }
+        .letter-display-box {
+            width: 45px;
+            height: 50px;
+            background-color: white;
+            border: 2px solid #d1d5db;
+            border-radius: 6px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2em;
+            font-weight: bold;
+            color: #1e3a8a; /* Las letras son visibles desde el inicio */
+            text-transform: uppercase;
+            transition: all 0.2s ease;
+        }
+        .letter-display-box.correct {
+            border-color: #22c55e;
+            background-color: #dcfce7;
+        }
+        .letter-input-box {
+            width: 45px;
+            height: 50px;
+            border: 2px solid #93c5fd;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 1.5em;
+            text-transform: uppercase;
+            outline: none;
+        }
+        .letter-input-box:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        }
+        .letter-input-box:disabled {
+            background-color: #f3f4f6;
+            color: #9ca3af;
+        }
+
+        .stats-container {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+        .stat-item {
+            font-size: 1.4em;
+            font-weight: bold;
+        }
+        .stat-item .label { color: #4b5563; }
+        .stat-item .value { color: #1e3a8a; }
+
+        .input-field, .number-input {
+            width: 100%;
+            padding: 10px;
+            font-size: 1em;
+            border-radius: 6px;
+            border: 2px solid #93c5fd;
+            margin-bottom: 15px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+        .input-field:focus, .number-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        }
+
+        .button {
+            padding: 12px 28px;
+            font-size: 1.1em;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            border: none;
+            font-weight: 600;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .play-again-button {
+            background-color: #3b82f6; 
+            color: white;
+            margin-top:10px;
+        }
+        h1.game-title { 
+            color: #1e3a8a; 
+            margin-bottom: 20px;
+        }
+        .dropdown-menu {
+            z-index: 50;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container mx-auto px-6 py-4 sm:py-6 flex flex-col sm:flex-row justify-between items-center">
+            <a href="../index.html" class="flex items-center hover:opacity-90 transition-opacity duration-200">
+                <img src="../logo.png" alt="Logo Don Bosco Pampahasi" class="h-12 w-12 sm:h-16 sm:w-16 mr-3 sm:mr-4 rounded-full bg-white p-1" 
+                     onerror="this.onerror=null; this.src='https://placehold.co/64x64/FFFFFF/1E3A8A?text=Logo'; this.alt='Logo Don Bosco Pampahasi (Error)';">
+                <div>
+                    <h1 class="header-title-font text-2xl sm:text-4xl text-yellow-400">Juegos Didácticos</h1>
+                    <p class="text-sm sm:text-lg font-semibold">DON BOSCO PAMPAHASI</p>
+                </div>
+            </a>
+            <nav class="mt-4 sm:mt-0">
+                <div class="relative">
+                    <button id="games-dropdown-button" class="bg-yellow-400 text-blue-800 font-semibold py-2 px-4 rounded-lg hover:bg-yellow-300 transition-colors duration-200 flex items-center">
+                        Juegos
+                        <svg class="w-4 h-4 ml-2 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+                    </button>
+                    <div id="games-dropdown-menu" class="dropdown-menu absolute right-0 mt-2 w-56 bg-white rounded-md shadow-xl py-1 hidden">
+                        <a href="../animales/animales.html" class="block px-4 py-2 text-sm text-blue-800 hover:bg-sky-100 hover:text-blue-700">Adivina el Animal</a>
+                        <a href="../multiplicacion/multiplicacion.html" class="block px-4 py-2 text-sm text-blue-800 hover:bg-sky-100 hover:text-blue-700">Tablas de Multiplicar</a>
+                        <a href="../alimentos/alimentos.html" class="block px-4 py-2 text-sm text-blue-800 hover:bg-sky-100 hover:text-blue-700">Adivina el Alimento</a>
+                        <a href="../sumas/sumas.html" class="block px-4 py-2 text-sm text-blue-800 hover:bg-sky-100 hover:text-blue-700">Juego de Sumas</a>
+                        <a href="../restas/restas.html" class="block px-4 py-2 text-sm text-blue-800 hover:bg-sky-100 hover:text-blue-700">Juego de Restas</a>
+                        <a href="../divisiones/divisiones.html" class="block px-4 py-2 text-sm text-blue-800 hover:bg-sky-100 hover:text-blue-700">Juego de Divisiones</a>
+                        <a href="../multiplicacion_aleatoria/multiplicacion_aleatoria.html" class="block px-4 py-2 text-sm text-blue-800 hover:bg-sky-100 hover:text-blue-700">Multiplicación Aleatoria</a>
+                        <a href="../mecanografia/mecanografia.html" class="block px-4 py-2 text-sm text-blue-800 hover:bg-sky-100 hover:text-blue-700">Mecanografía y Ortografía</a>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div id="settings-screen" class="settings-container">
+            <h1 class="text-3xl font-bold game-title">Mecanografía y Ortografía</h1>
+            <p class="text-gray-600 mb-4">Escribe la palabra que corresponda a la imagen para mejorar tu velocidad y precisión.</p>
+            <input type="text" id="player-name" class="input-field" placeholder="Escribe tu nombre">
+            <div class="my-4">
+                 <label for="word-count" class="block font-semibold mb-2 text-gray-700">Cantidad de Palabras:</label>
+                 <input type="number" id="word-count" class="number-input w-1/2 mx-auto" value="200" min="5">
+            </div>
+            <button id="start-game-button" class="button bg-blue-500 hover:bg-blue-600 text-white">Empezar a Jugar</button>
+             <p class="text-xs text-gray-500 mt-4">Las imagenes pueden no mostrarse siempre.</p>
+        </div>
+    
+        <div id="game-screen" class="game-container hidden">
+            <div id="welcome-message" class="welcome-message"></div>
+            <div class="stats-container">
+                <div class="stat-item"><span class="label">Tiempo:</span> <span id="timer" class="value">0s</span></div>
+                <div class="stat-item"><span class="label">PPM:</span> <span id="wpm" class="value">0</span></div>
+            </div>
+            <img id="display-image" src="" alt="Cargando imagen..." class="display-image">
+            <div id="letter-display-container">
+                <!-- Cajas de letras de visualización se generan aquí -->
+            </div>
+            <div id="letter-input-container">
+                 <!-- Cajas de letras de entrada se generan aquí -->
+            </div>
+            <p id="message-area" class="mt-4 text-lg font-semibold"></p>
+        </div>
+    
+        <div id="end-screen" class="end-screen-container hidden">
+            <h1 class="text-3xl font-bold game-title">¡Juego Terminado!</h1>
+            <p id="final-message" class="text-xl my-4"></p>
+            <button id="play-again-button" class="button play-again-button">Jugar de Nuevo</button>
+        </div>
+    </main>
+
+    <footer class="mt-auto py-6 sm:py-8 text-center">
+        <div class="container mx-auto px-6">
+            <p>&copy; 2025 Juegos Didácticos Don Bosco Pampahasi. Todos los derechos reservados.</p>
+ <p>&copy; Desarrollado por Ing. Paulo Daniel Batuani Hurtado.</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- Script para Dropdown del Header ---
+        const gamesDropdownButton = document.getElementById('games-dropdown-button');
+        const gamesDropdownMenu = document.getElementById('games-dropdown-menu');
+        if (gamesDropdownButton && gamesDropdownMenu) {
+            gamesDropdownButton.addEventListener('click', (event) => {
+                event.stopPropagation();
+                gamesDropdownMenu.classList.toggle('hidden');
+            });
+            document.addEventListener('click', (event) => {
+                if (!gamesDropdownMenu.classList.contains('hidden') && !gamesDropdownButton.contains(event.target) && !gamesDropdownMenu.contains(event.target)) {
+                    gamesDropdownMenu.classList.add('hidden');
+                }
+            });
+        }
+
+        // --- Script del Juego de Mecanografía y Ortografía ---
+        const YOUR_UNSPLASH_ACCESS_KEY = "3Xy9unvCyaYf_mBpb9B9f46H9yvfKpOGPNm8Fd5u8c8";
+
+        const words = ["computadora", "teclado", "montaña", "playa", "océano", "ciudad", "gato", "perro", "árbol", "libro", "sol", "luna", "estrella", "flor", "río", "puente", "coche", "avión", "tren", "bicicleta", "guitarra", "piano", "comida", "agua", "café", "manzana", "naranja", "plátano", "fresa", "bosque", "casa", "mesa", "silla", "escuela", "trabajo", "amigo", "familia", "amor", "vida", "tiempo", "mundo", "país", "calle", "barco", "música", "película", "juego", "deporte", "fútbol", "baloncesto", "tenis", "natación", "correr", "caminar", "hablar", "comer", "beber", "dormir", "soñar", "reír", "llorar", "pensar", "aprender", "enseñar", "leer", "escribir", "dibujar", "cantar", "bailar", "viajar", "estudiar", "descansar", "feliz", "triste", "enojado", "cansado", "aburrido", "emocionado", "sorprendido", "asustado", "valiente", "inteligente", "bueno", "malo", "grande", "pequeño", "alto", "bajo", "joven", "viejo", "nuevo", "antiguo", "bonito", "feo", "rico", "pobre", "fácil", "difícil", "claro", "oscuro", "caliente", "frío", "día", "noche", "mañana", "tarde", "semana", "mes", "año", "siglo", "segundo", "minuto", "hora", "rojo", "azul", "verde", "amarillo", "blanco", "negro", "gris", "marrón", "rosa", "violeta", "cabeza", "ojo", "nariz", "boca", "oreja", "mano", "pie", "dedo", "cuerpo", "alma", "corazón", "mente", "espíritu", "naturaleza", "planta", "animal", "insecto", "pájaro", "pez", "mar", "lago", "valle", "desierto", "selva", "cielo", "tierra", "fuego", "aire", "arte", "ciencia", "historia", "filosofía", "religión", "política", "economía", "sociedad", "cultura", "tecnología", "internet", "teléfono", "televisión", "radio", "periódico", "revista", "carta", "mensaje", "palabra", "frase", "oración", "universo", "galaxia", "planeta", "cometa", "asteroide", "átomo", "molécula", "célula", "energía", "materia", "luz", "sonido", "velocidad", "fuerza", "masa", "temperatura", "clima", "estación", "primavera", "verano", "otoño", "invierno", "norte", "sur", "este", "oeste", "puerta", "ventana", "pared", "techo", "suelo", "cama", "cocina", "baño", "sala", "habitación", "jardín", "parque", "plaza", "museo", "teatro", "cine", "restaurante", "tienda", "mercado", "hospital", "farmacia", "banco", "oficina", "fábrica", "universidad", "colegio", "biblioteca", "iglesia", "castillo", "palacio", "edificio", "carretera", "autopista", "campo", "granja", "pueblo", "capital", "frontera", "isla", "continente", "mapa", "brújula", "telescopio", "microscopio", "acero", "algodón", "ambiente", "ancho", "anillo", "arena", "arte", "ascensor", "ausencia", "azúcar", "batalla", "barba", "barriga", "barro", "bastón", "basura", "batido", "bautizo", "bebé", "belleza", "beso", "bestia", "biblioteca", "billete", "blanco", "boca", "boda", "bodega", "boleto", "bolígrafo", "bolsillo", "bomba", "bondad", "bonito", "borde", "borrador", "bosque", "botas", "botella", "botón", "brazo", "brillante", "brillo", "brisa", "bronce", "broma", "bruja", "buey", "bufanda", "búho", "bulto", "buque", "burbuja", "burro", "buscar", "butaca", "buzón", "caballo", "cabello", "cabeza", "cabo", "cabra", "cacao", "cadáver", "cadena", "cadera", "caer", "café", "caída", "caja", "cajón", "cal", "calabaza", "calamar", "calavera", "calcetín", "calcio", "caldera", "calle", "calma", "calor", "calvo", "calzado", "cama", "cámara", "camarón", "cambiar", "camello", "camino", "camión", "camisa", "campana", "campo", "canal", "canasta", "canción", "cancha", "cangrejo", "canoa", "cansado", "cantar", "cantidad", "caña", "cañón", "caoba", "caos", "capa", "capacidad", "capataz", "capaz", "capilla", "capital", "capitán", "capítulo", "capricho", "cara", "caracol", "carácter", "caravana", "carbón", "cárcel", "caricia", "caries", "cariño", "carne", "carpeta", "carrera", "carreta", "carretera", "carro", "carroza", "carta", "cartel", "cartera", "cartón", "casa", "cascada", "cáscara", "casco", "casino", "caso", "castigo", "castillo", "castor", "casualidad", "catálogo", "catarata", "catástrofe", "catedral", "categoría", "catorce", "caucho", "causa", "cautela", "cavar", "caverna", "caza", "cazador", "cazo", "cebada", "cebolla", "cebra", "ceja", "celebrar", "celeste", "célula", "cemento", "cena", "cenicero", "ceniza", "centavo", "centena", "centeno", "centro", "cepillo", "cera", "cerca", "cerdo", "cerebro", "cereza", "cerilla", "cero", "cerrado", "cerradura", "cerro", "certeza", "cerveza", "césped", "cesta", "cicatriz", "ciego", "cielo", "cien", "ciencia", "ciervo", "cierto", "cifra", "cigarro", "cigüeña", "cilindro", "cima", "cemento", "cinco", "cine", "cinta", "cintura", "cinturón", "circo", "ciruela", "cirugía", "cisne", "cita", "ciudad", "civil", "claridad", "claro", "clase", "clásico", "clavar", "cliente", "clima", "clínica", "club", "cobertizo", "cobija", "cobre", "cocina", "cocodrilo", "cóctel", "coco", "coche", "codicia", "código", "codo", "cofre", "cohete", "coincidir", "cojín", "cola", "colaborar", "colchón", "colección", "colegio", "colgar", "colibrí", "colina", "collar", "colmena", "colocar", "colonia", "color", "columna", "comandante", "combate", "combinar", "combustible", "comedia", "comedor", "comentario", "comenzar", "comer", "comercio", "cometa", "comida", "comienzo", "comisaría", "comité", "como", "compañero", "compañía", "comparar", "compás", "competir", "comprar", "comprender", "común", "con", "concebir", "conceder", "concierto", "concluir", "concreto", "concurso", "conde", "condenar", "condición", "conducir", "conducta", "conejo", "conectar", "conexión", "confesar", "confianza", "confirmar", "conflicto", "confundir", "congelar", "congreso", "conjunto", "conmigo", "conocer", "conquista", "conseguir", "consejo", "conservar", "considerar", "consolar", "constante", "construir", "consulta", "consumir", "contacto", "contar", "contemplar", "contener", "contento", "contestar", "contigo", "continente", "continuar", "contra", "contrario", "contrato", "control", "convencer", "conversar", "convertir", "invitar", "copa", "copia", "corazón", "corbata", "corcho", "cordero", "cordón", "corona", "coronel", "corral", "correa", "correcto", "correo", "correr", "corriente", "corrupto", "cortar", "corte", "corteza", "cortina", "corto", "corvo", "cosa", "cosecha", "coser", "cosquillas", "costa", "costado", "costar", "costilla", "costumbre", "costura", "cráneo", "cráter", "crear", "crecer", "crédito", "creer", "crema", "crepúsculo", "cresta", "criada", "criado", "criar", "criatura", "crimen", "criminal", "crin", "cristal", "cristiano", "criterio", "crítica", "crónica", "croqueta", "cruce", "crudo", "cruel", "crujido", "cruz", "cuaderno", "cuadrado", "cuadro", "cual", "cualquier", "cuando", "cuanto", "cuarenta", "cuarto", "cuatro", "cubo", "cubrir", "cuchara", "cuchillo", "cuello", "cuenta", "cuento", "cuerda", "cuerno", "cuero", "cuerpo", "cuervo", "cuesta", "cueva", "cuidado", "culebra", "culpa", "cultivar", "culto", "cultura", "cumbre", "cumpleaños", "cumplir", "cuna", "cuneta", "cuota", "cupón", "cúpula", "cura", "curar", "curiosidad", "curso", "curva", "custodia", "cutis", "dama", "danza", "daño", "dar", "dardo", "dátil", "dato", "de", "debate", "deber", "débil", "década", "decente", "decidir", "décimo", "decir", "decisión", "declarar", "decorar", "decreto", "dedal", "dedicar", "dedo", "defender", "defensa", "definir", "definitivo", "dejar", "del", "delante", "delantero", "delegado", "deleite", "delfín", "delgado", "delicado", "delicia", "delincuente", "delirar", "delito", "demanda", "demás", "demasiado", "democracia", "demonio", "demostrar", "denso", "dentro", "departamento", "depender", "deporte", "depositar", "depresión", "derecha", "derecho", "derramar", "derretir", "derribar", "derrota", "desafiar", "desafío", "desagradable", "desaparecer", "desarrollar", "desastre", "desatar", "desayuno", "descansar", "descargar", "descartar", "descender", "descifrar", "desconfiar", "desconocer", "describir", "descubrir", "descuento", "desde", "desear", "desecho", "desembarcar", "desempeñar", "deseo", "desierto", "designar", "desigual", "deslizar", "desnudo", "despacio", "despacho", "despedida", "despegar", "despertar", "despido", "desplazar", "despreciar", "después", "destino", "destruir", "desventaja", "detallar", "detalle", "detener", "detective", "detrás", "deuda", "devorar", "día", "diablo", "diagnóstico", "diagrama", "diamante", "diario", "dibujar", "dibujo", "diccionario", "diciembre", "dictado", "diente", "dieta", "diez", "diferencia", "diferente", "difícil", "dificultad", "digno", "dinero", "dios", "diploma", "diputado", "dique", "dirección", "directo", "director", "dirigir", "disco", "disciplina", "discípulo", "discreto", "disculpa", "discurso", "discutir", "diseño", "disfraz", "disfrutar", "disgusto", "disimular", "disparar", "disparo", "disponer", "distancia", "distinguir", "distinto", "distraer", "distribuir", "distrito", "disturbio", "diversión", "diverso", "dividir", "divino", "división", "divorcio", "doble", "dólar", "dolor", "domingo", "don", "donde", "dorado", "dormir", "dos", "dragón", "droga", "ducha", "duda", "duelo", "dueño", "dulce", "dúo", "durante", "duro", "echar", "eco", "economía", "edad", "edición", "edificio", "educar", "efectivo", "efecto", "eficaz", "ejecutar", "ejemplo", "ejercer", "ejercicio", "ejército", "el", "él", "elaborar", "elección", "electricidad", "elegante", "elegir", "elemento", "elefante", "elevar", "eliminar", "ella", "ello", "elogio", "embarcar", "embargo", "embudo", "emisión", "emoción", "empapado", "empeine", "emperador", "empezar", "empleado", "empleo", "empresa", "empujar", "en", "enamorado", "encaje", "encanto", "encarar", "encargar", "encender", "encerrar", "encía", "encima", "encontrar", "encuesta", "enemigo", "energía", "enero", "enfadar", "énfasis", "enfermo", "enfocar", "enfrentar", "enfriar", "engaño", "enigma", "enlace", "enorme", "ensalada", "ensayo", "enseñar", "entender", "enterar", "entero", "enterrar", "entonces", "entrada", "entrar", "entre", "entregar", "entrenar", "entrevista", "entusiasmo", "enviar", "envidia", "envolver", "episodio", "época", "equipaje", "equipo", "equivocar", "error", "erudito", "erupción", "es", "esa", "escala", "escalera", "escalofrío", "escándalo", "escapar", "escarabajo", "escarcha", "escardar", "escarlata", "escenario", "esclavo", "escoba", "escoger", "escolar", "esconder", "escombro", "escopeta", "escribir", "escritor", "escuchar", "escudo", "escuela", "esculpir", "escupir", "escurrir", "ese", "esencia", "esfera", "esfuerzo", "esgrima", "eslabón", "esmalte", "esmeralda", "eso", "espacio", "espada", "espalda", "espanto", "español", "esparadrapo", "espárrago", "especial", "especie", "espectáculo", "espectro", "espejo", "espera", "esperanza", "esperar", "espeso", "espía", "espiga", "espina", "espinaca", "espinazo", "espíritu", "espléndido", "esposa", "esposo", "espuma", "esquela", "esquema", "esquina", "estable", "establecer", "establo", "estaca", "estación", "estadio", "estado", "estallar", "estampa", "estancia", "estanque", "estante", "estar", "estatua", "este", "éste", "estera", "estéril", "estilo", "estimar", "estirar", "estómago", "estrecho", "estrella", "estremecer", "estrenar", "estrépito", "estricto", "estrofa", "estructura", "estuche", "estudiante", "estudiar", "estudio", "estufa", "estupendo", "estúpido", "etapa", "etcétera", "eterno", "ética", "etiqueta", "eucalipto", "Europa", "evacuar", "evadir", "evaluar", "evangelio", "evaporar", "evasión", "evento", "evidente", "evitar", "evolución", "exacto", "exagerar", "examen", "examinar", "excavar", "exceder", "excelente", "excéntrico", "excepción", "exceso", "excitar", "exclamar", "excluir", "exclusivo", "excursión", "excusa", "exento", "exhalar", "exhibir", "exigir", "exilio", "existir", "éxito", "exótico", "expandir", "expedición", "experiencia", "experimento", "experto", "explicar", "explorar", "explosión", "explotar", "exponer", "exportar", "exposición", "expresar", "exprimir", "expulsar", "exquisito", "extender", "exterior", "exterminar", "externo", "extinguir", "extirpar", "extra", "extracto", "extraer", "extranjero", "extraño", "extrañar", "extraordinario", "extravagante", "extraviar", "extremo", "fábrica", "fábula", "fácil", "factor", "factura", "facultad", "faena", "faja", "falda", "fallar", "fallecer", "fallo", "falso", "falta", "faltar", "fama", "familia", "famoso", "fan", "fantasma", "fantasía", "fantástico", "farmacia", "faro", "farol", "farsa", "fase", "fastidiar", "fatal", "fatiga", "fauna", "favor", "favorito", "faz", "fe", "febrero", "fecha", "fecundo", "federal", "felicidad", "felicitar", "feliz", "felpa", "femenino", "fenómeno", "feo", "feria", "fermentar", "feroz", "ferrocarril", "fértil", "festejar", "festejo", "festín", "festival", "fiado", "fiambre", "fianza", "fiar", "fibra", "ficción", "ficha", "fideo", "fiebre", "fiel", "fiera", "fiesta", "figura", "fijar", "fijo", "fila", "filial", "filmar", "filo", "filosofía", "filtrar", "fin", "final", "financiar", "finca", "fingir", "fino", "firma", "firmar", "firme", "fiscal", "fisco", "física", "físico", "flaco", "flamenco", "flan", "flauta", "flecha", "fleco", "flema", "flexión", "flojo", "flor", "flora", "florecer", "florete", "florido", "flota", "flotar", "flujo", "flúor", "fobia", "foca", "foco", "fogata", "fogón", "folio", "folleto", "fondo", "fuente"];
+
+        const settingsScreen = document.getElementById('settings-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const endScreen = document.getElementById('end-screen');
+        const playerNameInput = document.getElementById('player-name');
+        const wordCountInput = document.getElementById('word-count');
+        const startGameButton = document.getElementById('start-game-button');
+        
+        const welcomeMessageDisplay = document.getElementById('welcome-message');
+        const timerDisplay = document.getElementById('timer');
+        const wpmDisplay = document.getElementById('wpm');
+        const displayImage = document.getElementById('display-image');
+        const letterDisplayContainer = document.getElementById('letter-display-container');
+        const letterInputContainer = document.getElementById('letter-input-container'); 
+        const messageArea = document.getElementById('message-area');
+        
+        const finalMessageDisplay = document.getElementById('final-message');
+        const playAgainButton = document.getElementById('play-again-button');
+
+        let timerInterval;
+        let secondsElapsed = 0;
+        let playerName = "";
+        let currentWord = "";
+        let shuffledWords = [];
+        let currentWordIndex = 0;
+        let letterDisplayElements = [];
+        let letterInputElements = [];
+        let correctlyGuessedLettersCount = 0;
+        let totalCharsTypedInSession = 0;
+
+        wordCountInput.max = words.length; 
+        wordCountInput.placeholder = `(5-${words.length})`;
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function updateTimer() {
+            secondsElapsed++;
+            timerDisplay.textContent = `${secondsElapsed}s`;
+            if (secondsElapsed > 0) {
+                const wpm = (totalCharsTypedInSession / 5) / (secondsElapsed / 60);
+                wpmDisplay.textContent = Math.round(wpm);
+            }
+        }
+
+        function setupWordDisplay(word) {
+            letterDisplayContainer.innerHTML = '';
+            letterInputContainer.innerHTML = '';
+            letterDisplayElements = [];
+            letterInputElements = [];
+            correctlyGuessedLettersCount = 0;
+
+            for (let i = 0; i < word.length; i++) {
+                const char = word[i];
+                const displayBox = document.createElement('div');
+                displayBox.className = 'letter-display-box';
+                displayBox.textContent = char;
+                letterDisplayContainer.appendChild(displayBox);
+                letterDisplayElements.push(displayBox);
+
+                const inputBox = document.createElement('input');
+                inputBox.type = 'text';
+                inputBox.maxLength = 1;
+                inputBox.className = 'letter-input-box';
+                inputBox.dataset.index = i;
+                inputBox.addEventListener('input', handleLetterInput);
+                letterInputContainer.appendChild(inputBox);
+                letterInputElements.push(inputBox);
+            }
+        }
+        
+        function handleLetterInput(event) {
+            const inputElement = event.target;
+            const index = parseInt(inputElement.dataset.index);
+            const typedChar = inputElement.value;
+
+            if (typedChar.toLowerCase() === currentWord[index].toLowerCase()) {
+                letterDisplayElements[index].classList.add('correct');
+                inputElement.disabled = true;
+                correctlyGuessedLettersCount++;
+                totalCharsTypedInSession++;
+
+                if (correctlyGuessedLettersCount === currentWord.length) {
+                    handleCorrectAnswer();
+                } else {
+                    const nextInput = letterInputElements[index + 1];
+                    if (nextInput) {
+                        nextInput.focus();
+                    }
+                }
+            } else if (typedChar !== '') {
+                inputElement.value = '';
+            }
+        }
+        
+        function handleCorrectAnswer() {
+            messageArea.textContent = "¡Correcto!";
+            messageArea.classList.add('text-green-600');
+
+            setTimeout(() => {
+                currentWordIndex++;
+                fetchAndLoadWord();
+            }, 1000);
+        }
+
+        async function fetchAndLoadWord() {
+            if (currentWordIndex >= shuffledWords.length) {
+                endGame();
+                return;
+            }
+
+            currentWord = shuffledWords[currentWordIndex];
+            setupWordDisplay(currentWord);
+            
+            messageArea.textContent = "";
+            messageArea.classList.remove('text-green-600');
+            displayImage.src = '';
+            displayImage.alt = `Buscando imagen para "${currentWord}"...`;
+
+            if (YOUR_UNSPLASH_ACCESS_KEY === "AQUÍ_VA_TU_CLAVE_DE_API_DE_UNSPLASH") {
+                 displayImage.alt = "Error: Falta la clave de API de Unsplash.";
+                 messageArea.textContent = "Por favor, añade tu clave de API en el código para jugar.";
+                 console.error("No se ha proporcionado una clave de API de Unsplash en el código.");
+                 return;
+            }
+
+            const apiUrl = `https://api.unsplash.com/photos/random?query=${encodeURIComponent(currentWord)}&client_id=${YOUR_UNSPLASH_ACCESS_KEY}`;
+
+            try {
+                const response = await fetch(apiUrl);
+                if (!response.ok) {
+                    throw new Error(`Error de Unsplash: ${response.statusText}`);
+                }
+                const data = await response.json();
+                
+                if (data && data.urls && data.urls.regular) {
+                    displayImage.src = data.urls.regular;
+                    displayImage.alt = data.alt_description || `Imagen de ${currentWord}`;
+                } else {
+                     throw new Error("Respuesta de API inválida o sin imagen.");
+                }
+
+            } catch (error) {
+                console.error("Error al obtener la imagen:", error);
+                displayImage.src = `https://placehold.co/800x400/CCCCCC/FFFFFF?text=${encodeURIComponent(currentWord)}`;
+                displayImage.alt = `No se pudo cargar la imagen. La palabra es: ${currentWord}`;
+            } finally {
+                if (letterInputElements.length > 0) {
+                    letterInputElements[0].focus();
+                }
+            }
+        }
+
+        function startGame() {
+            playerName = playerNameInput.value.trim();
+            if (!playerName) {
+                alert("Por favor, ingresa tu nombre.");
+                return;
+            }
+
+            const wordCount = parseInt(wordCountInput.value);
+            if (isNaN(wordCount) || wordCount < 5 || wordCount > words.length) {
+                alert(`Por favor, ingresa una cantidad de palabras válida entre 5 y ${words.length}.`);
+                return;
+            }
+            
+            shuffledWords = shuffleArray([...words]).slice(0, wordCount);
+            currentWordIndex = 0;
+            secondsElapsed = 0;
+            totalCharsTypedInSession = 0;
+            wpmDisplay.textContent = '0';
+            
+            welcomeMessageDisplay.textContent = `¡Vamos, ${playerName}!`;
+            settingsScreen.classList.add('hidden');
+            endScreen.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+
+            fetchAndLoadWord();
+            clearInterval(timerInterval); 
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        function endGame() {
+            clearInterval(timerInterval);
+            gameScreen.classList.add('hidden');
+            endScreen.classList.remove('hidden');
+            const finalWPM = wpmDisplay.textContent;
+            finalMessageDisplay.textContent = `¡Felicidades, ${playerName}! Finalizaste con un promedio de ${finalWPM} PPM en ${secondsElapsed} segundos.`;
+        }
+
+        startGameButton.addEventListener('click', startGame);
+        playAgainButton.addEventListener('click', () => {
+            endScreen.classList.add('hidden');
+            settingsScreen.classList.remove('hidden');
+        });
+        
+    </script>
+</body>
+</html>
