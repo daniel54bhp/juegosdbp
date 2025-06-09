@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ordena el Alfabeto - Juegos Didácticos Don Bosco</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Pacifico&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #E0F2FE;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+        }
+        header {
+            background-color: #1E3A8A;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            width: 100%;
+            z-index: 10;
+        }
+        .header-title-font {
+            font-family: 'Pacifico', cursive;
+        }
+        main {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center; 
+            align-items: center; 
+            width: 100%;
+            padding: 20px; 
+            box-sizing: border-box;
+        }
+        footer {
+            background-color: #1E3A8A;
+            color: white;
+            width: 100%;
+        }
+        .game-container, .settings-container, .end-screen-container {
+            background-color: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 600px; 
+            text-align: center;
+        }
+        
+        #target-letter-display {
+            background-color: #fffbeb;
+            border: 2px dashed #facc15;
+            color: #b45309;
+            font-weight: bold;
+            font-size: 1.8rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+        #target-letter-display span {
+            font-size: 2.5rem;
+            color: #1e40af;
+        }
+
+        #letter-options-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .letter-button {
+            width: 70px;
+            height: 70px;
+            font-size: 2.5rem;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 2px solid #d1d5db;
+            background-color: #f9fafb;
+            color: #374151;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .letter-button:hover:not(:disabled) {
+            border-color: #3b82f6;
+            color: #1e40af;
+            transform: translateY(-3px);
+        }
+        .letter-button.correct {
+            background-color: #22c55e;
+            color: white;
+            border-color: #16a34a;
+            cursor: default;
+            opacity: 0.6;
+        }
+         .letter-button.incorrect {
+            background-color: #ef4444;
+            color: white;
+            border-color: #b91c1c;
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+
+        .stats-container {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+            font-weight: bold;
+        }
+        .timer { color: #ef4444; }
+        .failures { color: #1d4ed8; }
+
+        .input-field {
+            width: 100%;
+            padding: 10px;
+            font-size: 1em;
+            border-radius: 6px;
+            border: 2px solid #93c5fd;
+            margin-bottom: 15px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+        .play-again-button {
+            padding: 12px 28px;
+            font-size: 1.1em;
+            border-radius: 8px;
+            cursor: pointer;
+            border: none;
+            font-weight: 600;
+            background-color: #3b82f6; 
+            color: white;
+            margin-top:10px;
+        }
+        h1.game-title { 
+            color: #1e3a8a; 
+            margin-bottom: 20px;
+        }
+        .dropdown-menu {
+            z-index: 50;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container mx-auto px-6 py-4 sm:py-6 flex flex-col sm:flex-row justify-between items-center">
+            <a href="../index.html" class="flex items-center hover:opacity-90 transition-opacity duration-200">
+                <img src="../logo.png" alt="Logo Don Bosco Pampahasi" class="h-12 w-12 sm:h-16 sm:w-16 mr-3 sm:mr-4 rounded-full bg-white p-1" 
+                     onerror="this.onerror=null; this.src='https://placehold.co/64x64/FFFFFF/1E3A8A?text=Logo'; this.alt='Logo Don Bosco Pampahasi (Error)';">
+                <div>
+                    <h1 class="header-title-font text-2xl sm:text-4xl text-yellow-400">Juegos Didácticos</h1>
+                    <p class="text-sm sm:text-lg font-semibold">DON BOSCO PAMPAHASI</p>
+                </div>
+            </a>
+            <nav class="mt-4 sm:mt-0">
+                <div class="relative">
+                    <button id="games-dropdown-button" class="bg-yellow-400 text-blue-800 font-semibold py-2 px-4 rounded-lg hover:bg-yellow-300 transition-colors duration-200 flex items-center">
+                        Juegos
+                        <svg class="w-4 h-4 ml-2 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+                    </button>
+                    <div id="games-dropdown-menu" class="dropdown-menu absolute right-0 mt-2 w-56 bg-white rounded-md shadow-xl py-1 hidden">
+                        <!-- Llenado dinámico por JS -->
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div id="settings-screen" class="settings-container">
+            <h1 class="text-3xl font-bold game-title">Ordena el Alfabeto</h1>
+            <p class="text-gray-600 mb-6">Aprende el orden del alfabeto haciendo clic en las letras en la secuencia correcta.</p>
+            <input type="text" id="player-name" class="input-field" placeholder="Escribe tu nombre">
+            <button id="start-game-button" class="button bg-blue-500 hover:bg-blue-600 text-white">Empezar a Jugar</button>
+        </div>
+    
+        <div id="game-screen" class="game-container hidden">
+            <div class="stats-container">
+                <div class="stat-item timer" id="timer">Tiempo: 0s</div>
+                <div class="stat-item failures"><span class="label">Fallos:</span> <span id="failures" class="value">0</span></div>
+            </div>
+            <div id="target-letter-display">Encuentra la: <span id="target-letter">A</span></div>
+            <div id="letter-options-container">
+                <!-- Los botones de letras se generan aquí -->
+            </div>
+        </div>
+    
+        <div id="end-screen" class="end-screen-container hidden">
+            <h1 class="text-3xl font-bold game-title">¡Juego Completado!</h1>
+            <p id="final-message" class="text-xl my-4"></p>
+            <button id="play-again-button" class="button play-again-button">Jugar de Nuevo</button>
+        </div>
+    </main>
+
+    <footer class="mt-auto py-6 sm:py-8 text-center">
+        <div class="container mx-auto px-6">
+            <p>&copy; 2025 Juegos Didácticos Don Bosco Pampahasi. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- Script para Dropdown del Header ---
+        const gamesDropdownButton = document.getElementById('games-dropdown-button');
+        const gamesDropdownMenu = document.getElementById('games-dropdown-menu');
+        const games = [
+             { name: "Adivina el Animal", path: "../animales/animales.html" },
+            { name: "Tablas de Multiplicar", path: "../multiplicacion/multiplicacion.html" },
+            { name: "Adivina el Alimento", path: "../alimentos/alimentos.html" },
+            { name: "Juego de Sumas", path: "../sumas/sumas.html" },
+            { name: "Juego de Restas", path: "../restas/restas.html" },
+            { name: "Juego de Divisiones", path: "../divisiones/divisiones.html" },
+            { name: "Multiplicación Aleatoria", path: "../multiplicacion_aleatoria/multiplicacion_aleatoria.html" },
+            { name: "Mecanografía y Ortografía", path: "../mecanografia/mecanografia.html" },
+            { name: "Juego de Trazos", path: "../trazos/trazos.html" },
+            { name: "Inglés y Español", path: "../ingles/ingles.html"},
+            { name: "Contar hasta 100", path: "../contar/contar.html"},
+            { name: "Juego de Múltiplos", path: "../multiplos/multiplos.html"},
+            { name: "Juego de Pares e Impares", path: "../pares_impares/pares_impares.html"},
+            { name: "Ordena el Alfabeto", path: "../ordenar_alfabeto/ordenar_alfabeto.html"}
+        ];
+        if (gamesDropdownButton && gamesDropdownMenu) {
+            gamesDropdownMenu.innerHTML = '';
+            games.forEach(game => {
+                 const link = document.createElement('a');
+                 link.href = game.path;
+                 link.textContent = game.name;
+                 link.className = 'block px-4 py-2 text-sm text-blue-800 hover:bg-sky-100 hover:text-blue-700';
+                 gamesDropdownMenu.appendChild(link);
+            });
+            gamesDropdownButton.addEventListener('click', (event) => {
+                event.stopPropagation();
+                gamesDropdownMenu.classList.toggle('hidden');
+            });
+            document.addEventListener('click', (event) => {
+                if (!gamesDropdownMenu.classList.contains('hidden') && !gamesDropdownButton.contains(event.target) && !gamesDropdownMenu.contains(event.target)) {
+                    gamesDropdownMenu.classList.add('hidden');
+                }
+            });
+        }
+        
+        // --- Script del Juego de Ordenar Alfabeto ---
+        const alphabet = 'ABCDEFGHIJKLMNÑOPQRSTUVWXYZ'.split('');
+
+        const settingsScreen = document.getElementById('settings-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const endScreen = document.getElementById('end-screen');
+        const playerNameInput = document.getElementById('player-name');
+        const startGameButton = document.getElementById('start-game-button');
+        
+        const timerDisplay = document.getElementById('timer');
+        const failuresDisplay = document.getElementById('failures');
+        const targetLetterDisplay = document.getElementById('target-letter');
+        const optionsContainer = document.getElementById('letter-options-container');
+        
+        const finalMessageDisplay = document.getElementById('final-message');
+        const playAgainButton = document.getElementById('play-again-button');
+
+        let timerInterval;
+        let secondsElapsed = 0;
+        let failureCount = 0;
+        let playerName = "";
+        let currentRoundLetters = [];
+        let correctOrderInRound = [];
+        let nextCorrectIndex = 0;
+        let alphabetToOrder = [];
+        let roundSize = 7;
+
+        function shuffleArray(array) {
+            return [...array].sort(() => Math.random() - 0.5);
+        }
+
+        function updateTimer() {
+            secondsElapsed++;
+            timerDisplay.textContent = `Tiempo: ${secondsElapsed}s`;
+        }
+
+        function loadNextRound() {
+            if (alphabetToOrder.length === 0) {
+                endGame();
+                return;
+            }
+
+            nextCorrectIndex = 0;
+            currentRoundLetters = alphabetToOrder.splice(0, roundSize);
+            correctOrderInRound = [...currentRoundLetters].sort();
+            
+            let shuffledRoundLetters = shuffleArray(currentRoundLetters);
+
+            optionsContainer.innerHTML = '';
+            shuffledRoundLetters.forEach(letter => {
+                const button = document.createElement('button');
+                button.className = 'letter-button';
+                button.textContent = letter;
+                button.dataset.letter = letter;
+                button.addEventListener('click', handleLetterClick);
+                optionsContainer.appendChild(button);
+            });
+            
+            updateTargetLetter();
+        }
+
+        function updateTargetLetter() {
+            if (nextCorrectIndex < correctOrderInRound.length) {
+                targetLetterDisplay.textContent = correctOrderInRound[nextCorrectIndex];
+            }
+        }
+
+        function handleLetterClick(event) {
+            const clickedButton = event.target;
+            const clickedLetter = clickedButton.dataset.letter;
+
+            if (clickedLetter === correctOrderInRound[nextCorrectIndex]) {
+                clickedButton.classList.add('correct');
+                clickedButton.disabled = true;
+                nextCorrectIndex++;
+                
+                if (nextCorrectIndex === correctOrderInRound.length) {
+                    setTimeout(loadNextRound, 1000);
+                } else {
+                    updateTargetLetter();
+                }
+            } else {
+                failureCount++;
+                failuresDisplay.textContent = failureCount;
+                clickedButton.classList.add('incorrect');
+                setTimeout(() => {
+                    clickedButton.classList.remove('incorrect');
+                }, 500);
+            }
+        }
+        
+        function startGame() {
+            playerName = playerNameInput.value.trim();
+            if (!playerName) {
+                alert("Por favor, ingresa tu nombre.");
+                return;
+            }
+            
+            alphabetToOrder = [...alphabet];
+            failureCount = 0;
+            secondsElapsed = 0;
+            failuresDisplay.textContent = failureCount;
+            
+            settingsScreen.classList.add('hidden');
+            endScreen.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+
+            loadNextRound();
+            clearInterval(timerInterval);
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        function endGame() {
+            clearInterval(timerInterval);
+            gameScreen.classList.add('hidden');
+            endScreen.classList.remove('hidden');
+            finalMessageDisplay.textContent = `${playerName}, ordenaste todo el alfabeto en ${secondsElapsed} segundos con ${failureCount} fallos. ¡Excelente trabajo!`;
+        }
+
+        startGameButton.addEventListener('click', startGame);
+        playAgainButton.addEventListener('click', () => {
+            endScreen.classList.add('hidden');
+            settingsScreen.classList.remove('hidden');
+        });
+        
+    </script>
+</body>
+</html>
