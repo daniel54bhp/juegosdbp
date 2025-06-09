@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reglas de Acentuación - Juegos Didácticos Don Bosco</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Pacifico&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #E0F2FE;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+        }
+        header {
+            background-color: #1E3A8A;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            width: 100%;
+            z-index: 10;
+        }
+        .header-title-font {
+            font-family: 'Pacifico', cursive;
+        }
+        main {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center; 
+            align-items: center; 
+            width: 100%;
+            padding: 20px; 
+            box-sizing: border-box;
+        }
+        footer {
+            background-color: #1E3A8A;
+            color: white;
+            width: 100%;
+        }
+        .game-container, .settings-container, .end-screen-container {
+            background-color: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 850px; /* Aumentado para el nuevo layout */
+            text-align: center;
+        }
+        .input-field, .number-input {
+            width: 100%; padding: 10px; font-size: 1em; border-radius: 6px;
+            border: 2px solid #93c5fd; margin-bottom: 15px; text-align: center;
+            box-sizing: border-box;
+        }
+        .input-field:focus, .number-input:focus {
+            outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        }
+        
+        #sentence-display {
+            font-size: 1.5rem;
+            color: #374151;
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background-color: #f3f4f6;
+            border-radius: 8px;
+            line-height: 1.6;
+        }
+        #sentence-display .highlight {
+            background-color: #fef08a; /* Amarillo para resaltar */
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-weight: 700;
+            color: #854d0e;
+        }
+
+        #options-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* Siempre 2x2 */
+            gap: 15px;
+        }
+        .option-button {
+            padding: 1rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 2px solid #d1d5db;
+            background-color: #f9fafb;
+            color: #374151;
+        }
+        .option-button:hover:not(:disabled) {
+            border-color: #3b82f6;
+            color: #1e40af;
+            transform: translateY(-3px);
+        }
+        .option-button.correct {
+            background-color: #22c55e;
+            color: white;
+            border-color: #16a34a;
+            transform: scale(1.05);
+        }
+         .option-button.incorrect {
+            background-color: #ef4444;
+            color: white;
+            border-color: #b91c1c;
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+
+        .stats-container {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+            font-weight: bold;
+        }
+        .timer { color: #ef4444; }
+        .failures { color: #1d4ed8; }
+
+        .button {
+             padding: 15px 40px;
+            font-size: 1.5em;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            border: none;
+            font-weight: 700;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            color: white;
+        }
+        .button:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 3px rgba(0,0,0,0.1);
+        }
+        .start-button {
+            background-color: #22c55e; 
+        }
+        .start-button:hover:not(:disabled) {
+            background-color: #16a34a;
+        }
+
+        .play-again-button {
+            background-color: #3b82f6; 
+            margin-top:10px;
+        }
+        h1.game-title { 
+            color: #1e3a8a; 
+            margin-bottom: 20px;
+        }
+        .dropdown-menu {
+            z-index: 50;
+        }
+
+        /* Estilos para el nuevo layout */
+        .game-layout {
+            display: flex;
+            flex-direction: column; /* Apilado en móvil */
+            gap: 2rem;
+        }
+        .rules-panel {
+            flex-shrink: 0;
+            background-color: #f1f5f9;
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: left;
+        }
+        .rules-panel h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1e3a8a;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #93c5fd;
+            padding-bottom: 0.5rem;
+        }
+        .rules-panel dl dt {
+            font-weight: 600;
+            color: #1d4ed8;
+            margin-top: 0.75rem;
+        }
+        .rules-panel dl dd {
+            font-size: 0.9rem;
+            color: #4b5563;
+            padding-left: 1rem;
+            border-left: 3px solid #bfdbfe;
+        }
+        .main-game-area {
+            flex-grow: 1;
+        }
+
+        @media (min-width: 768px) {
+            .game-layout {
+                flex-direction: row; /* Lado a lado en pantallas más grandes */
+            }
+            .rules-panel {
+                width: 280px; /* Ancho fijo para el panel de ayuda */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container mx-auto px-6 py-4 sm:py-6 flex flex-col sm:flex-row justify-between items-center">
+            <a href="../index.html" class="flex items-center hover:opacity-90 transition-opacity duration-200">
+                <img src="../logo.png" alt="Logo Don Bosco Pampahasi" class="h-12 w-12 sm:h-16 sm:w-16 mr-3 sm:mr-4 rounded-full bg-white p-1" 
+                     onerror="this.onerror=null; this.src='https://placehold.co/64x64/FFFFFF/1E3A8A?text=Logo'; this.alt='Logo Don Bosco Pampahasi (Error)';">
+                <div>
+                    <h1 class="header-title-font text-2xl sm:text-4xl text-yellow-400">Juegos Didácticos</h1>
+                    <p class="text-sm sm:text-lg font-semibold">DON BOSCO PAMPAHASI</p>
+                </div>
+            </a>
+            <nav class="mt-4 sm:mt-0">
+                <div class="relative">
+                    <button id="games-dropdown-button" class="bg-yellow-400 text-blue-800 font-semibold py-2 px-4 rounded-lg hover:bg-yellow-300 transition-colors duration-200 flex items-center">
+                        Juegos
+                        <svg class="w-4 h-4 ml-2 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+                    </button>
+                    <div id="games-dropdown-menu" class="dropdown-menu absolute right-0 mt-2 w-56 bg-white rounded-md shadow-xl py-1 hidden">
+                        <!-- Llenado dinámico por JS -->
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div id="settings-screen" class="settings-container max-w-lg">
+            <h1 class="text-3xl font-bold game-title">Reglas de Acentuación</h1>
+            <p class="text-gray-600 mb-6">Clasifica la palabra resaltada en cada oración como Aguda, Grave, Esdrújula o Sobresdrújula.</p>
+            <input type="text" id="player-name" class="input-field" placeholder="Escribe tu nombre">
+            <div class="my-4">
+                 <label for="question-count" class="block font-semibold mb-2 text-gray-700">Cantidad de Preguntas:</label>
+                 <input type="number" id="question-count" class="number-input w-1/2 mx-auto" value="20" min="10" max="100">
+            </div>
+            <button id="start-game-button" class="button start-button">Empezar a Jugar</button>
+        </div>
+    
+        <div id="game-screen" class="game-container hidden">
+            <div class="game-layout">
+                <!-- Columna de Ayuda -->
+                <aside class="rules-panel">
+                    <h3>Guía de Acentuación</h3>
+                    <dl>
+                        <dt>Agudas</dt>
+                        <dd>Acento en la <strong>última</strong> sílaba. Llevan tilde si terminan en <strong>-n</strong>, <strong>-s</strong> o <strong>vocal</strong>. (Ej: can-ción, pa-red)</dd>
+                        
+                        <dt>Graves (Llanas)</dt>
+                        <dd>Acento en la <strong>penúltima</strong> sílaba. Llevan tilde si <strong>NO</strong> terminan en -n, -s o vocal. (Ej: ár-bol, ca-sa)</dd>
+                        
+                        <dt>Esdrújulas</dt>
+                        <dd>Acento en la <strong>antepenúltima</strong> sílaba. <strong>Siempre</strong> llevan tilde. (Ej: mú-si-ca)</dd>
+                        
+                        <dt>Sobresdrújulas</dt>
+                        <dd>Acento en la sílaba <strong>anterior a la antepenúltima</strong>. <strong>Siempre</strong> llevan tilde. (Ej: en-tré-ga-me-lo)</dd>
+                    </dl>
+                </aside>
+
+                <!-- Área principal del juego -->
+                <div class="main-game-area">
+                    <div class="stats-container">
+                        <div class="stat-item timer" id="timer">Tiempo: 0s</div>
+                        <div class="stat-item failures"><span class="label">Fallos:</span> <span id="failures" class="value">0</span></div>
+                    </div>
+                    <div id="sentence-display"></div>
+                    <div id="options-container" class="mt-6">
+                        <!-- Los botones de opciones se generan aquí -->
+                    </div>
+                    <p id="message-area" class="mt-4 text-lg font-semibold min-h-[1.5em]"></p>
+                </div>
+            </div>
+        </div>
+    
+        <div id="end-screen" class="end-screen-container hidden">
+            <h1 class="text-3xl font-bold game-title">¡Juego Completado!</h1>
+            <p id="final-message" class="text-xl my-4"></p>
+            <button id="play-again-button" class="button play-again-button">Jugar de Nuevo</button>
+        </div>
+    </main>
+
+    <footer class="mt-auto py-6 sm:py-8 text-center">
+        <div class="container mx-auto px-6">
+            <p>&copy; 2025 Juegos Didácticos Don Bosco Pampahasi. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- Script para Dropdown del Header ---
+        const gamesDropdownButton = document.getElementById('games-dropdown-button');
+        const gamesDropdownMenu = document.getElementById('games-dropdown-menu');
+        const games = [
+            { name: "Adivina el Animal", path: "../animales/animales.html" },
+            { name: "Tablas de Multiplicar", path: "../multiplicacion/multiplicacion.html" },
+            { name: "Adivina el Alimento", path: "../alimentos/alimentos.html" },
+            { name: "Juego de Sumas", path: "../sumas/sumas.html" },
+            { name: "Juego de Restas", path: "../restas/restas.html" },
+            { name: "Juego de Divisiones", path: "../divisiones/divisiones.html" },
+            { name: "Multiplicación Aleatoria", path: "../multiplicacion_aleatoria/multiplicacion_aleatoria.html" },
+            { name: "Mecanografía y Ortografía", path: "../mecanografia/mecanografia.html" },
+            { name: "Juego de Trazos", path: "../trazos/trazos.html" },
+            { name: "Inglés y Español", path: "../ingles/ingles.html"},
+            { name: "Contar hasta 100", path: "../contar/contar.html"},
+            { name: "Juego de Múltiplos", path: "../multiplos/multiplos.html"},
+            { name: "Juego de Pares e Impares", path: "../pares_impares/pares_impares.html"},
+            { name: "Ordena el Alfabeto", path: "../ordenar_alfabeto/ordenar_alfabeto.html"},
+            { name: "Reglas de Acentuación", path: "../reglas_acentuacion/reglas_acentuacion.html"}
+        ];
+        if (gamesDropdownButton && gamesDropdownMenu) {
+            gamesDropdownMenu.innerHTML = '';
+            games.forEach(game => {
+                 const link = document.createElement('a');
+                 link.href = game.path;
+                 link.textContent = game.name;
+                 link.className = 'block px-4 py-2 text-sm text-blue-800 hover:bg-sky-100 hover:text-blue-700';
+                 gamesDropdownMenu.appendChild(link);
+            });
+            gamesDropdownButton.addEventListener('click', (event) => {
+                event.stopPropagation();
+                gamesDropdownMenu.classList.toggle('hidden');
+            });
+            document.addEventListener('click', (event) => {
+                if (!gamesDropdownMenu.classList.contains('hidden') && !gamesDropdownButton.contains(event.target) && !gamesDropdownMenu.contains(event.target)) {
+                    gamesDropdownMenu.classList.add('hidden');
+                }
+            });
+        }
+        
+        // --- Script del Juego de Acentuación ---
+        const questions = [
+            { sentence: "El café está muy caliente.", word: "café", type: "Aguda" },
+            { sentence: "El árbol del jardín es muy alto.", word: "árbol", type: "Grave" },
+            { sentence: "La música clásica me relaja.", word: "música", type: "Esdrújula" },
+            { sentence: "Rápidamente, terminó su tarea.", word: "rápidamente", type: "Sobresdrújula" },
+            { sentence: "Compró un balón nuevo.", word: "balón", type: "Aguda" },
+            { sentence: "El examen fue muy difícil.", word: "difícil", type: "Grave" },
+            { sentence: "Los pájaros cantan al amanecer.", word: "pájaros", type: "Esdrújula" },
+            { sentence: "Entrégamelo antes de irte.", word: "entrégamelo", type: "Sobresdrújula" },
+            { sentence: "La pared de la sala es de color azul.", word: "pared", type: "Aguda" },
+            { sentence: "El azúcar es dulce.", word: "azúcar", type: "Grave" },
+            { sentence: "El teléfono no deja de sonar.", word: "teléfono", type: "Esdrújula" },
+            { sentence: "Fácilmente resolvió el problema.", word: "fácilmente", type: "Sobresdrújula" },
+            { sentence: "El perro corrió por el jardín.", word: "jardín", type: "Aguda" },
+            { sentence: "El césped necesita ser cortado.", word: "césped", type: "Grave" },
+            { sentence: "El semáforo cambió a verde.", word: "semáforo", type: "Esdrújula" },
+            { sentence: "Jamás volveré a ese lugar.", word: "Jamás", type: "Aguda" },
+            { sentence: "El cráter del volcán es enorme.", word: "cráter", type: "Grave" },
+            { sentence: "El médico me recetó un antibiótico.", word: "antibiótico", type: "Esdrújula" },
+            { sentence: "Dígaselo a su supervisor.", word: "Dígaselo", type: "Sobresdrújula" },
+            { sentence: "El motor del coche hace un ruido extraño.", word: "motor", type: "Aguda" },
+            { sentence: "Este lápiz es de color amarillo.", word: "lápiz", type: "Grave" },
+            { sentence: "La pirámide de Egipto es majestuosa.", word: "pirámide", type: "Esdrújula" },
+            { sentence: "Dibújamelo para entenderlo mejor.", word: "Dibújamelo", type: "Sobresdrújula" },
+            { sentence: "Debes tomar una decisión importante.", word: "decisión", type: "Aguda" },
+            { sentence: "El túnel es muy oscuro.", word: "túnel", type: "Grave" },
+            { sentence: "El océano Atlántico es muy grande.", word: "Atlántico", type: "Esdrújula" },
+            { sentence: "Cómpratelo si de verdad lo quieres.", word: "Cómpratelo", type: "Sobresdrújula" },
+            { sentence: "Su compás era muy preciso.", word: "compás", type: "Aguda" },
+            { sentence: "El personaje de la película era un mártir.", word: "mártir", type: "Grave" },
+            { sentence: "La brújula siempre señala al norte.", word: "brújula", type: "Esdrújula" },
+            { sentence: "El colibrí vuela muy rápido.", word: "colibrí", type: "Aguda" },
+            { sentence: "El líder del grupo tomó la palabra.", word: "líder", type: "Grave" },
+            { sentence: "El semáforo está en rojo.", word: "semáforo", type: "Esdrújula" },
+            { sentence: "Caliéntamelo en el microondas.", word: "Caliéntamelo", type: "Sobresdrújula" },
+            { sentence: "El menú del restaurante es variado.", word: "menú", type: "Aguda" },
+            { sentence: "El fútbol es un deporte popular.", word: "fútbol", type: "Grave" },
+            { sentence: "El miércoles tenemos clase de matemáticas.", word: "miércoles", type: "Esdrújula" },
+            { sentence: "Quítatelo antes de entrar a la piscina.", word: "Quítatelo", type: "Sobresdrújula" },
+            { sentence: "El avión despegó a tiempo.", word: "avión", type: "Aguda" },
+            { sentence: "El cóndor es un ave impresionante.", word: "cóndor", type: "Grave" },
+            { sentence: "La gramática del español es compleja.", word: "gramática", type: "Esdrújula" },
+            { sentence: "No me gusta el ají picante.", word: "ají", type: "Aguda" },
+            { sentence: "El personaje del libro era un ángel.", word: "ángel", type: "Grave" },
+            { sentence: "El océano Pacífico es el más grande.", word: "Pacífico", type: "Esdrújula" },
+            { sentence: "El capitán dio la orden de zarpar.", word: "capitán", type: "Aguda" },
+            { sentence: "El mármol es una piedra muy elegante.", word: "mármol", type: "Grave" },
+            { sentence: "El helicóptero sobrevoló la ciudad.", word: "helicóptero", type: "Esdrújula" },
+            { sentence: "La ciudad de Madrid es muy bonita.", word: "Madrid", type: "Aguda" },
+            { sentence: "La cárcel está en las afueras.", word: "cárcel", type: "Grave" },
+            { sentence: "El bolígrafo no tiene tinta.", word: "bolígrafo", type: "Esdrújula" },
+            { sentence: "La emoción del público era palpable.", word: "emoción", type: "Aguda" },
+            { sentence: "El trébol de cuatro hojas da suerte.", word: "trébol", type: "Grave" },
+            { sentence: "El espectáculo fue magnífico.", word: "magnífico", type: "Esdrújula" },
+            { sentence: "Él vive en un país lejano.", word: "país", type: "Aguda" },
+            { sentence: "Su carácter es muy fuerte.", word: "carácter", type: "Grave" },
+            { sentence: "La película es de género fantástico.", word: "fantástico", type: "Esdrújula" },
+            { sentence: "Me gusta el té con limón.", word: "té", type: "Aguda" },
+            { sentence: "El cómic es muy entretenido.", word: "cómic", type: "Grave" },
+            { sentence: "Es un número telefónico.", word: "telefónico", type: "Esdrújula" },
+            { sentence: "Pruébatelo antes de comprarlo.", word: "Pruébatelo", type: "Sobresdrújula" },
+            { sentence: "El camión transporta mercancías.", word: "camión", type: "Aguda" },
+            { sentence: "El referí pitó el final del partido.", word: "referí", type: "Aguda" },
+            { sentence: "El cáliz era de oro puro.", word: "cáliz", type: "Grave" },
+            { sentence: "La península ibérica está en Europa.", word: "península", type: "Esdrújula" },
+            { sentence: "Tímidamente, se acercó a saludar.", word: "tímidamente", type: "Sobresdrújula" },
+            { sentence: "El bebé duerme en su cuna.", word: "bebé", type: "Aguda" },
+            { sentence: "Es un animal muy dócil.", word: "dócil", type: "Grave" },
+            { sentence: "La sílaba tónica es importante.", word: "sílaba", type: "Esdrújula" },
+            { sentence: "Su dirección de correo es nueva.", word: "dirección", type: "Aguda" },
+            { sentence: "El tórax es parte del cuerpo.", word: "tórax", type: "Grave" },
+            { sentence: "La película tiene un epílogo.", word: "epílogo", type: "Esdrújula" },
+            { sentence: "La lección de hoy fue interesante.", word: "lección", type: "Aguda" },
+            { sentence: "El túnel estaba bien iluminado.", word: "túnel", type: "Grave" },
+            { sentence: "El tránsito en la ciudad es caótico.", word: "tránsito", type: "Esdrújula" },
+            { sentence: "El corazón bombea la sangre.", word: "corazón", type: "Aguda" },
+            { sentence: "El césped necesita agua.", word: "césped", type: "Grave" },
+            { sentence: "La máquina funciona con electricidad.", word: "máquina", type: "Esdrújula" },
+            { sentence: "El sofá es muy cómodo.", word: "sofá", type: "Aguda" },
+            { sentence: "La casa tiene un jardín muy útil.", word: "útil", type: "Grave" },
+            { sentence: "El océano tiene olas altísimas.", word: "altísimas", type: "Esdrújula" },
+            { sentence: "Pásamelo, por favor.", word: "Pásamelo", type: "Sobresdrújula" },
+            { sentence: "Él cantó una canción muy alegre.", word: "cantó", type: "Aguda" },
+            { sentence: "El fénix es un ave mitológica.", word: "fénix", type: "Grave" },
+            { sentence: "El murciélago es un mamífero volador.", word: "murciélago", type: "Esdrújula" },
+            { sentence: "Gánatelo con tu propio esfuerzo.", word: "Gánatelo", type: "Sobresdrújula" },
+            { sentence: "La reunión será en el salón principal.", word: "reunión", type: "Aguda" },
+            { sentence: "El cónsul atendió nuestra solicitud.", word: "cónsul", type: "Grave" },
+            { sentence: "El espectáculo fue ridículo.", word: "ridículo", type: "Esdrújula" },
+            { sentence: "La organización del evento fue perfecta.", word: "organización", type: "Aguda" },
+            { sentence: "El dólar es una moneda fuerte.", word: "dólar", type: "Grave" },
+            { sentence: "El pronóstico del tiempo es favorable.", word: "pronóstico", type: "Esdrújula" }
+        ];
+        const options = ["Aguda", "Grave", "Esdrújula", "Sobresdrújula"];
+
+        const settingsScreen = document.getElementById('settings-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const endScreen = document.getElementById('end-screen');
+        const playerNameInput = document.getElementById('player-name');
+        const questionCountInput = document.getElementById('question-count');
+        const startGameButton = document.getElementById('start-game-button');
+        
+        const timerDisplay = document.getElementById('timer');
+        const failuresDisplay = document.getElementById('failures');
+        const sentenceDisplay = document.getElementById('sentence-display');
+        const optionsContainer = document.getElementById('options-container');
+        const messageArea = document.getElementById('message-area');
+        
+        const finalMessageDisplay = document.getElementById('final-message');
+        const playAgainButton = document.getElementById('play-again-button');
+
+        let timerInterval;
+        let secondsElapsed = 0;
+        let failureCount = 0;
+        let playerName = "";
+        let shuffledQuestions = [];
+        let currentQuestionIndex = 0;
+
+        questionCountInput.max = questions.length;
+        questionCountInput.placeholder = `(10-${questions.length})`;
+
+        function shuffleArray(array) {
+            return [...array].sort(() => Math.random() - 0.5);
+        }
+
+        function updateTimer() {
+            secondsElapsed++;
+            timerDisplay.textContent = `Tiempo: ${secondsElapsed}s`;
+        }
+        
+        function loadNextQuestion() {
+            if (currentQuestionIndex >= shuffledQuestions.length) {
+                endGame();
+                return;
+            }
+
+            const question = shuffledQuestions[currentQuestionIndex];
+            messageArea.textContent = "";
+            
+            sentenceDisplay.innerHTML = question.sentence.replace(question.word, `<span class="highlight">${question.word}</span>`);
+
+            optionsContainer.innerHTML = '';
+            options.forEach(optionText => {
+                const button = document.createElement('button');
+                button.className = 'option-button';
+                button.textContent = optionText;
+                button.dataset.type = optionText;
+                button.addEventListener('click', handleOptionClick);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function handleOptionClick(event) {
+            const clickedButton = event.target;
+            const selectedType = clickedButton.dataset.type;
+            const correctType = shuffledQuestions[currentQuestionIndex].type;
+
+            Array.from(optionsContainer.children).forEach(btn => btn.disabled = true);
+
+            if (selectedType === correctType) {
+                clickedButton.classList.add('correct');
+                messageArea.textContent = "¡Correcto!";
+                messageArea.classList.remove('text-red-500');
+                messageArea.classList.add('text-green-500');
+                
+                setTimeout(() => {
+                    currentQuestionIndex++;
+                    messageArea.classList.remove('text-green-500');
+                    loadNextQuestion();
+                }, 1200);
+
+            } else {
+                failureCount++;
+                failuresDisplay.textContent = failureCount;
+                clickedButton.classList.add('incorrect');
+                messageArea.textContent = `Incorrecto. La respuesta era ${correctType}.`;
+                messageArea.classList.remove('text-green-500');
+                messageArea.classList.add('text-red-500');
+
+                Array.from(optionsContainer.children).forEach(btn => {
+                    if (btn.dataset.type === correctType) {
+                        btn.classList.add('correct');
+                    }
+                });
+                
+                setTimeout(() => {
+                    currentQuestionIndex++;
+                    messageArea.classList.remove('text-red-500');
+                    loadNextQuestion();
+                }, 2000);
+            }
+        }
+        
+        function startGame() {
+            playerName = playerNameInput.value.trim();
+            if (!playerName) {
+                alert("Por favor, ingresa tu nombre.");
+                return;
+            }
+
+            const questionCount = parseInt(questionCountInput.value);
+            if (isNaN(questionCount) || questionCount < 10 || questionCount > questions.length) {
+                alert(`Por favor, ingresa una cantidad de preguntas entre 10 y ${questions.length}.`);
+                return;
+            }
+            
+            shuffledQuestions = shuffleArray(questions).slice(0, questionCount);
+            currentQuestionIndex = 0;
+            failureCount = 0;
+            secondsElapsed = 0;
+            failuresDisplay.textContent = failureCount;
+            timerDisplay.textContent = `Tiempo: 0s`;
+            
+            settingsScreen.classList.add('hidden');
+            endScreen.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+
+            loadNextQuestion();
+            clearInterval(timerInterval);
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        function endGame() {
+            clearInterval(timerInterval);
+            gameScreen.classList.add('hidden');
+            endScreen.classList.remove('hidden');
+            finalMessageDisplay.textContent = `${playerName}, terminaste el juego en ${secondsElapsed} segundos con ${failureCount} fallos. ¡Sigue practicando!`;
+        }
+
+        startGameButton.addEventListener('click', startGame);
+        playAgainButton.addEventListener('click', () => {
+            endScreen.classList.add('hidden');
+            settingsScreen.classList.remove('hidden');
+        });
+        
+    </script>
+</body>
+</html>
