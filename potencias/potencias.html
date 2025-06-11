@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego de Potencias - Juegos Didácticos Don Bosco</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Pacifico&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #E0F2FE;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+        }
+        header {
+            background-color: #1E3A8A;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            width: 100%;
+            z-index: 10;
+        }
+        .header-title-font {
+            font-family: 'Pacifico', cursive;
+        }
+        main {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center; 
+            align-items: center; 
+            width: 100%;
+            padding: 20px; 
+            box-sizing: border-box;
+        }
+        footer {
+            background-color: #1E3A8A;
+            color: white;
+            width: 100%;
+        }
+        .game-container, .settings-container, .end-screen-container {
+            background-color: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 950px; 
+            text-align: center;
+        }
+        .input-field, .number-input {
+            width: 100%; padding: 10px; font-size: 1em; border-radius: 6px;
+            border: 2px solid #93c5fd; margin-bottom: 15px; text-align: center;
+            box-sizing: border-box;
+        }
+        .input-field:focus, .number-input:focus {
+            outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        }
+        
+        .problem-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+            min-height: 120px;
+        }
+        .power-display {
+            font-size: 5rem;
+            font-weight: 900;
+            color: #1e3a8a;
+            position: relative;
+            padding-right: 2rem; /* Espacio para el exponente */
+        }
+        .power-display .exponent {
+            font-size: 2.5rem;
+            position: absolute;
+            top: -0.5rem;
+            right: -0.5rem;
+            color: #ef4444;
+        }
+        .equals-sign { font-size: 4rem; font-weight: bold; color: #6b7280; }
+        .answer-input {
+            width: 80%;
+            max-width: 300px;
+            padding: 15px;
+            font-size: 2em;
+            font-weight: bold;
+            text-align: center;
+            border-radius: 8px;
+            border: 3px solid #93c5fd;
+            margin: 1rem auto;
+            -moz-appearance: textfield;
+        }
+        .answer-input.correct {
+            background-color: #dcfce7; border-color: #16a34a;
+        }
+        .answer-input.incorrect {
+            background-color: #fee2e2; border-color: #ef4444; animation: shake 0.5s;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+        
+        .stats-container {
+            display: flex; justify-content: space-around; margin-bottom: 20px;
+            font-size: 1.4em; font-weight: bold;
+        }
+        .timer { color: #ef4444; }
+        .failures { color: #1d4ed8; }
+
+        .button {
+             padding: 15px 40px; font-size: 1.5em; border-radius: 12px; cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            border: none; font-weight: 700; box-shadow: 0 4px 6px rgba(0,0,0,0.1); color: white;
+        }
+        .start-button { background-color: #22c55e; }
+        .check-button { background-color: #3b82f6; }
+        .play-again-button { background-color: #3b82f6; margin-top:10px; }
+        h1.game-title { color: #1e3a8a; margin-bottom: 20px; }
+        .dropdown-menu { z-index: 50; }
+
+        .game-layout { display: flex; flex-direction: column; gap: 2rem; }
+        .rules-panel {
+            flex-shrink: 0; background-color: #f1f5f9; padding: 1.5rem;
+            border-radius: 8px; text-align: left;
+        }
+        .rules-panel h3 {
+            font-size: 1.25rem; font-weight: 700; color: #1e3a8a; margin-bottom: 1rem;
+            border-bottom: 2px solid #93c5fd; padding-bottom: 0.5rem;
+        }
+        .rules-panel dl dt { font-weight: 600; color: #1d4ed8; margin-top: 0.75rem; }
+        .rules-panel dl dd { font-size: 0.9rem; color: #4b5563; padding-left: 1rem; border-left: 3px solid #bfdbfe; }
+        .main-game-area { flex-grow: 1; }
+
+        @media (min-width: 768px) {
+            .game-layout { flex-direction: row; }
+            .rules-panel { width: 340px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container mx-auto px-6 py-4 sm:py-6 flex flex-col sm:flex-row justify-between items-center">
+            <a href="../index.html" class="flex items-center hover:opacity-90 transition-opacity duration-200">
+                <img src="../logo.png" alt="Logo Don Bosco Pampahasi" class="h-12 w-12 sm:h-16 sm:w-16 mr-3 sm:mr-4 rounded-full bg-white p-1" 
+                     onerror="this.onerror=null; this.src='https://placehold.co/64x64/FFFFFF/1E3A8A?text=Logo'; this.alt='Logo Don Bosco Pampahasi (Error)';">
+                <div>
+                    <h1 class="header-title-font text-2xl sm:text-4xl text-yellow-400">Juegos Didácticos</h1>
+                    <p class="text-sm sm:text-lg font-semibold">DON BOSCO PAMPAHASI</p>
+                </div>
+            </a>
+            <nav class="mt-4 sm:mt-0">
+                <div class="relative">
+                    <button id="games-dropdown-button" class="bg-yellow-400 text-blue-800 font-semibold py-2 px-4 rounded-lg hover:bg-yellow-300 transition-colors duration-200 flex items-center">
+                        Juegos
+                        <svg class="w-4 h-4 ml-2 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+                    </button>
+                    <div id="games-dropdown-menu" class="dropdown-menu absolute right-0 mt-2 w-56 bg-white rounded-md shadow-xl py-1 hidden">
+                        <!-- Llenado dinámico por JS -->
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div id="settings-screen" class="settings-container max-w-lg">
+            <h1 class="text-3xl font-bold game-title">Juego de Potencias</h1>
+            <p class="text-gray-600 mb-6">Calcula el resultado de la potencia. ¡Recuerda multiplicar la base por sí misma el número de veces que indica el exponente!</p>
+            <input type="text" id="player-name" class="input-field" placeholder="Escribe tu nombre">
+            <div class="my-4">
+                 <label for="question-count" class="block font-semibold mb-2 text-gray-700">Cantidad de Ejercicios:</label>
+                 <input type="number" id="question-count" class="number-input w-1/2 mx-auto" value="10" min="5" max="30">
+            </div>
+            <button id="start-game-button" class="button start-button">Empezar a Jugar</button>
+        </div>
+    
+        <div id="game-screen" class="game-container hidden">
+            <div class="game-layout">
+                <aside class="rules-panel">
+                    <h3>¿Qué es una Potencia?</h3>
+                    <dl>
+                        <dt>Base</dt>
+                        <dd>Es el número grande que se multiplica por sí mismo.</dd>
+                        
+                        <dt>Exponente</dt>
+                        <dd>Es el número pequeño que indica cuántas veces se multiplica la base.</dd>
+                        
+                        <dt>Ejemplo:</dt>
+                        <dd class="mt-2">
+                           <span class="font-bold text-2xl">2<sup class="text-xl">3</sup></span> = 2 × 2 × 2 = 8
+                        </dd>
+                    </dl>
+                </aside>
+
+                <div class="main-game-area">
+                    <div class="stats-container">
+                        <div class="stat-item timer" id="timer">Tiempo: 0s</div>
+                        <div class="stat-item failures"><span class="label">Fallos:</span> <span id="failures" class="value">0</span></div>
+                    </div>
+                    <div class="problem-container">
+                        <div id="problem-display" class="power-display"></div>
+                        <div class="equals-sign">=</div>
+                        <input type="number" id="answer-input" class="answer-input" placeholder="?">
+                    </div>
+                     <button id="check-button" class="button check-button mt-6">Comprobar</button>
+                    <p id="message-area" class="mt-4 text-lg font-semibold min-h-[1.5em]"></p>
+                </div>
+            </div>
+        </div>
+    
+        <div id="end-screen" class="end-screen-container hidden">
+            <h1 class="text-3xl font-bold game-title">¡Juego Completado!</h1>
+            <p id="final-message" class="text-xl my-4"></p>
+            <button id="play-again-button" class="button play-again-button">Jugar de Nuevo</button>
+        </div>
+    </main>
+
+    <footer class="mt-auto py-6 sm:py-8 text-center">
+        <div class="container mx-auto px-6">
+            <p>&copy; 2025 Juegos Didácticos Don Bosco Pampahasi. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- Script para Dropdown del Header ---
+        const gamesDropdownButton = document.getElementById('games-dropdown-button');
+        const gamesDropdownMenu = document.getElementById('games-dropdown-menu');
+        const games = [
+            { name: "Adivina el Animal", path: "../animales/animales.html" }, { name: "Tablas de Multiplicar", path: "../multiplicacion/multiplicacion.html" }, { name: "Adivina el Alimento", path: "../alimentos/alimentos.html" }, { name: "Juego de Sumas", path: "../sumas/sumas.html" }, { name: "Juego de Restas", path: "../restas/restas.html" }, { name: "Juego de Divisiones", path: "../divisiones/divisiones.html" }, { name: "Multiplicación Aleatoria", path: "../multiplicacion_aleatoria/multiplicacion_aleatoria.html" }, { name: "Mecanografía y Ortografía", path: "../mecanografia/mecanografia.html" }, { name: "Juego de Trazos", path: "../trazos/trazos.html" }, { name: "Inglés y Español", path: "../ingles/ingles.html"}, { name: "Contar hasta 100", path: "../contar/contar.html"}, { name: "Juego de Múltiplos", path: "../multiplos/multiplos.html"}, { name: "Juego de Pares e Impares", path: "../pares_impares/pares_impares.html"}, { name: "Ordena el Alfabeto", path: "../ordenar_alfabeto/ordenar_alfabeto.html"}, { name: "Reglas de Acentuación", path: "../reglas_acentuacion/reglas_acentuacion.html"}, { name: "Juego de M.C.D.", path: "../mcd/mcd.html"}, { name: "Amplificar y Simplificar", path: "../amplificacion_simplificacion/amplificacion_simplificacion.html"}, { name: "Fracciones Homogéneas", path: "../operaciones_homogeneas/operaciones_homogeneas.html" }, { name: "Fracciones Heterogéneas", path: "../operaciones_heterogeneas/operaciones_heterogeneas.html" }, { name: "Multiplicar y Dividir Fracciones", path: "../operaciones_avanzadas_fracciones/operaciones_avanzadas_fracciones.html" }, { name: "Convertir a Fracción Mixta", path: "../fraccion_mixta/fraccion_mixta.html" }, { name: "Problemas con Fracciones", path: "../problemas_fracciones/problemas_fracciones.html" }, { name: "Juego de Paralelogramos", path: "../paralelogramos/paralelogramos.html" }, { name: "Geometría de Rectas", path: "../rectas/rectas.html" }, { name: "Plano Cartesiano", path: "../plano_cartesiano/plano_cartesiano.html" }, { name: "Razones y Proporciones", path: "../razon_proporcion/razon_proporcion.html" }, { name: "Regla de Tres Simple", path: "../regla_de_tres/regla_de_tres.html" }, { name: "Medidas y Equivalencias", path: "../medidas/medidas.html" }, { name: "Juego de Potencias", path: "../potencias/potencias.html" }
+        ];
+        if (gamesDropdownButton && gamesDropdownMenu) {
+            gamesDropdownMenu.innerHTML = '';
+            games.forEach(game => {
+                 const link = document.createElement('a');
+                 link.href = game.path;
+                 link.textContent = game.name;
+                 link.className = 'block px-4 py-2 text-sm text-blue-800 hover:bg-sky-100 hover:text-blue-700';
+                 gamesDropdownMenu.appendChild(link);
+            });
+            gamesDropdownButton.addEventListener('click', (event) => {
+                event.stopPropagation();
+                gamesDropdownMenu.classList.toggle('hidden');
+            });
+            document.addEventListener('click', (event) => {
+                if (!gamesDropdownMenu.classList.contains('hidden') && !gamesDropdownButton.contains(event.target) && !gamesDropdownMenu.contains(event.target)) {
+                    gamesDropdownMenu.classList.add('hidden');
+                }
+            });
+        }
+        
+        // --- Script del Juego ---
+        const settingsScreen = document.getElementById('settings-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const endScreen = document.getElementById('end-screen');
+        const playerNameInput = document.getElementById('player-name');
+        const questionCountInput = document.getElementById('question-count');
+        const startGameButton = document.getElementById('start-game-button');
+        
+        const timerDisplay = document.getElementById('timer');
+        const failuresDisplay = document.getElementById('failures');
+        const problemDisplay = document.getElementById('problem-display');
+        const answerInput = document.getElementById('answer-input');
+        const checkButton = document.getElementById('check-button');
+        const messageArea = document.getElementById('message-area');
+        
+        const finalMessageDisplay = document.getElementById('final-message');
+        const playAgainButton = document.getElementById('play-again-button');
+
+        let timerInterval;
+        let secondsElapsed = 0;
+        let failureCount = 0;
+        let playerName = "";
+        let questions = [];
+        let currentQuestionIndex = 0;
+
+        function generateProblem() {
+            const base = Math.floor(Math.random() * 9) + 2; // Base de 2 a 10
+            let exponent;
+            if (base <= 3) {
+                exponent = Math.floor(Math.random() * 3) + 2; // 2, 3, 4
+            } else if (base <= 6) {
+                exponent = Math.floor(Math.random() * 2) + 2; // 2, 3
+            } else {
+                exponent = 2; // Solo al cuadrado
+            }
+            const answer = Math.pow(base, exponent);
+            return { base, exponent, answer };
+        }
+        
+        function updateTimer() {
+            secondsElapsed++;
+            timerDisplay.textContent = `Tiempo: ${secondsElapsed}s`;
+        }
+        
+        function loadNextQuestion() {
+            if (currentQuestionIndex >= questions.length) {
+                endGame();
+                return;
+            }
+            const question = questions[currentQuestionIndex];
+            messageArea.textContent = "";
+            problemDisplay.innerHTML = `${question.base}<sup class="exponent">${question.exponent}</sup>`;
+            answerInput.value = "";
+            answerInput.disabled = false;
+            answerInput.classList.remove('correct', 'incorrect');
+            checkButton.disabled = false;
+            answerInput.focus();
+        }
+
+        function handleCheckAnswer() {
+            const userAnswer = parseInt(answerInput.value);
+            const question = questions[currentQuestionIndex];
+
+            if (isNaN(userAnswer)) {
+                alert("Por favor, ingresa una respuesta numérica.");
+                return;
+            }
+
+            if (userAnswer === question.answer) {
+                messageArea.textContent = "¡Correcto!";
+                messageArea.classList.add('text-green-500');
+                answerInput.classList.add('correct');
+                answerInput.disabled = true;
+                checkButton.disabled = true;
+
+                setTimeout(() => {
+                    currentQuestionIndex++;
+                    messageArea.classList.remove('text-green-500');
+                    loadNextQuestion();
+                }, 1200);
+
+            } else {
+                failureCount++;
+                failuresDisplay.textContent = failureCount;
+                answerInput.classList.add('incorrect');
+                messageArea.textContent = `Incorrecto. La respuesta era ${question.answer}.`;
+                messageArea.classList.add('text-red-500');
+
+                setTimeout(() => {
+                     messageArea.textContent = "";
+                     messageArea.classList.remove('text-red-500');
+                     answerInput.classList.remove('incorrect');
+                     answerInput.value = '';
+                     answerInput.focus();
+                }, 2000);
+            }
+        }
+        
+        function startGame() {
+            playerName = playerNameInput.value.trim();
+            if (!playerName) {
+                alert("Por favor, ingresa tu nombre.");
+                return;
+            }
+            
+            const questionCount = parseInt(questionCountInput.value);
+            if(isNaN(questionCount) || questionCount < 5 || questionCount > 50){
+                alert("Por favor, ingresa un número de preguntas entre 5 y 50.");
+                return;
+            }
+            
+            questions = [];
+            for(let i=0; i<questionCount; i++){
+                questions.push(generateProblem());
+            }
+
+            currentQuestionIndex = 0;
+            failureCount = 0;
+            secondsElapsed = 0;
+            failuresDisplay.textContent = failureCount;
+            timerDisplay.textContent = `Tiempo: 0s`;
+            
+            settingsScreen.classList.add('hidden');
+            endScreen.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+
+            loadNextQuestion();
+            clearInterval(timerInterval);
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        function endGame() {
+            clearInterval(timerInterval);
+            gameScreen.classList.add('hidden');
+            endScreen.classList.remove('hidden');
+            finalMessageDisplay.textContent = `${playerName}, resolviste ${questions.length} problemas con ${failureCount} fallos en ${secondsElapsed} segundos.`;
+        }
+
+        checkButton.addEventListener('click', handleCheckAnswer);
+        answerInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') handleCheckAnswer();
+        });
+        
+        startGameButton.addEventListener('click', startGame);
+        playAgainButton.addEventListener('click', () => {
+            endScreen.classList.add('hidden');
+            settingsScreen.classList.remove('hidden');
+        });
+        
+    </script>
+</body>
+</html>
