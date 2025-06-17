@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Completar Himno a la Madre - Juegos Didácticos Don Bosco</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Pacifico&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #E0F2FE;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+        }
+        header {
+            background-color: #1E3A8A;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            width: 100%;
+            z-index: 10;
+        }
+        .header-title-font {
+            font-family: 'Pacifico', cursive;
+        }
+        main {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center; 
+            align-items: center; 
+            width: 100%;
+            padding: 20px; 
+            box-sizing: border-box;
+        }
+        footer {
+            background-color: #1E3A8A;
+            color: white;
+            width: 100%;
+        }
+        .game-container, .settings-container, .end-screen-container {
+            background-color: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 950px; 
+            text-align: center;
+        }
+        .input-field {
+            width: 100%; padding: 10px; font-size: 1em; border-radius: 6px;
+            border: 2px solid #93c5fd; margin-bottom: 15px; text-align: center;
+            box-sizing: border-box;
+        }
+        .input-field:focus {
+            outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        }
+        
+        .line-container {
+            display: flex;
+            align-items: center;
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: #1f2937;
+        }
+        .word-input {
+            font-size: 1.2rem;
+            width: 150px;
+            text-align: center;
+            border: none;
+            border-bottom: 2px solid #93c5fd;
+            margin: 0 0.5rem;
+            outline: none;
+            transition: all 0.2s;
+        }
+        .word-input:focus {
+            border-bottom-color: #3b82f6;
+        }
+        .word-input.correct {
+            border: 2px solid #22c55e;
+            background-color: #dcfce7;
+            border-radius: 6px;
+            color: #166534;
+            font-weight: 600;
+        }
+        .word-input.incorrect {
+            border: 2px solid #ef4444;
+            animation: shake 0.5s;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+
+        .button {
+             padding: 15px 40px; font-size: 1.5em; border-radius: 12px; cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            border: none; font-weight: 700; box-shadow: 0 4px 6px rgba(0,0,0,0.1); color: white;
+        }
+        .start-button { background-color: #22c55e; }
+        .next-button { background-color: #3b82f6; }
+        .play-again-button { background-color: #3b82f6; margin-top:10px; }
+        h1.game-title { color: #1e3a8a; margin-bottom: 20px; }
+        .dropdown-menu { z-index: 50; }
+
+        .game-layout { display: flex; flex-direction: column; gap: 2rem; }
+        .rules-panel {
+            flex-shrink: 0; background-color: #f1f5f9; padding: 1.5rem;
+            border-radius: 8px; text-align: left;
+        }
+        .rules-panel h3 {
+            font-size: 1.25rem; font-weight: 700; color: #1e3a8a; margin-bottom: 1rem;
+            border-bottom: 2px solid #93c5fd; padding-bottom: 0.5rem;
+        }
+        .rules-panel ul { list-style: none; padding: 0; }
+        .rules-panel li { margin-top: 0.75rem; font-size: 0.95rem; color: #4b5563; }
+        .main-game-area { flex-grow: 1; }
+
+        @media (min-width: 768px) {
+            .game-layout { flex-direction: row; }
+            .rules-panel { width: 340px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container mx-auto px-6 py-4 sm:py-6 flex flex-col sm:flex-row justify-between items-center">
+            <a href="../index.html" class="flex items-center hover:opacity-90 transition-opacity duration-200">
+                <img src="../logo.png" alt="Logo Don Bosco Pampahasi" class="h-12 w-12 sm:h-16 sm:w-16 mr-3 sm:mr-4 rounded-full bg-white p-1" 
+                     onerror="this.onerror=null; this.src='https://placehold.co/64x64/FFFFFF/1E3A8A?text=Logo'; this.alt='Logo Don Bosco Pampahasi (Error)';">
+                <div>
+                    <h1 class="header-title-font text-2xl sm:text-4xl text-yellow-400">Juegos Didácticos</h1>
+                    <p class="text-sm sm:text-lg font-semibold">DON BOSCO PAMPAHASI</p>
+                </div>
+            </a>
+            <nav class="mt-4 sm:mt-0">
+                <div class="relative">
+                    <button id="games-dropdown-button" class="bg-yellow-400 text-blue-800 font-semibold py-2 px-4 rounded-lg hover:bg-yellow-300 transition-colors duration-200 flex items-center">
+                        Juegos
+                        <svg class="w-4 h-4 ml-2 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+                    </button>
+                    <div id="games-dropdown-menu" class="dropdown-menu absolute right-0 mt-2 w-64 bg-white rounded-md shadow-xl py-1 hidden">
+                        <!-- Llenado dinámico por JS -->
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div id="settings-screen" class="settings-container max-w-lg">
+            <h1 class="text-3xl font-bold game-title">Completar el Himno a la Madre</h1>
+            <p class="text-gray-600 mb-6">Lee cada línea y escribe la palabra que falta para completar el himno.</p>
+            <input type="text" id="player-name" class="input-field" placeholder="Escribe tu nombre">
+            <button id="start-game-button" class="button start-button">Empezar a Jugar</button>
+        </div>
+    
+        <div id="game-screen" class="game-container hidden">
+            <div class="game-layout">
+                <div class="main-game-area">
+                    <h2 class="text-2xl font-bold text-blue-800 mb-4" id="stanza-title"></h2>
+                    <div id="stanza-container">
+                        <!-- Las líneas de la estrofa se generan aquí -->
+                    </div>
+                     <button id="next-stanza-button" class="button next-button mt-6 hidden">Siguiente Estrofa</button>
+                </div>
+                <aside class="rules-panel">
+                    <h3>Pistas</h3>
+                    <ul id="hints-container">
+                        <!-- Las pistas se generan aquí -->
+                    </ul>
+                </aside>
+            </div>
+        </div>
+    
+        <div id="end-screen" class="end-screen-container hidden">
+            <h1 class="text-3xl font-bold game-title">¡Himno Completado!</h1>
+            <p id="final-message" class="text-xl my-4"></p>
+            <button id="play-again-button" class="button play-again-button">Jugar de Nuevo</button>
+        </div>
+    </main>
+
+    <footer class="mt-auto py-6 sm:py-8 text-center">
+        <div class="container mx-auto px-6">
+            <p>&copy; 2025 Juegos Didácticos Don Bosco Pampahasi. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- Script para Dropdown del Header ---
+        const gamesDropdownButton = document.getElementById('games-dropdown-button');
+        const gamesDropdownMenu = document.getElementById('games-dropdown-menu');
+        const games = [
+            { name: "Adivina el Animal", path: "../animales/animales.html" }, { name: "Tablas de Multiplicar", path: "../multiplicacion/multiplicacion.html" }, { name: "Adivina el Alimento", path: "../alimentos/alimentos.html" }, { name: "Juego de Sumas", path: "../sumas/sumas.html" }, { name: "Juego de Restas", path: "../restas/restas.html" }, { name: "Juego de Divisiones", path: "../divisiones/divisiones.html" }, { name: "Multiplicación Aleatoria", path: "../multiplicacion_aleatoria/multiplicacion_aleatoria.html" }, { name: "Mecanografía y Ortografía", path: "../mecanografia/mecanografia.html" }, { name: "Juego de Trazos", path: "../trazos/trazos.html" }, { name: "Inglés y Español", path: "../ingles/ingles.html"}, { name: "Contar hasta 100", path: "../contar/contar.html"}, { name: "Juego de Múltiplos", path: "../multiplos/multiplos.html"}, { name: "Juego de Pares e Impares", path: "../pares_impares/pares_impares.html"}, { name: "Ordena el Alfabeto", path: "../ordenar_alfabeto/ordenar_alfabeto.html"}, { name: "Reglas de Acentuación", path: "../reglas_acentuacion/reglas_acentuacion.html"}, { name: "Juego de M.C.D.", path: "../mcd/mcd.html"}, { name: "Amplificar y Simplificar", path: "../amplificacion_simplificacion/amplificacion_simplificacion.html"}, { name: "Fracciones Homogéneas", path: "../operaciones_homogeneas/operaciones_homogeneas.html" }, { name: "Fracciones Heterogéneas", path: "../operaciones_heterogeneas/operaciones_heterogeneas.html" }, { name: "Multiplicar y Dividir Fracciones", path: "../operaciones_avanzadas_fracciones/operaciones_avanzadas_fracciones.html" }, { name: "Convertir a Fracción Mixta", path: "../fraccion_mixta/fraccion_mixta.html" }, { name: "Problemas con Fracciones", path: "../problemas_fracciones/problemas_fracciones.html" }, { name: "Juego de Paralelogramos", path: "../paralelogramos/paralelogramos.html" }, { name: "Geometría de Rectas", path: "../rectas/rectas.html" }, { name: "Plano Cartesiano", path: "../plano_cartesiano/plano_cartesiano.html" }, { name: "Razones y Proporciones", path: "../razon_proporcion/razon_proporcion.html" }, { name: "Regla de Tres Simple", path: "../regla_de_tres/regla_de_tres.html" }, { name: "Medidas y Equivalencias", path: "../medidas/medidas.html" }, { name: "Juego de Potencias", path: "../potencias/potencias.html" }, { name: "Juego de Estadística", path: "../estadistica/estadistica.html" }, { name: "Completar Himno a la Madre", path: "../himno_madre/himno_madre.html" }
+        ];
+        if (gamesDropdownButton && gamesDropdownMenu) {
+            gamesDropdownMenu.innerHTML = '';
+            games.forEach(game => {
+                 const link = document.createElement('a');
+                 link.href = game.path;
+                 link.textContent = game.name;
+                 link.className = 'block px-4 py-2 text-sm text-blue-800 hover:bg-sky-100 hover:text-blue-700';
+                 gamesDropdownMenu.appendChild(link);
+            });
+            gamesDropdownButton.addEventListener('click', (event) => {
+                event.stopPropagation();
+                gamesDropdownMenu.classList.toggle('hidden');
+            });
+            document.addEventListener('click', (event) => {
+                if (!gamesDropdownMenu.classList.contains('hidden') && !gamesDropdownButton.contains(event.target) && !gamesDropdownMenu.contains(event.target)) {
+                    gamesDropdownMenu.classList.add('hidden');
+                }
+            });
+        }
+        
+        // --- Script del Juego ---
+        const stanzas = [
+            { lines: [
+                { before: "Palpitantes de ", word: "amor", after: " y de anhelo", hint: "Sentimiento de afecto profundo." },
+                { before: "a la ", word: "madre", after: " elevemos la voz", hint: "Figura materna a la que cantamos." },
+                { before: "dirigiendo su imagen al ", word: "cielo", after: "", hint: "Lugar donde están las nubes." },
+                { before: "cual si fuera la imagen de ", word: "Dios", after: ".", hint: "Ser supremo y creador." }
+            ]},
+            { lines: [
+                { before: "En la madre el pesar se ", word: "depura", after: "", hint: "Se limpia o purifica." },
+                { before: "la grandeza en su vida se ", word: "encierra", after: "", hint: "Se guarda o contiene." },
+                { before: "bendigamos su inmensa ", word: "ternura", after: "", hint: "Cariño y suavidad." },
+                { before: "nuestra dicha suprema en la ", word: "tierra", after: ".", hint: "Nuestro planeta." }
+            ]},
+            { lines: [
+                { before: "Abnegada soporta las ", word: "cruces", after: ",", hint: "Símbolo de sacrificio." },
+                { before: "que por buena le carga el ", word: "dolor", after: ",", hint: "Sentimiento de sufrimiento." },
+                { before: "es la ostia su frente de ", word: "luces", after: ",", hint: "Brillos, resplandores." },
+                { before: "y su pecho es el cáliz de ", word: "amor", after: ".", hint: "Sentimiento opuesto al odio." }
+            ]},
+            { lines: [
+                { before: "Hoy la ciñen laureles y ", word: "palmas", after: ",", hint: "Hojas que simbolizan victoria." },
+                { before: "y por ella con hondo ", word: "fervor", after: "", hint: "Sentimiento intenso." },
+                { before: "en plegarias se tornan las ", word: "almas", after: "", hint: "Parte espiritual del ser." },
+                { before: "y la espina conviértase en ", word: "flor", after: ".", hint: "Parte bonita y colorida de una planta." }
+            ]}
+        ];
+
+        const settingsScreen = document.getElementById('settings-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const endScreen = document.getElementById('end-screen');
+        const playerNameInput = document.getElementById('player-name');
+        const startGameButton = document.getElementById('start-game-button');
+        
+        const stanzaTitle = document.getElementById('stanza-title');
+        const stanzaContainer = document.getElementById('stanza-container');
+        const hintsContainer = document.getElementById('hints-container');
+        const nextStanzaButton = document.getElementById('next-stanza-button');
+        
+        const finalMessageDisplay = document.getElementById('final-message');
+        const playAgainButton = document.getElementById('play-again-button');
+
+        let playerName = "";
+        let currentStanzaIndex = 0;
+        let correctWordsInStanza = 0;
+
+        function loadStanza(index) {
+            const stanza = stanzas[index];
+            correctWordsInStanza = 0;
+            stanzaTitle.textContent = `Estrofa ${index + 1}`;
+            stanzaContainer.innerHTML = '';
+            hintsContainer.innerHTML = '';
+            nextStanzaButton.classList.add('hidden');
+
+            stanza.lines.forEach((line, lineIndex) => {
+                const lineDiv = document.createElement('div');
+                lineDiv.className = 'line-container';
+                lineDiv.innerHTML = `
+                    <span>${line.before}</span>
+                    <input type="text" class="word-input" data-line-index="${lineIndex}" autocomplete="off">
+                    <span>${line.after}</span>
+                `;
+                stanzaContainer.appendChild(lineDiv);
+
+                const hintLi = document.createElement('li');
+                hintLi.textContent = `Línea ${lineIndex + 1}: ${line.hint}`;
+                hintsContainer.appendChild(hintLi);
+            });
+
+            const inputs = stanzaContainer.querySelectorAll('.word-input');
+            inputs.forEach(input => input.addEventListener('input', handleWordInput));
+        }
+        
+        function handleWordInput(event) {
+            const input = event.target;
+            const lineIndex = parseInt(input.dataset.lineIndex);
+            const correctWord = stanzas[currentStanzaIndex].lines[lineIndex].word;
+
+            if(input.value.toLowerCase() === correctWord.toLowerCase()) {
+                input.classList.remove('incorrect');
+                input.classList.add('correct');
+                input.disabled = true;
+                
+                checkStanzaCompletion();
+            } else {
+                input.classList.add('incorrect');
+            }
+        }
+        
+        function checkStanzaCompletion() {
+            const inputs = stanzaContainer.querySelectorAll('.word-input');
+            const allCorrect = Array.from(inputs).every(input => input.disabled);
+
+            if(allCorrect) {
+                nextStanzaButton.classList.remove('hidden');
+            }
+        }
+
+        function startGame() {
+            playerName = playerNameInput.value.trim();
+            if (!playerName) {
+                alert("Por favor, ingresa tu nombre.");
+                return;
+            }
+            
+            currentStanzaIndex = 0;
+            settingsScreen.classList.add('hidden');
+            endScreen.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+            loadStanza(currentStanzaIndex);
+        }
+
+        function endGame() {
+            gameScreen.classList.add('hidden');
+            endScreen.classList.remove('hidden');
+            finalMessageDisplay.textContent = `¡Felicidades, ${playerName}! Has completado el himno.`;
+        }
+
+        nextStanzaButton.addEventListener('click', () => {
+            currentStanzaIndex++;
+            if (currentStanzaIndex < stanzas.length) {
+                loadStanza(currentStanzaIndex);
+            } else {
+                endGame();
+            }
+        });
+
+        startGameButton.addEventListener('click', startGame);
+        playAgainButton.addEventListener('click', () => {
+            endScreen.classList.add('hidden');
+            settingsScreen.classList.remove('hidden');
+        });
+        
+    </script>
+</body>
+</html>
