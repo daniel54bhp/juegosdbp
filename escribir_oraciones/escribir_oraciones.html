@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escritura Correcta - Juegos Didácticos Don Bosco</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Pacifico&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #E0F2FE;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+        }
+        header {
+            background-color: #1E3A8A;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            width: 100%;
+            z-index: 10;
+        }
+        .header-title-font {
+            font-family: 'Pacifico', cursive;
+        }
+        main {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center; 
+            align-items: center; 
+            width: 100%;
+            padding: 20px; 
+            box-sizing: border-box;
+        }
+        footer {
+            background-color: #1E3A8A;
+            color: white;
+            width: 100%;
+        }
+        .game-container, .settings-container, .end-screen-container {
+            background-color: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 700px; 
+            text-align: center;
+        }
+        .input-field, .number-input {
+            width: 100%; padding: 10px; font-size: 1em; border-radius: 6px;
+            border: 2px solid #93c5fd; margin-bottom: 15px; text-align: center;
+            box-sizing: border-box;
+        }
+        .input-field:focus, .number-input:focus {
+            outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        }
+        
+        #problem-display {
+            font-size: 1.3rem;
+            color: #4b5563;
+            margin: 1.5rem 0;
+            padding: 1.5rem;
+            background-color: #fef2f2;
+            border-left: 5px solid #ef4444;
+            border-radius: 8px;
+            line-height: 1.7;
+            text-align: left;
+        }
+        
+        .answer-textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 15px;
+            font-size: 1.2em;
+            border-radius: 8px;
+            border: 3px solid #93c5fd;
+            margin: 1rem auto;
+            resize: vertical;
+        }
+        .answer-textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.3);
+        }
+        .answer-textarea.correct {
+            background-color: #dcfce7; border-color: #16a34a;
+        }
+        .answer-textarea.incorrect {
+            background-color: #fee2e2; border-color: #ef4444;
+        }
+        
+        .stats-container {
+            display: flex; justify-content: space-around; margin-bottom: 20px;
+            font-size: 1.4em; font-weight: bold;
+        }
+        .timer { color: #ef4444; }
+        .failures { color: #1d4ed8; }
+
+        .button {
+             padding: 15px 40px; font-size: 1.5em; border-radius: 12px; cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            border: none; font-weight: 700; box-shadow: 0 4px 6px rgba(0,0,0,0.1); color: white;
+        }
+        .start-button { background-color: #22c55e; }
+        .check-button { background-color: #3b82f6; }
+        .play-again-button { background-color: #3b82f6; margin-top:10px; }
+        h1.game-title { color: #1e3a8a; margin-bottom: 20px; }
+        .dropdown-menu { z-index: 50; }
+        
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container mx-auto px-6 py-4 sm:py-6 flex flex-col sm:flex-row justify-between items-center">
+            <a href="../index.html" class="flex items-center hover:opacity-90 transition-opacity duration-200">
+                <img src="../logo.png" alt="Logo Don Bosco Pampahasi" class="h-12 w-12 sm:h-16 sm:w-16 mr-3 sm:mr-4 rounded-full bg-white p-1" 
+                     onerror="this.onerror=null; this.src='https://placehold.co/64x64/FFFFFF/1E3A8A?text=Logo'; this.alt='Logo Don Bosco Pampahasi (Error)';">
+                <div>
+                    <h1 class="header-title-font text-2xl sm:text-4xl text-yellow-400">Juegos Didácticos</h1>
+                    <p class="text-sm sm:text-lg font-semibold">DON BOSCO PAMPAHASI</p>
+                </div>
+            </a>
+            <nav class="mt-4 sm:mt-0">
+                <div class="relative">
+                    <button id="games-dropdown-button" class="bg-yellow-400 text-blue-800 font-semibold py-2 px-4 rounded-lg hover:bg-yellow-300 transition-colors duration-200 flex items-center">
+                        Juegos
+                        <svg class="w-4 h-4 ml-2 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+                    </button>
+                    <div id="games-dropdown-menu" class="dropdown-menu absolute right-0 mt-2 w-64 bg-white rounded-md shadow-xl py-1 hidden">
+                        <!-- Llenado dinámico por JS -->
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div id="settings-screen" class="settings-container max-w-lg">
+            <h1 class="text-3xl font-bold game-title">Escritura Correcta de Oraciones</h1>
+            <p class="text-gray-600 mb-6">Lee la oración con errores y escríbela correctamente en el cuadro de texto.</p>
+            <input type="text" id="player-name" class="input-field" placeholder="Escribe tu nombre">
+            <div class="my-4">
+                 <label for="question-count" class="block font-semibold mb-2 text-gray-700">Cantidad de Oraciones:</label>
+                 <input type="number" id="question-count" class="number-input w-1/2 mx-auto" value="10" min="10" max="100">
+            </div>
+            <button id="start-game-button" class="button start-button">Empezar a Jugar</button>
+        </div>
+    
+        <div id="game-screen" class="game-container hidden">
+            <div class="stats-container">
+                <div class="stat-item timer" id="timer">Tiempo: 0s</div>
+                <div class="stat-item failures"><span class="label">Fallos:</span> <span id="failures" class="value">0</span></div>
+            </div>
+            <p class="text-lg font-semibold text-gray-700 mb-2">Corrige la siguiente oración:</p>
+            <div id="problem-display"></div>
+            <textarea id="answer-textarea" class="answer-textarea" placeholder="Escribe aquí la oración corregida..."></textarea>
+            <button id="check-button" class="button check-button">Comprobar</button>
+            <p id="message-area" class="mt-4 text-lg font-semibold min-h-[1.5em]"></p>
+        </div>
+    
+        <div id="end-screen" class="end-screen-container hidden">
+            <h1 class="text-3xl font-bold game-title">¡Juego Completado!</h1>
+            <p id="final-message" class="text-xl my-4"></p>
+            <button id="play-again-button" class="button play-again-button">Jugar de Nuevo</button>
+        </div>
+    </main>
+
+    <footer class="mt-auto py-6 sm:py-8 text-center">
+        <div class="container mx-auto px-6">
+            <p>&copy; 2025 Juegos Didácticos Don Bosco Pampahasi. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- Script para Dropdown del Header ---
+        const gamesDropdownButton = document.getElementById('games-dropdown-button');
+        const gamesDropdownMenu = document.getElementById('games-dropdown-menu');
+        const games = [
+            { name: "Adivina el Animal", path: "../animales/animales.html" }, { name: "Tablas de Multiplicar", path: "../multiplicacion/multiplicacion.html" }, { name: "Adivina el Alimento", path: "../alimentos/alimentos.html" }, { name: "Juego de Sumas", path: "../sumas/sumas.html" }, { name: "Juego de Restas", path: "../restas/restas.html" }, { name: "Juego de Divisiones", path: "../divisiones/divisiones.html" }, { name: "Multiplicación Aleatoria", path: "../multiplicacion_aleatoria/multiplicacion_aleatoria.html" }, { name: "Mecanografía y Ortografía", path: "../mecanografia/mecanografia.html" }, { name: "Juego de Trazos", path: "../trazos/trazos.html" }, { name: "Inglés y Español", path: "../ingles/ingles.html"}, { name: "Contar hasta 100", path: "../contar/contar.html"}, { name: "Juego de Múltiplos", path: "../multiplos/multiplos.html"}, { name: "Juego de Pares e Impares", path: "../pares_impares/pares_impares.html"}, { name: "Ordena el Alfabeto", path: "../ordenar_alfabeto/ordenar_alfabeto.html"}, { name: "Reglas de Acentuación", path: "../reglas_acentuacion/reglas_acentuacion.html"}, { name: "Juego de M.C.D.", path: "../mcd/mcd.html"}, { name: "Amplificar y Simplificar", path: "../amplificacion_simplificacion/amplificacion_simplificacion.html"}, { name: "Fracciones Homogéneas", path: "../operaciones_homogeneas/operaciones_homogeneas.html" }, { name: "Fracciones Heterogéneas", path: "../operaciones_heterogeneas/operaciones_heterogeneas.html" }, { name: "Multiplicar y Dividir Fracciones", path: "../operaciones_avanzadas_fracciones/operaciones_avanzadas_fracciones.html" }, { name: "Convertir a Fracción Mixta", path: "../fraccion_mixta/fraccion_mixta.html" }, { name: "Problemas con Fracciones", path: "../problemas_fracciones/problemas_fracciones.html" }, { name: "Juego de Paralelogramos", path: "../paralelogramos/paralelogramos.html" }, { name: "Geometría de Rectas", path: "../rectas/rectas.html" }, { name: "Plano Cartesiano", path: "../plano_cartesiano/plano_cartesiano.html" }, { name: "Razones y Proporciones", path: "../razon_proporcion/razon_proporcion.html" }, { name: "Regla de Tres Simple", path: "../regla_de_tres/regla_de_tres.html" }, { name: "Medidas y Equivalencias", path: "../medidas/medidas.html" }, { name: "Juego de Potencias", path: "../potencias/potencias.html" }, { name: "Juego de Estadística", path: "../estadistica/estadistica.html" }, { name: "Juego de Sílabas", path: "../silabas/silabas.html" }, { name: "Crucigrama del Himno", path: "../crucigrama_himno/crucigrama_himno.html" }, { name: "Contar en Series", path: "../conteo_avanzado/conteo_avanzado.html" }, { name: "Escritura Correcta", path: "../escribir_oraciones/escribir_oraciones.html" }
+        ];
+        if (gamesDropdownButton && gamesDropdownMenu) {
+            gamesDropdownMenu.innerHTML = '';
+            games.forEach(game => {
+                 const link = document.createElement('a');
+                 link.href = game.path;
+                 link.textContent = game.name;
+                 link.className = 'block px-4 py-2 text-sm text-blue-800 hover:bg-sky-100 hover:text-blue-700';
+                 gamesDropdownMenu.appendChild(link);
+            });
+            gamesDropdownButton.addEventListener('click', (event) => {
+                event.stopPropagation();
+                gamesDropdownMenu.classList.toggle('hidden');
+            });
+            document.addEventListener('click', (event) => {
+                if (!gamesDropdownMenu.classList.contains('hidden') && !gamesDropdownButton.contains(event.target) && !gamesDropdownMenu.contains(event.target)) {
+                    gamesDropdownMenu.classList.add('hidden');
+                }
+            });
+        }
+        
+        // --- Script del Juego ---
+        const sentences = [
+            { incorrect: "El perro de mi vesino ladra mucho.", correct: "El perro de mi vecino ladra mucho." },
+            { incorrect: "Ayer hubieron muchas personas en el parque.", correct: "Ayer había muchas personas en el parque." },
+            { incorrect: "Me dijistes que vendrías temprano.", correct: "Me dijiste que vendrías temprano." },
+            { incorrect: "bamos a jugar al futbol.", correct: "Vamos a jugar al fútbol." },
+            { incorrect: "La casa es mas grande que la tuya.", correct: "La casa es más grande que la tuya." },
+            { incorrect: "No se por que no funciona.", correct: "No sé por qué no funciona." },
+            { incorrect: "El tubo un accidente ayer.", correct: "Él tuvo un accidente ayer." },
+            { incorrect: "Haber si nos vemos pronto.", correct: "A ver si nos vemos pronto." },
+            { incorrect: "La jente está muy contenta.", correct: "La gente está muy contenta." },
+            { incorrect: "El niño se calló de la bicicleta.", correct: "El niño se cayó de la bicicleta." },
+            { incorrect: "hechale mas sal a la comida.", correct: "Échale más sal a la comida." },
+            { incorrect: "la casa de madera es bonita", correct: "La casa de madera es bonita." },
+            { incorrect: "me gusta el te con leche", correct: "Me gusta el té con leche." },
+            { incorrect: "el auto rojo es rapido", correct: "El auto rojo es rápido." },
+            { incorrect: "ayer ice la tarea", correct: "Ayer hice la tarea." },
+            { incorrect: "la baca da leche", correct: "La vaca da leche." },
+            { incorrect: "el arbol es muy alto", correct: "El árbol es muy alto." },
+            { incorrect: "el sol da calor y lus", correct: "El sol da calor y luz." },
+            { incorrect: "quieres venir con migo", correct: "Quieres venir conmigo." },
+            { incorrect: "no hay nadien en casa", correct: "No hay nadie en casa." },
+            { incorrect: "el agua esta fria", correct: "El agua está fría." },
+            { incorrect: "me compre un elicoptero de juguete", correct: "Me compré un helicóptero de juguete." },
+            { incorrect: "la cancion es muy bonita", correct: "La canción es muy bonita." },
+            { incorrect: "el leon es un animal salvaje", correct: "El león es un animal salvaje." },
+            { incorrect: "el águila vuela muy alto", correct: "El águila vuela muy alto." },
+            { incorrect: "el bebe esta durmiendo", correct: "El bebé está durmiendo." },
+            { incorrect: "el lapiz no tiene punta", correct: "El lápiz no tiene punta." },
+            { incorrect: "el camion es amarillo", correct: "El camión es amarillo." },
+            { incorrect: "el azucar es dulce", correct: "El azúcar es dulce." },
+            { incorrect: "el futbol es mi deporte favorito", correct: "El fútbol es mi deporte favorito." },
+            { incorrect: "el arbol de navidad tiene muchas luses", correct: "El árbol de Navidad tiene muchas luces." },
+            { incorrect: "el pajaro canta en la ventana", correct: "El pájaro canta en la ventana." },
+            { incorrect: "el exámen fue difisil", correct: "El examen fue difícil." },
+            { incorrect: "el numero de telefono es incorrecto", correct: "El número de teléfono es incorrecto." },
+            { incorrect: "la lampara esta apagada", correct: "La lámpara está apagada." },
+            { incorrect: "el oceano es inmenso", correct: "El océano es inmenso." },
+            { incorrect: "el angel de la guarda me cuida", correct: "El ángel de la guarda me cuida." },
+            { incorrect: "el tunel es muy largo", correct: "El túnel es muy largo." },
+            { incorrect: "el crater del volcan es grande", correct: "El cráter del volcán es grande." },
+            { incorrect: "el colibri es un ave pequeña", correct: "El colibrí es un ave pequeña." },
+            { incorrect: "el trebol de la suerte", correct: "El trébol de la suerte." },
+            { incorrect: "la jirafa tiene el cuello largo", correct: "La jirafa tiene el cuello largo." },
+            { incorrect: "el pinguino vive en el frio", correct: "El pingüino vive en el frío." },
+            { incorrect: "el delfin es muy inteligente", correct: "El delfín es muy inteligente." },
+            { incorrect: "el sabado ire al cine", correct: "El sábado iré al cine." },
+            { incorrect: "el miercoles es mi dia favorito", correct: "El miércoles es mi día favorito." },
+            { incorrect: "el platano es una fruta amarilla", correct: "El plátano es una fruta amarilla." },
+            { incorrect: "la musica esta muy fuerte", correct: "La música está muy fuerte." },
+            { incorrect: "el helicoptero vuela alto", correct: "El helicóptero vuela alto." },
+            { incorrect: "el hipopotamo vive en el agua", correct: "El hipopótamo vive en el agua." },
+            { incorrect: "el rinoceronte tiene un cuerno", correct: "El rinoceronte tiene un cuerno." },
+            { incorrect: "el murcielago duerme de dia", correct: "El murciélago duerme de día." },
+            { incorrect: "la brujula señala el norte", correct: "La brújula señala el norte." },
+            { incorrect: "el semaforo esta en rojo", correct: "El semáforo está en rojo." },
+            { incorrect: "la silaba tonica es la mas fuerte", correct: "La sílaba tónica es la más fuerte." },
+            { incorrect: "el esparrago es un vegetal", correct: "El espárrago es un vegetal." },
+            { incorrect: "el estomago me duele", correct: "El estómago me duele." },
+            { incorrect: "la pelicula fue fantastica", correct: "La película fue fantástica." },
+            { incorrect: "el ultimo en llegar pierde", correct: "El último en llegar pierde." },
+            { incorrect: "el proximo año viajare", correct: "El próximo año viajaré." },
+            { incorrect: "el principe vive en un castillo", correct: "El príncipe vive en un castillo." },
+            { incorrect: "el arbol da buena sombra", correct: "El árbol da buena sombra." },
+            { incorrect: "el cafe de la mañana me despierta", correct: "El café de la mañana me despierta." },
+            { incorrect: "el sofa es muy comodo", correct: "El sofá es muy cómodo." },
+            { incorrect: "el rubi es una piedra preciosa", correct: "El rubí es una piedra preciosa." },
+            { incorrect: "el mani es un fruto seco", correct: "El maní es un fruto seco." },
+            { incorrect: "el bambu crece muy rapido", correct: "El bambú crece muy rápido." },
+            { incorrect: "el iglu es una casa de hielo", correct: "El iglú es una casa de hielo." },
+            { incorrect: "el tabu es un tema prohibido", correct: "El tabú es un tema prohibido." },
+            { incorrect: "el menu esta en la mesa", correct: "El menú está en la mesa." },
+            { incorrect: "el champu huele bien", correct: "El champú huele bien." },
+            { incorrect: "el interes es importante", correct: "El interés es importante." },
+            { incorrect: "el compas sirve para dibujar circulos", correct: "El compás sirve para dibujar círculos." },
+            { incorrect: "el autobus llego tarde", correct: "El autobús llegó tarde." },
+            { incorrect: "el frances es un idioma bonito", correct: "El francés es un idioma bonito." },
+            { incorrect: "el ingles es facil de aprender", correct: "El inglés es fácil de aprender." },
+            { incorrect: "el japones es muy diferente", correct: "El japonés es muy diferente." },
+            { incorrect: "el adios fue muy triste", correct: "El adiós fue muy triste." },
+            { incorrect: "jamas pense que pasaria", correct: "Jamás pensé que pasaría." },
+            { incorrect: "ademas de eso, no hay mas", correct: "Además de eso, no hay más." },
+            { incorrect: "detras de la puerta", correct: "Detrás de la puerta." },
+            { incorrect: "el anis se usa en postres", correct: "El anís se usa en postres." },
+            { incorrect: "el ciempies tiene muchas patas", correct: "El ciempiés tiene muchas patas." },
+            { incorrect: "el estres no es bueno", correct: "El estrés no es bueno." },
+            { incorrect: "el obus es un tipo de cañon", correct: "El obús es un tipo de cañón." },
+            { incorrect: "el virus se propaga rapido", correct: "El virus se propaga rápido." },
+            { incorrect: "el album de fotos esta lleno", correct: "El álbum de fotos está lleno." },
+            { incorrect: "el nectar de las flores es dulce", correct: "El néctar de las flores es dulce." },
+            { incorrect: "el poster esta en la pared", correct: "El póster está en la pared." },
+            { incorrect: "el femur es un hueso largo", correct: "El fémur es un hueso largo." },
+            { incorrect: "el habil jugador gano", correct: "El hábil jugador ganó." },
+            { incorrect: "el fosil es muy antiguo", correct: "El fósil es muy antiguo." },
+            { incorrect: "el reptil se esconde", correct: "El reptil se esconde." },
+            { incorrect: "el movil esta sonando", correct: "El móvil está sonando." },
+            { incorrect: "el crater es profundo", correct: "El cráter es profundo." },
+            { incorrect: "el lider del equipo es juan", correct: "El líder del equipo es Juan." },
+            { incorrect: "el martir fue recordado", correct: "El mártir fue recordado." },
+            { incorrect: "el mastil de la bandera es alto", correct: "El mástil de la bandera es alto." },
+            { incorrect: "el procer lucho por la libertad", correct: "El prócer luchó por la libertad." },
+            { incorrect: "el consul trabaja en la embajada", correct: "El cónsul trabaja en la embajada." },
+            { incorrect: "el torax es parte del pecho", correct: "El tórax es parte del pecho." },
+            { incorrect: "el fenix renace de las cenizas", correct: "El fénix renace de las cenizas." },
+            { incorrect: "el comic es divertido", correct: "El cómic es divertido." },
+            { incorrect: "el biceps es un musculo", correct: "El bíceps es un músculo." },
+            { incorrect: "el forceps es un instrumento medico", correct: "El fórceps es un instrumento médico." },
+            { incorrect: "el record fue superado", correct: "El récord fue superado." },
+            { incorrect: "la cupula de la iglesia es grande", correct: "La cúpula de la iglesia es grande." },
+            { incorrect: "la bascula pesa la fruta", correct: "La báscula pesa la fruta." },
+            { incorrect: "la brujula indica el norte", correct: "La brújula indica el norte." },
+            { incorrect: "la camara toma fotos", correct: "La cámara toma fotos." },
+            { incorrect: "la caratula del libro es colorida", correct: "La carátula del libro es colorida." },
+            { incorrect: "la celula es la unidad de la vida", correct: "La célula es la unidad de la vida." },
+            { incorrect: "la ceramica es un arte antiguo", correct: "La cerámica es un arte antiguo." },
+            { incorrect: "la espatula sirve para cocinar", correct: "La espátula sirve para cocinar." },
+            { incorrect: "la fabula tiene una moraleja", correct: "La fábula tiene una moraleja." },
+            { incorrect: "la lamina es de metal", correct: "La lámina es de metal." },
+            { incorrect: "la maquina hace ruido", correct: "La máquina hace ruido." },
+            { incorrect: "la mascara oculta el rostro", correct: "La máscara oculta el rostro." },
+            { incorrect: "la pagina del libro esta rota", correct: "La página del libro está rota." },
+            { incorrect: "la parabola es una enseñanza", correct: "La parábola es una enseñanza." },
+            { incorrect: "la peninsula es una porcion de tierra", correct: "La península es una porción de tierra." },
+            { incorrect: "la piramide es una figura geometrica", correct: "La pirámide es una figura geométrica." },
+            { incorrect: "la silaba es parte de una palabra", correct: "La sílaba es parte de una palabra." },
+            { incorrect: "la tarantula es una araña grande", correct: "La tarántula es una araña grande." },
+            { incorrect: "la valvula controla el paso de agua", correct: "La válvula controla el paso de agua." },
+            { incorrect: "el cantaro esta lleno de agua", correct: "El cántaro está lleno de agua." },
+            { incorrect: "el capitulo del libro es largo", correct: "El capítulo del libro es largo." },
+            { incorrect: "el circulo es redondo", correct: "El círculo es redondo." },
+            { incorrect: "el codice es un libro antiguo", correct: "El códice es un libro antiguo." },
+            { incorrect: "el higado es un organo", correct: "El hígado es un órgano." },
+            { incorrect: "el hipotalamo esta en el cerebro", correct: "El hipotálamo está en el cerebro." },
+            { incorrect: "el limite de velocidad es 80", correct: "El límite de velocidad es 80." },
+            { incorrect: "el liquido es transparente", correct: "El líquido es transparente." },
+            { incorrect: "el numero ganador es el siete", correct: "El número ganador es el siete." },
+            { incorrect: "el pajaro tiene plumas", correct: "El pájaro tiene plumas." },
+            { incorrect: "el petalo de la flor es suave", correct: "El pétalo de la flor es suave." },
+            { incorrect: "el platano es amarillo", correct: "El plátano es amarillo." },
+            { incorrect: "el rabano es un vegetal", correct: "El rábano es un vegetal." },
+            { incorrect: "el sabado es dia de descanso", correct: "El sábado es día de descanso." },
+            { incorrect: "el timpano esta en el oido", correct: "El tímpano está en el oído." },
+            { incorrect: "el titulo del libro es interesante", correct: "El título del libro es interesante." },
+            { incorrect: "el vestibulo es la entrada", correct: "El vestíbulo es la entrada." },
+            { incorrect: "el zangano es una abeja macho", correct: "El zángano es una abeja macho." },
+            { incorrect: "el apostol predico la palabra", correct: "El apóstol predicó la palabra." },
+            { incorrect: "el atomo es muy pequeño", correct: "El átomo es muy pequeño." },
+            { incorrect: "el cantico fue hermoso", correct: "El cántico fue hermoso." },
+            { incorrect: "el catolico va a misa", correct: "El católico va a misa." },
+            { incorrect: "el cientifico hace experimentos", correct: "El científico hace experimentos." },
+            { incorrect: "el comico me hizo reir", correct: "El cómico me hizo reír." },
+            { incorrect: "el credito fue aprobado", correct: "El crédito fue aprobado." },
+            { incorrect: "el digito es un numero", correct: "El dígito es un número." },
+            { incorrect: "el ejercito defiende el pais", correct: "El ejército defiende el país." },
+            { incorrect: "el farmaco cura enfermedades", correct: "El fármaco cura enfermedades." },
+            { incorrect: "el fosforo se usa para encender fuego", correct: "El fósforo se usa para encender fuego." },
+            { incorrect: "el hipodromo es para carreras de caballos", correct: "El hipódromo es para carreras de caballos." },
+            { incorrect: "el idolo es admirado por muchos", correct: "El ídolo es admirado por muchos." },
+            { incorrect: "el impetu lo hizo actuar", correct: "El ímpetu lo hizo actuar." },
+            { incorrect: "el jubilo era inmenso", correct: "El júbilo era inmenso." },
+            { incorrect: "el medico receta medicinas", correct: "El médico receta medicinas." },
+            { incorrect: "el merito es tuyo", correct: "El mérito es tuyo." },
+            { incorrect: "el metodo cientifico es riguroso", correct: "El método científico es riguroso." },
+            { incorrect: "el microfono amplifica la voz", correct: "El micrófono amplifica la voz." },
+            { incorrect: "el multiplo de 2 es 4", correct: "El múltiplo de 2 es 4." },
+            { incorrect: "el musculo se contrae", correct: "El músculo se contrae." },
+            { incorrect: "el oxigeno es vital para respirar", correct: "El oxígeno es vital para respirar." },
+            { incorrect: "el pajaro carpintero hace agujeros", correct: "El pájaro carpintero hace agujeros." },
+            { incorrect: "el parentesis agrupa ideas", correct: "El paréntesis agrupa ideas." },
+            { incorrect: "el politico dio un discurso", correct: "El político dio un discurso." },
+            { incorrect: "el prologo introduce el libro", correct: "El prólogo introduce el libro." },
+            { incorrect: "el proposito es claro", correct: "El propósito es claro." },
+            { incorrect: "el publico aplaudio", correct: "El público aplaudió." },
+            { incorrect: "el rustico es del campo", correct: "El rústico es del campo." },
+            { incorrect: "el sinonimo de bonito es hermoso", correct: "El sinónimo de bonito es hermoso." },
+            { incorrect: "el subito movimiento me asusto", correct: "El súbito movimiento me asustó." },
+            { incorrect: "el termino de la calle", correct: "El término de la calle." },
+            { incorrect: "el tipico plato de aqui es delicioso", correct: "El típico plato de aquí es delicioso." },
+            { incorrect: "el ultimo de la fila", correct: "El último de la fila." },
+            { incorrect: "el unico que sabe es el", correct: "El único que sabe es él." },
+            { incorrect: "el utero es un organo femenino", correct: "El útero es un órgano femenino." },
+            { incorrect: "el vertigo da mareos", correct: "El vértigo da mareos." },
+            { incorrect: "el vinculo familiar es fuerte", correct: "El vínculo familiar es fuerte." },
+            { incorrect: "academicamente es muy bueno", correct: "Académicamente es muy bueno." },
+            { incorrect: "agilmente subio el arbol", correct: "Ágilmente subió el árbol." },
+            { incorrect: "calidamente me recibio", correct: "Cálidamente me recibió." },
+            { incorrect: "comodamente se sento", correct: "Cómodamente se sentó." },
+            { incorrect: "dificilmente lo lograra", correct: "Difícilmente lo logrará." },
+            { incorrect: "docilmente obedecio", correct: "Dócilmente obedeció." },
+            { incorrect: "enfaticamente lo nego", correct: "Enfáticamente lo negó." },
+            { incorrect: "esporadicamente lo visita", correct: "Esporádicamente lo visita." },
+            { incorrect: "estupidamente cayo en la trampa", correct: "Estúpidamente cayó en la trampa." },
+            { incorrect: "explicitamente se lo prohibio", correct: "Explícitamente se lo prohibió." },
+            { incorrect: "fantasticamente bien", correct: "Fantásticamente bien." },
+            { incorrect: "fisicamente esta en forma", correct: "Físicamente está en forma." },
+            { incorrect: "integramente se dedico a ello", correct: "Íntegramente se dedicó a ello." },
+            { incorrect: "intimamente lo deseaba", correct: "Íntimamente lo deseaba." },
+            { incorrect: "pacificamente resolvieron el conflicto", correct: "Pacíficamente resolvieron el conflicto." },
+            { incorrect: "practicamente esta terminado", correct: "Prácticamente está terminado." },
+            { incorrect: "quimicamente es un compuesto", correct: "Químicamente es un compuesto." },
+            { incorrect: "tecnicamente es posible", correct: "Técnicamente es posible." },
+            { incorrect: "teoricamente deberia funcionar", correct: "Teóricamente debería funcionar." },
+            { incorrect: "timidamente se acerco", correct: "Tímidamente se acercó." },
+            { incorrect: "ultimamente ha llovido mucho", correct: "Últimamente ha llovido mucho." },
+            { incorrect: "unicamente lo sabe el", correct: "Únicamente lo sabe él." },
+            { incorrect: "averiguatelo tu mismo", correct: "Averíguatelo tú mismo." },
+            { incorrect: "compramelo por favor", correct: "Cómpramelo, por favor." },
+            { incorrect: "consideramelo un favor", correct: "Considérame un favor." },
+            { incorrect: "cuentamelo todo", correct: "Cuéntamelo todo." },
+            { incorrect: "devuelveselo a su dueño", correct: "Devuélveselo a su dueño." },
+            { incorrect: "dibujamelo en un papel", correct: "Dibújamelo en un papel." },
+            { incorrect: "diselo a el", correct: "Díselo a él." },
+            { incorrect: "entregaselo en mano", correct: "Entrégaselo en mano." },
+            { incorrect: "expliquemelo otra vez", correct: "Explíquemelo otra vez." },
+            { incorrect: "permitaseme hablar", correct: "Permítaseme hablar." },
+            { incorrect: "rapidamente corrio", correct: "Rápidamente corrió." },
+            { incorrect: "recuerdamelo mañana", correct: "Recuérdamelo mañana." },
+            { incorrect: "repitaselo por favor", correct: "Repítaselo, por favor." },
+            { incorrect: "traigaselo aqui", correct: "Tráigaselo aquí." },
+            { incorrect: "vendemelo mas barato", correct: "Véndemelo más barato." }
+        ];
+        
+        const settingsScreen = document.getElementById('settings-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const endScreen = document.getElementById('end-screen');
+        const playerNameInput = document.getElementById('player-name');
+        const questionCountInput = document.getElementById('question-count');
+        const startGameButton = document.getElementById('start-game-button');
+        
+        const timerDisplay = document.getElementById('timer');
+        const failuresDisplay = document.getElementById('failures');
+        const problemDisplay = document.getElementById('problem-display');
+        const answerTextarea = document.getElementById('answer-textarea');
+        const checkButton = document.getElementById('check-button');
+        const messageArea = document.getElementById('message-area');
+        
+        const finalMessageDisplay = document.getElementById('final-message');
+        const playAgainButton = document.getElementById('play-again-button');
+
+        let timerInterval;
+        let secondsElapsed = 0;
+        let failureCount = 0;
+        let playerName = "";
+        let questions = [];
+        let currentQuestionIndex = 0;
+
+        questionCountInput.max = sentences.length;
+
+        function shuffleArray(array) {
+            return [...array].sort(() => Math.random() - 0.5);
+        }
+
+        function updateTimer() {
+            secondsElapsed++;
+            timerDisplay.textContent = `Tiempo: ${secondsElapsed}s`;
+        }
+        
+        function loadNextQuestion() {
+            if (currentQuestionIndex >= questions.length) {
+                endGame();
+                return;
+            }
+            const question = questions[currentQuestionIndex];
+            messageArea.textContent = "";
+            problemDisplay.textContent = question.incorrect;
+            answerTextarea.value = "";
+            answerTextarea.disabled = false;
+            answerTextarea.classList.remove('correct', 'incorrect');
+            checkButton.disabled = false;
+            answerTextarea.focus();
+        }
+
+        function normalizeAnswer(text) {
+            return text.trim().replace(/\s+/g, ' '); // Quita espacios extra
+        }
+
+        function handleCheckAnswer() {
+            const userAnswer = normalizeAnswer(answerTextarea.value);
+            const question = questions[currentQuestionIndex];
+            const correctAnswer = normalizeAnswer(question.correct);
+
+            if (userAnswer === "") {
+                alert("Por favor, escribe tu respuesta.");
+                return;
+            }
+
+            if (userAnswer === correctAnswer) {
+                messageArea.textContent = "¡Correcto!";
+                messageArea.classList.add('text-green-500');
+                answerTextarea.classList.add('correct');
+                answerTextarea.disabled = true;
+                checkButton.disabled = true;
+
+                setTimeout(() => {
+                    currentQuestionIndex++;
+                    messageArea.classList.remove('text-green-500');
+                    loadNextQuestion();
+                }, 1200);
+
+            } else {
+                failureCount++;
+                failuresDisplay.textContent = failureCount;
+                answerTextarea.classList.add('incorrect');
+                messageArea.innerHTML = `Incorrecto. La respuesta correcta era: <br><strong class="text-blue-600">${correctAnswer}</strong>`;
+                messageArea.classList.add('text-red-500');
+                answerTextarea.disabled = true;
+                checkButton.disabled = true;
+
+                setTimeout(() => {
+                     currentQuestionIndex++;
+                     messageArea.classList.remove('text-red-500');
+                     loadNextQuestion();
+                }, 3000); // Dar más tiempo para leer la corrección
+            }
+        }
+        
+        function startGame() {
+            playerName = playerNameInput.value.trim();
+            if (!playerName) {
+                alert("Por favor, ingresa tu nombre.");
+                return;
+            }
+            
+            const questionCount = parseInt(questionCountInput.value);
+            if(isNaN(questionCount) || questionCount < 10 || questionCount > sentences.length){
+                alert(`Por favor, ingresa un número de oraciones entre 10 y ${sentences.length}.`);
+                return;
+            }
+            
+            questions = shuffleArray(sentences).slice(0, questionCount);
+            currentQuestionIndex = 0;
+            failureCount = 0;
+            secondsElapsed = 0;
+            failuresDisplay.textContent = failureCount;
+            timerDisplay.textContent = `Tiempo: 0s`;
+            
+            settingsScreen.classList.add('hidden');
+            endScreen.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+
+            loadNextQuestion();
+            clearInterval(timerInterval);
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        function endGame() {
+            clearInterval(timerInterval);
+            gameScreen.classList.add('hidden');
+            endScreen.classList.remove('hidden');
+            finalMessageDisplay.textContent = `${playerName}, terminaste con ${failureCount} fallos en ${secondsElapsed} segundos.`;
+        }
+
+        checkButton.addEventListener('click', handleCheckAnswer);
+        answerTextarea.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleCheckAnswer();
+            }
+        });
+        
+        startGameButton.addEventListener('click', startGame);
+        playAgainButton.addEventListener('click', () => {
+            endScreen.classList.add('hidden');
+            settingsScreen.classList.remove('hidden');
+        });
+        
+    </script>
+</body>
+</html>
