@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Los Colores en Aymara - Juegos Didácticos Don Bosco</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Pacifico&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #E0F2FE;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+        }
+        header {
+            background-color: #1E3A8A;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            width: 100%;
+            z-index: 10;
+        }
+        .header-title-font {
+            font-family: 'Pacifico', cursive;
+        }
+        main {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center; 
+            align-items: center; 
+            width: 100%;
+            padding: 20px; 
+            box-sizing: border-box;
+        }
+        footer {
+            background-color: #1E3A8A;
+            color: white;
+            width: 100%;
+        }
+        .game-container, .settings-container, .end-screen-container {
+            background-color: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 600px; 
+            text-align: center;
+        }
+        .input-field {
+            width: 100%; padding: 10px; font-size: 1em; border-radius: 6px;
+            border: 2px solid #93c5fd; margin-bottom: 15px; text-align: center;
+        }
+        .input-field:focus {
+            outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        }
+        
+        .card {
+            background-color: #f3f4f6;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .color-box {
+            width: 100%;
+            height: 150px;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border: 2px solid #d1d5db;
+        }
+        .card .spanish-word {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e3a8a;
+        }
+        .card .aymara-word {
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: #3b82f6;
+            text-transform: capitalize;
+        }
+
+        #options-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .option-button {
+            padding: 1rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 2px solid #d1d5db;
+            background-color: #f9fafb;
+            color: #374151;
+            text-transform: capitalize;
+        }
+        .option-button:hover:not(:disabled) {
+            border-color: #3b82f6;
+            transform: translateY(-3px);
+        }
+        .option-button.correct {
+            background-color: #22c55e; color: white; border-color: #16a34a;
+        }
+         .option-button.incorrect {
+            background-color: #ef4444; color: white; border-color: #b91c1c; animation: shake 0.5s;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); }
+        }
+
+        .stats-container {
+            display: flex; justify-content: space-around; margin-bottom: 20px;
+            font-size: 1.4em; font-weight: bold;
+        }
+        .timer { color: #ef4444; }
+        .failures { color: #1d4ed8; }
+
+        .button {
+             padding: 12px 28px; font-size: 1.1em; border-radius: 8px; cursor: pointer;
+            transition: background-color 0.3s ease; border: none; font-weight: 600; color: white;
+        }
+        .start-button { background-color: #22c55e; }
+        .play-again-button { background-color: #3b82f6; margin-top:10px; }
+        h1.game-title { color: #1e3a8a; margin-bottom: 20px; }
+        .dropdown-menu { z-index: 50; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container mx-auto px-6 py-4 sm:py-6 flex flex-col sm:flex-row justify-between items-center">
+            <a href="../index.html" class="flex items-center hover:opacity-90 transition-opacity duration-200">
+                <img src="../logo.png" alt="Logo Don Bosco Pampahasi" class="h-12 w-12 sm:h-16 sm:w-16 mr-3 sm:mr-4 rounded-full bg-white p-1" 
+                     onerror="this.onerror=null; this.src='https://placehold.co/64x64/FFFFFF/1E3A8A?text=Logo'; this.alt='Logo Don Bosco Pampahasi (Error)';">
+                <div>
+                    <h1 class="header-title-font text-2xl sm:text-4xl text-yellow-400">Juegos Didácticos</h1>
+                    <p class="text-sm sm:text-lg font-semibold">DON BOSCO PAMPAHASI</p>
+                </div>
+            </a>
+            <nav class="mt-4 sm:mt-0">
+                <div class="relative">
+                    <button id="games-dropdown-button" class="bg-yellow-400 text-blue-800 font-semibold py-2 px-4 rounded-lg hover:bg-yellow-300 transition-colors duration-200 flex items-center">
+                        Juegos
+                        <svg class="w-4 h-4 ml-2 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+                    </button>
+                    <div id="games-dropdown-menu" class="dropdown-menu absolute right-0 mt-2 w-64 bg-white rounded-md shadow-xl py-1 hidden">
+                        <!-- Llenado dinámico por JS -->
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div id="settings-screen" class="settings-container max-w-lg">
+            <h1 class="text-3xl font-bold game-title">Aprende los Colores en Aymara</h1>
+            <p class="text-gray-600 mb-6">Elige un modo de juego para empezar.</p>
+            <input type="text" id="player-name" class="input-field" placeholder="Escribe tu nombre">
+            <div class="flex justify-center gap-4">
+                <button id="learn-button" class="button bg-blue-500 hover:bg-blue-600">Aprender</button>
+                <button id="test-button" class="button bg-green-500 hover:bg-green-600">Dar Prueba</button>
+            </div>
+        </div>
+    
+        <div id="learning-screen" class="game-container hidden">
+            <h2 class="text-2xl font-bold text-blue-800 mb-4">Modo de Aprendizaje</h2>
+            <div class="card">
+                <div id="learn-color-box" class="color-box"></div>
+                <div id="learn-spanish-word" class="spanish-word"></div>
+                <div id="learn-aymara-word" class="aymara-word"></div>
+            </div>
+            <div class="flex justify-between">
+                <button id="prev-button" class="button bg-gray-500 hover:bg-gray-600">Anterior</button>
+                <button id="next-button" class="button bg-gray-500 hover:bg-gray-600">Siguiente</button>
+            </div>
+             <button id="back-to-menu-learn" class="button bg-yellow-500 hover:bg-yellow-600 text-yellow-900 mt-6">Volver al Menú</button>
+        </div>
+
+        <div id="test-screen" class="game-container hidden">
+            <div class="stats-container">
+                <div class="stat-item timer" id="timer">Tiempo: 0s</div>
+                <div class="stat-item failures"><span class="label">Fallos:</span> <span id="failures" class="value">0</span></div>
+            </div>
+            <p class="text-xl font-semibold text-gray-700 mb-4">¿Cuál es la traducción para el color?</p>
+            <div id="test-color-box" class="color-box"></div>
+            <div id="test-spanish-word" class="text-3xl font-black text-blue-600 mb-6 capitalize"></div>
+            <div id="options-container"></div>
+        </div>
+    
+        <div id="end-screen" class="end-screen-container hidden">
+            <h1 class="text-3xl font-bold game-title">¡Prueba Completada!</h1>
+            <p id="final-message" class="text-xl my-4"></p>
+            <button id="play-again-button" class="button play-again-button">Jugar de Nuevo</button>
+        </div>
+    </main>
+
+    <footer class="mt-auto py-6 sm:py-8 text-center">
+        <div class="container mx-auto px-6">
+            <p>&copy; 2025 Juegos Didácticos Don Bosco Pampahasi. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- Script para Dropdown del Header ---
+        const gamesDropdownButton = document.getElementById('games-dropdown-button');
+        const gamesDropdownMenu = document.getElementById('games-dropdown-menu');
+        const games = [
+            { name: "Adivina el Animal", path: "../animales/animales.html" }, { name: "Tablas de Multiplicar", path: "../multiplicacion/multiplicacion.html" }, { name: "Adivina el Alimento", path: "../alimentos/alimentos.html" }, { name: "Juego de Sumas", path: "../sumas/sumas.html" }, { name: "Juego de Restas", path: "../restas/restas.html" }, { name: "Juego de Divisiones", path: "../divisiones/divisiones.html" }, { name: "Multiplicación Aleatoria", path: "../multiplicacion_aleatoria/multiplicacion_aleatoria.html" }, { name: "Mecanografía y Ortografía", path: "../mecanografia/mecanografia.html" }, { name: "Juego de Trazos", path: "../trazos/trazos.html" }, { name: "Inglés y Español", path: "../ingles/ingles.html"}, { name: "Contar hasta 100", path: "../contar/contar.html"}, { name: "Juego de Múltiplos", path: "../multiplos/multiplos.html"}, { name: "Juego de Pares e Impares", path: "../pares_impares/pares_impares.html"}, { name: "Ordena el Alfabeto", path: "../ordenar_alfabeto/ordenar_alfabeto.html"}, { name: "Reglas de Acentuación", path: "../reglas_acentuacion/reglas_acentuacion.html"}, { name: "Juego de M.C.D.", path: "../mcd/mcd.html"}, { name: "Amplificar y Simplificar", path: "../amplificacion_simplificacion/amplificacion_simplificacion.html"}, { name: "Fracciones Homogéneas", path: "../operaciones_homogeneas/operaciones_homogeneas.html" }, { name: "Fracciones Heterogéneas", path: "../operaciones_heterogeneas/operaciones_heterogeneas.html" }, { name: "Multiplicar y Dividir Fracciones", path: "../operaciones_avanzadas_fracciones/operaciones_avanzadas_fracciones.html" }, { name: "Convertir a Fracción Mixta", path: "../fraccion_mixta/fraccion_mixta.html" }, { name: "Problemas con Fracciones", path: "../problemas_fracciones/problemas_fracciones.html" }, { name: "Juego de Paralelogramos", path: "../paralelogramos/paralelogramos.html" }, { name: "Geometría de Rectas", path: "../rectas/rectas.html" }, { name: "Plano Cartesiano", path: "../plano_cartesiano/plano_cartesiano.html" }, { name: "Razones y Proporciones", path: "../razon_proporcion/razon_proporcion.html" }, { name: "Regla de Tres Simple", path: "../regla_de_tres/regla_de_tres.html" }, { name: "Medidas y Equivalencias", path: "../medidas/medidas.html" }, { name: "Juego de Potencias", path: "../potencias/potencias.html" }, { name: "Juego de Estadística", path: "../estadistica/estadistica.html" }, { name: "Juego de Sílabas", path: "../silabas/silabas.html" }, { name: "Crucigrama del Himno", path: "../crucigrama_himno/crucigrama_himno.html" }, { name: "Contar en Series", path: "../conteo_avanzado/conteo_avanzado.html" }, { name: "Escritura Correcta", path: "../escribir_oraciones/escribir_oraciones.html" }, { name: "Multiplicación Avanzada", path: "../multiplicacion_avanzada/multiplicacion_avanzada.html" }, { name: "Metales y No Metales", path: "../elementos_quimicos/elementos_quimicos.html" }, { name: "Conversión de Medidas", path: "../conversiones/conversiones.html" }, { name: "Números en Aymara", path: "../aymara_numeros/aymara_numeros.html" }, { name: "Familia en Aymara", path: "../familia_aymara/familia_aymara.html" }, { name: "Colores en Aymara", path: "../colores_aymara/colores_aymara.html" }
+        ];
+        if (gamesDropdownButton && gamesDropdownMenu) {
+            gamesDropdownMenu.innerHTML = '';
+            games.forEach(game => {
+                 const link = document.createElement('a');
+                 link.href = game.path;
+                 link.textContent = game.name;
+                 link.className = 'block px-4 py-2 text-sm text-blue-800 hover:bg-sky-100 hover:text-blue-700';
+                 gamesDropdownMenu.appendChild(link);
+            });
+            gamesDropdownButton.addEventListener('click', (event) => {
+                event.stopPropagation();
+                gamesDropdownMenu.classList.toggle('hidden');
+            });
+            document.addEventListener('click', (event) => {
+                if (!gamesDropdownMenu.classList.contains('hidden') && !gamesDropdownButton.contains(event.target) && !gamesDropdownMenu.contains(event.target)) {
+                    gamesDropdownMenu.classList.add('hidden');
+                }
+            });
+        }
+        
+        // --- Script del Juego ---
+        const colorsAymara = [
+            { es: "Rojo", aymara: "Wila", hex: "#ef4444" },
+            { es: "Azul", aymara: "Larama", hex: "#3b82f6" },
+            { es: "Verde", aymara: "Ch'uxña", hex: "#22c55e" },
+            { es: "Amarillo", aymara: "Q'illu", hex: "#facc15" },
+            { es: "Blanco", aymara: "Janq'u", hex: "#ffffff" },
+            { es: "Negro", aymara: "Ch'iyara", hex: "#1f2937" },
+            { es: "Gris", aymara: "Uqi", hex: "#6b7280" },
+            { es: "Morado", aymara: "Kulli", hex: "#8b5cf6" },
+            { es: "Naranja", aymara: "Arumita", hex: "#f97316" },
+            { es: "Café", aymara: "Ch'umphi", hex: "#78350f" }
+        ];
+
+        const settingsScreen = document.getElementById('settings-screen');
+        const learningScreen = document.getElementById('learning-screen');
+        const testScreen = document.getElementById('test-screen');
+        const endScreen = document.getElementById('end-screen');
+        
+        const playerNameInput = document.getElementById('player-name');
+        const learnButton = document.getElementById('learn-button');
+        const testButton = document.getElementById('test-button');
+        
+        const learnColorBox = document.getElementById('learn-color-box');
+        const learnSpanishWordDisplay = document.getElementById('learn-spanish-word');
+        const learnAymaraWordDisplay = document.getElementById('learn-aymara-word');
+        const prevButton = document.getElementById('prev-button');
+        const nextButton = document.getElementById('next-button');
+        const backToMenuLearn = document.getElementById('back-to-menu-learn');
+
+        const timerDisplay = document.getElementById('timer');
+        const failuresDisplay = document.getElementById('failures');
+        const testColorBox = document.getElementById('test-color-box');
+        const testSpanishWordDisplay = document.getElementById('test-spanish-word');
+        const optionsContainer = document.getElementById('options-container');
+        
+        const finalMessageDisplay = document.getElementById('final-message');
+        const playAgainButton = document.getElementById('play-again-button');
+
+        let timerInterval;
+        let secondsElapsed = 0;
+        let failureCount = 0;
+        let playerName = "";
+        let shuffledQuestions = [];
+        let currentQuestionIndex = 0;
+        let currentLearnIndex = 0;
+
+        function shuffleArray(array) {
+            return [...array].sort(() => Math.random() - 0.5);
+        }
+
+        function updateTimer() {
+            secondsElapsed++;
+            timerDisplay.textContent = `Tiempo: ${secondsElapsed}s`;
+        }
+
+        // --- Learning Mode Logic ---
+        function showLearnCard(index) {
+            const item = colorsAymara[index];
+            learnColorBox.style.backgroundColor = item.hex;
+            learnSpanishWordDisplay.textContent = item.es;
+            learnAymaraWordDisplay.textContent = item.aymara;
+            prevButton.disabled = index === 0;
+            nextButton.disabled = index === colorsAymara.length - 1;
+        }
+
+        learnButton.addEventListener('click', () => {
+            playerName = playerNameInput.value.trim();
+            if (!playerName) {
+                alert("Por favor, ingresa tu nombre.");
+                return;
+            }
+            settingsScreen.classList.add('hidden');
+            learningScreen.classList.remove('hidden');
+            currentLearnIndex = 0;
+            showLearnCard(currentLearnIndex);
+        });
+
+        nextButton.addEventListener('click', () => {
+            if (currentLearnIndex < colorsAymara.length - 1) {
+                currentLearnIndex++;
+                showLearnCard(currentLearnIndex);
+            }
+        });
+
+        prevButton.addEventListener('click', () => {
+            if (currentLearnIndex > 0) {
+                currentLearnIndex--;
+                showLearnCard(currentLearnIndex);
+            }
+        });
+        
+        backToMenuLearn.addEventListener('click', () => {
+            learningScreen.classList.add('hidden');
+            settingsScreen.classList.remove('hidden');
+        });
+
+        // --- Test Mode Logic ---
+        function loadNextQuestion() {
+            if (currentQuestionIndex >= shuffledQuestions.length) {
+                endGame();
+                return;
+            }
+            const question = shuffledQuestions[currentQuestionIndex];
+            testColorBox.style.backgroundColor = question.hex;
+            testSpanishWordDisplay.textContent = question.es;
+
+            let options = [question.aymara];
+            let otherOptions = colorsAymara.filter(n => n.aymara !== question.aymara);
+            shuffleArray(otherOptions);
+            options.push(...otherOptions.slice(0, 3).map(n => n.aymara));
+            
+            optionsContainer.innerHTML = '';
+            shuffleArray(options).forEach(optionText => {
+                const button = document.createElement('button');
+                button.className = 'option-button';
+                button.textContent = optionText;
+                button.dataset.answer = optionText;
+                button.addEventListener('click', handleOptionClick);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function handleOptionClick(event) {
+            const clickedButton = event.target;
+            const selectedAnswer = clickedButton.dataset.answer;
+            const correctAnswer = shuffledQuestions[currentQuestionIndex].aymara;
+
+            Array.from(optionsContainer.children).forEach(btn => btn.disabled = true);
+
+            if (selectedAnswer === correctAnswer) {
+                clickedButton.classList.add('correct');
+                setTimeout(() => {
+                    currentQuestionIndex++;
+                    loadNextQuestion();
+                }, 1000);
+            } else {
+                failureCount++;
+                failuresDisplay.textContent = failureCount;
+                clickedButton.classList.add('incorrect');
+                Array.from(optionsContainer.children).forEach(btn => {
+                    if (btn.dataset.answer === correctAnswer) btn.classList.add('correct');
+                });
+                setTimeout(() => {
+                    currentQuestionIndex++;
+                    loadNextQuestion();
+                }, 1500);
+            }
+        }
+        
+        function startTest() {
+            playerName = playerNameInput.value.trim();
+            if (!playerName) {
+                alert("Por favor, ingresa tu nombre.");
+                return;
+            }
+            
+            shuffledQuestions = shuffleArray(colorsAymara);
+            currentQuestionIndex = 0;
+            failureCount = 0;
+            secondsElapsed = 0;
+            failuresDisplay.textContent = failureCount;
+            timerDisplay.textContent = `Tiempo: 0s`;
+            
+            settingsScreen.classList.add('hidden');
+            endScreen.classList.add('hidden');
+            testScreen.classList.remove('hidden');
+
+            loadNextQuestion();
+            clearInterval(timerInterval);
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        function endGame() {
+            clearInterval(timerInterval);
+            testScreen.classList.add('hidden');
+            endScreen.classList.remove('hidden');
+            finalMessageDisplay.textContent = `${playerName}, terminaste la prueba en ${secondsElapsed} segundos con ${failureCount} fallos.`;
+        }
+
+        testButton.addEventListener('click', startTest);
+        playAgainButton.addEventListener('click', () => {
+            endScreen.classList.add('hidden');
+            settingsScreen.classList.remove('hidden');
+        });
+        
+    </script>
+</body>
+</html>
