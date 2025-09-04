@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pintar con Números - Juegos Didácticos Don Bosco</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Pacifico&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #E0F2FE;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+        }
+        header {
+            background-color: #1E3A8A;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            width: 100%;
+            z-index: 10;
+        }
+        .header-title-font {
+            font-family: 'Pacifico', cursive;
+        }
+        main {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center; 
+            align-items: center; 
+            width: 100%;
+            padding: 20px; 
+            box-sizing: border-box;
+        }
+        footer {
+            background-color: #1E3A8A;
+            color: white;
+            width: 100%;
+        }
+        .game-container {
+            background-color: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 1024px; /* Aumentado para el nuevo layout */
+            text-align: center;
+        }
+        
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            border: 2px solid #9ca3af;
+            /* max-width: 600px; <-- Eliminado para que sea más grande */
+        }
+        .grid-cell {
+            aspect-ratio: 1 / 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.1rem; /* Ligeramente más grande */
+            font-weight: 600;
+            color: #4b5563;
+            border: 1px solid #d1d5db;
+            cursor: pointer;
+            transition: transform 0.1s ease;
+        }
+        .grid-cell:hover {
+            background-color: #f3f4f6;
+        }
+        .grid-cell.painted {
+             color: rgba(255, 255, 255, 0.7); /* Texto blanco semitransparente sobre el color */
+             text-shadow: 0 0 3px rgba(0,0,0,0.5);
+        }
+
+        /* Paleta de colores horizontal para móviles por defecto */
+        .color-palette {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+        /* Paleta de colores vertical para pantallas grandes */
+        @media (min-width: 768px) {
+            .color-palette {
+                flex-direction: column;
+            }
+        }
+        
+        .color-box {
+            width: 32px;  /* Reducido */
+            height: 32px; /* Reducido */
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.2s ease;
+        }
+        .color-box:hover {
+            transform: scale(1.1);
+        }
+        .color-box.selected {
+            border-color: #1E3A8A;
+            transform: scale(1.2);
+        }
+        .eraser {
+             background-image: linear-gradient(45deg, #ccc 25%, transparent 25%),
+                              linear-gradient(-45deg, #ccc 25%, transparent 25%),
+                              linear-gradient(45deg, transparent 75%, #ccc 75%),
+                              linear-gradient(-45deg, transparent 75%, #ccc 75%);
+            background-size: 10px 10px;
+            background-color: #fff;
+        }
+
+        .button {
+             padding: 12px 28px; font-size: 1.1em; border-radius: 8px; cursor: pointer;
+            transition: background-color 0.3s ease; border: none; font-weight: 600; color: white;
+        }
+        h1.game-title { color: #1e3a8a; margin-bottom: 20px; }
+        .dropdown-menu { z-index: 50; }
+
+        @media (max-width: 640px) {
+            .grid-cell { font-size: 0.7rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container mx-auto px-6 py-4 sm:py-6 flex flex-col sm:flex-row justify-between items-center">
+            <a href="../index.html" class="flex items-center hover:opacity-90 transition-opacity duration-200">
+                <img src="../logo.png" alt="Logo Don Bosco Pampahasi" class="h-12 w-12 sm:h-16 sm:w-16 mr-3 sm:mr-4 rounded-full bg-white p-1" 
+                     onerror="this.onerror=null; this.src='https://placehold.co/64x64/FFFFFF/1E3A8A?text=Logo'; this.alt='Logo Don Bosco Pampahasi (Error)';">
+                <div>
+                    <h1 class="header-title-font text-2xl sm:text-4xl text-yellow-400">Juegos Didácticos</h1>
+                    <p class="text-sm sm:text-lg font-semibold">DON BOSCO PAMPAHASI</p>
+                </div>
+            </a>
+            <nav class="mt-4 sm:mt-0">
+                <div class="relative">
+                    <button id="games-dropdown-button" class="bg-yellow-400 text-blue-800 font-semibold py-2 px-4 rounded-lg hover:bg-yellow-300 transition-colors duration-200 flex items-center">
+                        Juegos
+                        <svg class="w-4 h-4 ml-2 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+                    </button>
+                    <div id="games-dropdown-menu" class="dropdown-menu absolute right-0 mt-2 w-64 bg-white rounded-md shadow-xl py-1 hidden">
+                        <!-- Llenado dinámico por JS -->
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="game-container">
+            <h1 class="text-3xl font-bold game-title">Pintar con Números</h1>
+            <p class="text-gray-600 mb-6">Sigue las instrucciones de tu profesor. Primero, selecciona un color de la paleta. Luego, haz clic en los números de la cuadrícula para pintarlos.</p>
+            
+            <div class="flex flex-col md:flex-row gap-8 items-center md:items-start justify-center">
+                <!-- Paleta de Colores (Ahora a la izquierda en escritorio) -->
+                <div class="flex flex-col items-center gap-4 order-first">
+                     <p class="font-semibold text-gray-700">Paleta</p>
+                     <div id="color-palette" class="color-palette"></div>
+                     <button id="reset-button" class="button bg-red-500 hover:bg-red-600 mt-4">Limpiar</button>
+                </div>
+
+                <!-- Grid de Números (Ahora en el centro/derecha) -->
+                <div id="grid-container" class="grid-container flex-grow"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="mt-auto py-6 sm:py-8 text-center">
+        <div class="container mx-auto px-6">
+            <p>&copy; 2025 Juegos Didácticos Don Bosco Pampahasi. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- Script para Dropdown del Header ---
+        const gamesDropdownButton = document.getElementById('games-dropdown-button');
+        const gamesDropdownMenu = document.getElementById('games-dropdown-menu');
+        const games = [
+             { name: "Adivina el Animal", path: "../animales/animales.html" }, { name: "Tablas de Multiplicar", path: "../multiplicacion/multiplicacion.html" }, { name: "Adivina el Alimento", path: "../alimentos/alimentos.html" }, { name: "Juego de Sumas", path: "../sumas/sumas.html" }, { name: "Juego de Restas", path: "../restas/restas.html" }, { name: "Juego de Divisiones", path: "../divisiones/divisiones.html" }, { name: "Multiplicación Aleatoria", path: "../multiplicacion_aleatoria/multiplicacion_aleatoria.html" }, { name: "Mecanografía y Ortografía", path: "../mecanografia/mecanografia.html" }, { name: "Juego de Trazos", path: "../trazos/trazos.html" }, { name: "Inglés y Español", path: "../ingles/ingles.html"}, { name: "Contar hasta 100", path: "../contar/contar.html"}, { name: "Juego de Múltiplos", path: "../multiplos/multiplos.html"}, { name: "Juego de Pares e Impares", path: "../pares_impares/pares_impares.html"}, { name: "Ordena el Alfabeto", path: "../ordenar_alfabeto/ordenar_alfabeto.html"}, { name: "Reglas de Acentuación", path: "../reglas_acentuacion/reglas_acentuacion.html"}, { name: "Juego de M.C.D.", path: "../mcd/mcd.html"}, { name: "Amplificar y Simplificar", path: "../amplificacion_simplificacion/amplificacion_simplificacion.html"}, { name: "Fracciones Homogéneas", path: "../operaciones_homogeneas/operaciones_homogeneas.html" }, { name: "Fracciones Heterogéneas", path: "../operaciones_heterogeneas/operaciones_heterogeneas.html" }, { name: "Multiplicar y Dividir Fracciones", path: "../operaciones_avanzadas_fracciones/operaciones_avanzadas_fracciones.html" }, { name: "Convertir a Fracción Mixta", path: "../fraccion_mixta/fraccion_mixta.html" }, { name: "Problemas con Fracciones", path: "../problemas_fracciones/problemas_fracciones.html" }, { name: "Juego de Paralelogramos", path: "../paralelogramos/paralelogramos.html" }, { name: "Geometría de Rectas", path: "../rectas/rectas.html" }, { name: "Plano Cartesiano", path: "../plano_cartesiano/plano_cartesiano.html" }, { name: "Razones y Proporciones", path: "../razon_proporcion/razon_proporcion.html" }, { name: "Regla de Tres Simple", path: "../regla_de_tres/regla_de_tres.html" }, { name: "Medidas y Equivalencias", path: "../medidas/medidas.html" }, { name: "Juego de Potencias", path: "../potencias/potencias.html" }, { name: "Juego de Estadística", path: "../estadistica/estadistica.html" }, { name: "Juego de Sílabas", path: "../silabas/silabas.html" }, { name: "Crucigrama del Himno", path: "../crucigrama_himno/crucigrama_himno.html" }, { name: "Contar en Series", path: "../conteo_avanzado/conteo_avanzado.html" }, { name: "Escritura Correcta", path: "../escribir_oraciones/escribir_oraciones.html" }, { name: "Multiplicación Avanzada", path: "../multiplicacion_avanzada/multiplicacion_avanzada.html" }, { name: "Metales y No Metales", path: "../elementos_quimicos/elementos_quimicos.html" }, { name: "Conversión de Medidas", path: "../conversiones/conversiones.html" }, { name: "Números en Aymara", path: "../aymara_numeros/aymara_numeros.html" }, { name: "Familia en Aymara", path: "../familia_aymara/familia_aymara.html" }, { name: "Colores en Aymara", path: "../colores_aymara/colores_aymara.html" }, { name: "Saludos en Aymara", path: "../saludos_aymara/saludos_aymara.html" }, { name: "Pintar con Números", path: "../pintar_numeros/pintar_numeros.html" }
+        ];
+        if (gamesDropdownButton && gamesDropdownMenu) {
+            gamesDropdownMenu.innerHTML = '';
+            games.forEach(game => {
+                 const link = document.createElement('a');
+                 link.href = game.path;
+                 link.textContent = game.name;
+                 link.className = 'block px-4 py-2 text-sm text-blue-800 hover:bg-sky-100 hover:text-blue-700';
+                 gamesDropdownMenu.appendChild(link);
+            });
+            gamesDropdownButton.addEventListener('click', (event) => {
+                event.stopPropagation();
+                gamesDropdownMenu.classList.toggle('hidden');
+            });
+            document.addEventListener('click', (event) => {
+                if (!gamesDropdownMenu.classList.contains('hidden') && !gamesDropdownButton.contains(event.target) && !gamesDropdownMenu.contains(event.target)) {
+                    gamesDropdownMenu.classList.add('hidden');
+                }
+            });
+        }
+        
+        // --- Script del Juego ---
+        const gridContainer = document.getElementById('grid-container');
+        const colorPaletteContainer = document.getElementById('color-palette');
+        const resetButton = document.getElementById('reset-button');
+
+        const colors = [
+            '#ef4444', '#f97316', '#facc15', '#4ade80', '#22c55e', '#14b8a6',
+            '#3b82f6', '#6366f1', '#8b5cf6', '#d946ef', '#ec4899', '#78350f',
+            '#1f2937', '#6b7280'
+        ];
+        const ERASER_COLOR = 'transparent';
+        let selectedColor = colors[0];
+
+        // Crear paleta de colores
+        function createPalette() {
+            colors.forEach(color => {
+                const colorBox = document.createElement('div');
+                colorBox.className = 'color-box';
+                colorBox.style.backgroundColor = color;
+                colorBox.dataset.color = color;
+                colorBox.addEventListener('click', selectColor);
+                colorPaletteContainer.appendChild(colorBox);
+            });
+            // Añadir borrador
+            const eraserBox = document.createElement('div');
+            eraserBox.className = 'color-box eraser';
+            eraserBox.dataset.color = ERASER_COLOR;
+            eraserBox.addEventListener('click', selectColor);
+            colorPaletteContainer.appendChild(eraserBox);
+            // Seleccionar el primer color por defecto
+            colorPaletteContainer.firstChild.classList.add('selected');
+        }
+
+        function selectColor(event) {
+            selectedColor = event.target.dataset.color;
+            // Actualizar la selección visual en la paleta
+            document.querySelectorAll('.color-box').forEach(box => {
+                box.classList.remove('selected');
+            });
+            event.target.classList.add('selected');
+        }
+
+        // Crear la cuadrícula
+        function createGrid() {
+            gridContainer.innerHTML = '';
+            for (let i = 1; i <= 100; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'grid-cell';
+                cell.textContent = i;
+                cell.dataset.number = i;
+                cell.addEventListener('click', paintCell);
+                gridContainer.appendChild(cell);
+            }
+        }
+
+        // Pintar una celda
+        function paintCell(event) {
+            const cell = event.target;
+            // Si el color seleccionado es el borrador o el mismo color, despintar
+            if (selectedColor === ERASER_COLOR || cell.style.backgroundColor === selectedColor) {
+                 cell.style.backgroundColor = ERASER_COLOR;
+                 cell.classList.remove('painted');
+            } else { // Si no, pintar
+                cell.style.backgroundColor = selectedColor;
+                cell.classList.add('painted');
+            }
+        }
+
+        // Limpiar el dibujo
+        resetButton.addEventListener('click', () => {
+            document.querySelectorAll('.grid-cell').forEach(cell => {
+                cell.style.backgroundColor = ERASER_COLOR;
+                cell.classList.remove('painted');
+            });
+        });
+
+        // Inicializar el juego
+        createPalette();
+        createGrid();
+    </script>
+</body>
+</html>
+
