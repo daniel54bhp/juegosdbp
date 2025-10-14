@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neon Cat Typist - Juegos Didácticos Don Bosco</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        /* Estilos del nuevo layout */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #E0F2FE;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+        }
+        header {
+            background-color: #1E3A8A;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            width: 100%;
+            z-index: 10;
+        }
+        .header-title-font {
+            font-family: 'Pacifico', cursive;
+        }
+        main {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        footer {
+            background-color: #1E3A8A;
+            color: white;
+            width: 100%;
+        }
+        .dropdown-menu {
+            z-index: 50;
+        }
+
+        /* Variables y estilos del juego */
+        :root {
+            --neon-pink: #ff00ff;
+            --neon-cyan: #00ffff;
+            --background-color: #0d0221;
+            --text-color: #f0f0f0;
+            --cat-main: #FFFFFF;
+            --cat-stripe: #888888;
+            --cat-outline: #222222;
+            --cat-eye: #00ffff;
+            --cat-nose: #ff77ff;
+            --car-body: #ff4136;
+            --car-wheel: #444444;
+            --dog-body: #D2B48C;
+            --dog-outline: #8B4513;
+            --bird-body: #ADD8E6;
+            --bird-outline: #00008B;
+        }
+
+        #game-wrapper {
+            font-family: 'Press Start 2P', cursive;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            border-radius: 1rem;
+            border: 2px solid var(--neon-pink);
+            box-shadow: 0 0 20px var(--neon-pink);
+            position: relative;
+        }
+
+        #game-wrapper h1 {
+            font-size: 2.5rem;
+            color: var(--neon-pink);
+            text-shadow: 0 0 5px var(--neon-pink), 0 0 10px var(--neon-pink), 0 0 20px var(--neon-pink);
+            margin-bottom: 10px;
+        }
+
+        #score-display {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 1.2rem;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 5px var(--neon-cyan);
+            z-index: 5;
+        }
+
+        #word-display {
+            background-color: #000;
+            border: 2px solid var(--neon-cyan);
+            color: var(--text-color);
+            letter-spacing: 4px;
+            min-width: 250px;
+            text-align: center;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 1.5rem;
+            margin: 0 auto 15px auto;
+        }
+        
+        #user-input {
+            color: var(--neon-cyan);
+        }
+
+        #gameCanvas {
+            background-color: #000;
+            border: 4px solid var(--neon-pink);
+            box-shadow: 0 0 15px var(--neon-pink), inset 0 0 15px var(--neon-pink);
+            border-radius: 10px;
+            width: 100%;
+            max-width: 800px; 
+            aspect-ratio: 16 / 9;
+        }
+        
+        #message-box {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.85);
+            padding: 20px 40px;
+            border-radius: 10px;
+            border: 2px solid var(--neon-cyan);
+            box-shadow: 0 0 10px var(--neon-cyan);
+            color: white;
+            font-size: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            z-index: 10;
+            width: 90%;
+            max-width: 450px;
+        }
+        
+        #player-name-input {
+            font-family: 'Press Start 2P', cursive;
+            background-color: #111;
+            border: 2px solid var(--neon-cyan);
+            color: var(--text-color);
+            padding: 10px;
+            font-size: 1rem;
+            border-radius: 5px;
+            text-align: center;
+            width: 100%;
+            outline: none;
+        }
+
+        #message-box button {
+            font-family: 'Press Start 2P', cursive;
+            background-color: var(--background-color);
+            color: var(--neon-pink);
+            border: 2px solid var(--neon-pink);
+            padding: 10px 20px;
+            font-size: 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            text-transform: uppercase;
+            box-shadow: 0 0 5px var(--neon-pink), inset 0 0 5px var(--neon-pink);
+            transition: color 0.2s, background-color 0.2s, box-shadow 0.2s;
+        }
+        
+        #message-box button:hover {
+            background-color: var(--neon-pink);
+            color: var(--background-color);
+            box-shadow: 0 0 15px var(--neon-pink), inset 0 0 10px var(--neon-pink);
+        }
+
+        @media (max-width: 768px) {
+            #game-wrapper h1 { font-size: 1.8rem; }
+            #score-display { font-size: 1rem; top: 10px; left: 10px; }
+            #word-display { font-size: 1.2rem; min-width: 200px;}
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container mx-auto px-6 py-4 sm:py-6 flex flex-col sm:flex-row justify-between items-center">
+            <a href="#" class="flex items-center hover:opacity-90 transition-opacity duration-200">
+                <img src="https://placehold.co/64x64/FFFFFF/1E3A8A?text=Logo" alt="Logo Don Bosco Pampahasi" class="h-12 w-12 sm:h-16 sm:w-16 mr-3 sm:mr-4 rounded-full bg-white p-1">
+                <div>
+                    <h1 class="header-title-font text-2xl sm:text-4xl text-yellow-400">Juegos Didácticos</h1>
+                    <p class="text-sm sm:text-lg font-semibold">DON BOSCO PAMPAHASI</p>
+                </div>
+            </a>
+            <nav class="mt-4 sm:mt-0">
+                <div class="relative">
+                    <button id="games-dropdown-button" class="bg-yellow-400 text-blue-800 font-semibold py-2 px-4 rounded-lg hover:bg-yellow-300 transition-colors duration-200 flex items-center">
+                        Juegos
+                        <svg class="w-4 h-4 ml-2 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+                    </button>
+                    <div id="games-dropdown-menu" class="dropdown-menu absolute right-0 mt-2 w-56 bg-white rounded-md shadow-xl py-1 hidden">
+                        <!-- Llenado dinámico por JS -->
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div id="game-wrapper">
+            <h1>Neon Cat Typist</h1>
+            <div id="score-display">Score: 0</div>
+            <div id="word-display">
+                <span id="user-input"></span><span id="remaining-word"></span>
+            </div>
+            <canvas id="gameCanvas"></canvas>
+            <div id="message-box">
+                <span id="message-text">¡Bienvenido!</span>
+                <input type="text" id="player-name-input" placeholder="Escribe tu nombre" maxlength="12">
+                <button id="start-button">Empezar</button>
+            </div>
+        </div>
+    </main>
+
+    <footer class="mt-auto py-6 sm:py-8 text-center">
+        <div class="container mx-auto px-6">
+            <p>&copy; 2025 Juegos Didácticos Don Bosco Pampahasi. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- Script del Juego ---
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        const scoreEl = document.getElementById('score-display');
+        const userInputEl = document.getElementById('user-input');
+        const remainingWordEl = document.getElementById('remaining-word');
+        const messageBox = document.getElementById('message-box');
+        const messageText = document.getElementById('message-text');
+        const startButton = document.getElementById('start-button');
+        const playerNameInput = document.getElementById('player-name-input');
+
+        let score = 0;
+        let gameSpeed = 2;
+        let gameRunning = false;
+        let playerName = "Player";
+        const wordList = ["gato", "salta", "juego", "neon", "luz", "pixel", "tecla", "rapido", "vista", "noche", "miau", "color", "linea", "poder", "calle", "perro", "casa", "luna", "sol", "estrella", "cielo", "agua", "fuego", "tierra", "aire", "arbol", "flor", "hoja", "rio", "mar", "ola", "arena", "roca", "cueva", "monte", "valle", "nube", "lluvia", "nieve", "viento", "calor", "frio", "dia", "tarde", "mes", "hora", "minuto", "segundo", "tiempo", "vida", "muerte", "amor", "paz", "guerra", "alma", "cuerpo", "mente", "idea", "sueño", "risa", "llanto", "voz", "sonido", "musica", "silencio", "palabra", "letra", "numero", "libro", "papel", "pluma", "lapiz", "cuadro", "puerta", "ventana", "silla", "mesa", "cama", "llave", "reloj", "espejo", "ropa", "zapato", "sombrero", "anillo", "oro", "plata", "piedra", "camino", "puente", "ciudad", "pueblo", "jardin", "parque", "bosque", "selva", "desierto", "isla", "barco", "tren", "avion", "coche", "moto", "bici", "pie", "mano", "ojo", "nariz", "boca", "pelo", "piel", "hueso", "sangre", "corazon", "hombre", "mujer", "niño", "niña", "amigo", "familia", "padre", "madre", "hijo", "hija", "hermano", "hermana", "abuelo", "abuela", "animal", "pajaro", "pez", "insecto", "leon", "tigre", "oso", "lobo", "zorro", "ciervo", "conejo", "rata", "serpiente", "araña", "mosca", "abeja", "mariposa", "comida", "pan", "queso", "leche", "huevo", "carne", "fruta", "verdura", "azucar", "sal", "aceite", "vino", "cerveza", "fiesta", "baile", "canto", "risa", "beso", "abrazo", "regalo", "viaje", "mundo", "pais", "mapa", "norte", "sur", "este", "oeste", "arriba", "abajo", "dentro", "fuera", "cerca", "lejos", "siempre", "nunca", "ayer", "hoy", "mañana", "blanco", "negro", "rojo", "azul", "verde", "amarillo", "gris", "rosa", "naranja", "violeta"];
+        let obstacles = [];
+        let currentWord = "";
+        let typedWord = "";
+        let animationFrameCount = 0;
+        let groundMarkings = [];
+        const NUM_GROUND_MARKINGS = 20;
+
+        const cat = {
+            x: 50,
+            baseY: 0,
+            y: 0,
+            width: 32,
+            height: 32,
+            pixelSize: 4,
+            isJumping: false,
+            isJumpArmed: false, 
+            jumpSpeed: 15,
+            velocityY: 0,
+            gravity: 1,
+            sprite: [
+                ["  11 11 ", " 132231 ", "13241421", "12255221", "12222221", " 122221 ", " 11  11 ", "    331 "],
+                ["  11 11 ", " 132231 ", "13241421", "12255221", "12222221", " 122221 ", "  11  11", "   331  "]
+            ]
+        };
+
+        const obstacleSprites = {
+            car: [
+                "      1111    ", "    11222211  ", "  11122222211 ", " 1111111111111", " 1 33 1 1 33 1", " 111111 111111"
+            ],
+            dog: [
+                "  111    ", " 12111   ", "12221111 ", "12212221 ", " 12221 1 ", "  1 1 1  "
+            ],
+            bird: [
+                "  111   ", " 1221   ", "122211  ", " 121 11 ", "  1  1  "
+            ]
+        };
+        
+        function drawCat() {
+            const frame = Math.floor(animationFrameCount / 10) % cat.sprite.length;
+            const currentFrame = cat.sprite[frame];
+            for (let r = 0; r < 8; r++) {
+                for (let c = 0; c < 8; c++) {
+                    const pixel = currentFrame[r][c];
+                    if (pixel !== ' ') {
+                        let color;
+                        if (pixel === '1') color = 'var(--cat-outline)';
+                        else if (pixel === '2') color = 'var(--cat-main)';
+                        else if (pixel === '3') color = 'var(--cat-stripe)';
+                        else if (pixel === '4') color = 'var(--cat-eye)';
+                        else if (pixel === '5') color = 'var(--cat-nose)';
+                        ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue(color.slice(4, -1));
+                        ctx.fillRect(cat.x + c * cat.pixelSize, cat.y + r * cat.pixelSize, cat.pixelSize, cat.pixelSize);
+                    }
+                }
+            }
+        }
+
+        function drawObstacle(obs) {
+            const sprite = obstacleSprites[obs.type];
+            if (!sprite) return;
+            const pixelSize = 4;
+            let color;
+            for (let r = 0; r < sprite.length; r++) {
+                for (let c = 0; c < sprite[r].length; c++) {
+                    const pixel = sprite[r][c];
+                    if (pixel === ' ') continue;
+                    switch (obs.type) {
+                        case 'car':
+                            if (pixel === '1') color = 'var(--cat-outline)';
+                            else if (pixel === '2') color = 'var(--car-body)';
+                            else if (pixel === '3') color = 'var(--car-wheel)';
+                            break;
+                        case 'dog':
+                            if (pixel === '1') color = 'var(--dog-outline)';
+                            else if (pixel === '2') color = 'var(--dog-body)';
+                            break;
+                        case 'bird':
+                            if (pixel === '1') color = 'var(--bird-outline)';
+                            else if (pixel === '2') color = 'var(--bird-body)';
+                            break;
+                    }
+                    if (color) {
+                        ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue(color.slice(4, -1));
+                        ctx.fillRect(obs.x + c * pixelSize, obs.y + r * pixelSize, pixelSize, pixelSize);
+                    }
+                }
+            }
+        }
+
+        function spawnObstacle() {
+            const obstacleTypes = ['car', 'dog', 'bird'];
+            const type = obstacleTypes[Math.floor(Math.random() * obstacleTypes.length)];
+            let height, width;
+            const pixelSize = 4;
+            const sprite = obstacleSprites[type];
+            width = Math.max(...sprite.map(row => row.length)) * pixelSize;
+            height = sprite.length * pixelSize;
+            const y = canvas.height - height;
+            const word = wordList[Math.floor(Math.random() * wordList.length)];
+            obstacles.push({ x: canvas.width, y: y, width: width, height: height, word: word, cleared: false, type: type });
+        }
+        
+        function getNextObstacle() {
+            return obstacles.find(obs => !obs.cleared);
+        }
+
+        function updateWordDisplay() {
+            const nextObs = getNextObstacle();
+            if (nextObs) {
+                currentWord = nextObs.word;
+                const typedPart = typedWord;
+                const remainingPart = currentWord.substring(typedWord.length);
+                userInputEl.textContent = typedPart;
+                remainingWordEl.textContent = remainingPart;
+            } else {
+                currentWord = "";
+                userInputEl.textContent = "";
+                remainingWordEl.textContent = "";
+            }
+        }
+        
+        function handleKeyPress(e) {
+            if (!gameRunning) return;
+            const key = e.key.toLowerCase();
+            if (key.length === 1 && key >= 'a' && key <= 'z') {
+                typedWord += key;
+                const nextObs = getNextObstacle();
+                if (nextObs && currentWord.startsWith(typedWord)) {
+                    updateWordDisplay();
+                    if (typedWord === currentWord) {
+                        cat.isJumpArmed = true;
+                        nextObs.cleared = true;
+                        score += currentWord.length;
+                        scoreEl.textContent = `${playerName}: ${score}`;
+                        typedWord = "";
+                        setTimeout(updateWordDisplay, 200);
+                    }
+                } else {
+                    typedWord = typedWord.slice(0, -1);
+                }
+            } else if (e.key === 'Backspace') {
+                 typedWord = typedWord.slice(0, -1);
+                 updateWordDisplay();
+            }
+        }
+
+        function gameOver() {
+            gameRunning = false;
+            messageText.textContent = `¡Juego Terminado, ${playerName}!`;
+            playerNameInput.style.display = 'none';
+            startButton.textContent = "Jugar de Nuevo";
+            messageBox.style.display = 'flex';
+        }
+
+        function update() {
+            if (!gameRunning) return;
+            animationFrameCount++;
+            if (cat.isJumpArmed && !cat.isJumping) {
+                const obstacleToJump = obstacles.find(obs => obs.cleared && (obs.x + obs.width) > cat.x);
+                if (obstacleToJump) {
+                    const distanceToObstacle = obstacleToJump.x - (cat.x + cat.width);
+                    if (distanceToObstacle <= 75) { 
+                        cat.isJumping = true;
+                        cat.velocityY = -cat.jumpSpeed;
+                        cat.isJumpArmed = false;
+                    }
+                }
+            }
+            if (cat.isJumping) {
+                cat.y += cat.velocityY;
+                cat.velocityY += cat.gravity;
+                if (cat.y >= cat.baseY) {
+                    cat.y = cat.baseY;
+                    cat.isJumping = false;
+                    cat.velocityY = 0;
+                }
+            }
+            groundMarkings.forEach(mark => {
+                mark.x -= gameSpeed;
+                if (mark.x + mark.width < 0) {
+                    mark.x = canvas.width + Math.random() * 50;
+                    mark.width = 10 + Math.random() * 20;
+                }
+            });
+            for (let i = obstacles.length - 1; i >= 0; i--) {
+                const obs = obstacles[i];
+                obs.x -= gameSpeed;
+                if (!obs.cleared && cat.x < obs.x + obs.width && cat.x + cat.width > obs.x && cat.y < obs.y + obs.height && cat.y + cat.height > obs.y) {
+                    gameOver();
+                }
+                if (obs.x + obs.width < 0) {
+                    obstacles.splice(i, 1);
+                }
+            }
+            const lastObstacle = obstacles[obstacles.length - 1];
+            if (!lastObstacle || canvas.width - lastObstacle.x > 650 + Math.random() * 300) {
+                spawnObstacle();
+                if (getNextObstacle() && !getNextObstacle().cleared && currentWord === "") {
+                    updateWordDisplay();
+                }
+            }
+            gameSpeed += 0.002;
+        }
+
+        function render() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'var(--neon-pink)';
+            ctx.shadowColor = 'var(--neon-pink)';
+            ctx.shadowBlur = 10;
+            ctx.fillRect(0, canvas.height - 2, canvas.width, 2); 
+            groundMarkings.forEach(mark => {
+                ctx.fillRect(mark.x, canvas.height - 5, mark.width, 5);
+            });
+            ctx.shadowBlur = 0;
+            drawCat();
+            obstacles.forEach(drawObstacle);
+        }
+
+        function gameLoop() {
+            if (gameRunning) {
+                update();
+            }
+            render();
+            requestAnimationFrame(gameLoop);
+        }
+        
+        function startGame() {
+            playerName = playerNameInput.value.trim() || 'Gato';
+            score = 0;
+            gameSpeed = 2;
+            obstacles = [];
+            currentWord = "";
+            typedWord = "";
+            scoreEl.textContent = `${playerName}: ${score}`;
+            cat.y = cat.baseY;
+            cat.isJumping = false;
+            cat.isJumpArmed = false;
+            groundMarkings = [];
+            for (let i = 0; i < NUM_GROUND_MARKINGS; i++) {
+                groundMarkings.push({ x: Math.random() * canvas.width, width: 15 + Math.random() * 25 });
+            }
+            messageBox.style.display = 'none';
+            playerNameInput.style.display = 'block';
+            spawnObstacle();
+            gameRunning = true;
+            updateWordDisplay();
+        }
+
+        function resizeCanvas() {
+            const container = document.getElementById('game-wrapper');
+            let newWidth = container.clientWidth - (parseInt(getComputedStyle(container).paddingLeft) * 2);
+            const aspectRatio = 16 / 9;
+            let newHeight = newWidth / aspectRatio;
+            canvas.width = newWidth;
+            canvas.height = newHeight;
+            cat.baseY = canvas.height - cat.height;
+            cat.y = cat.baseY;
+            if (!gameRunning) render();
+        }
+        
+        window.addEventListener('resize', resizeCanvas);
+        window.addEventListener('keydown', handleKeyPress);
+        startButton.addEventListener('click', startGame);
+
+        
+        // --- Script para Dropdown del Header ---
+        const gamesDropdownButton = document.getElementById('games-dropdown-button');
+        const gamesDropdownMenu = document.getElementById('games-dropdown-menu');
+        const games = [
+            { name: "Adivina el Animal", path: "../animales/animales.html" },
+            { name: "Tablas de Multiplicar", path: "../multiplicacion/multiplicacion.html" },
+            { name: "Adivina el Alimento", path: "../alimentos/alimentos.html" },
+            { name: "Juego de Sumas", path: "../sumas/sumas.html" },
+            { name: "Juego de Restas", path: "../restas/restas.html" },
+            { name: "Juego de Divisiones", path: "../divisiones/divisiones.html" },
+            { name: "Multiplicación Aleatoria", path: "../multiplicacion_aleatoria/multiplicacion_aleatoria.html" },
+            { name: "Mecanografía y Ortografía", path: "../mecanografia/mecanografia.html" },
+            { name: "Juego de Trazos", path: "../trazos/trazos.html" },
+            { name: "Inglés y Español", path: "../ingles/ingles.html"},
+            { name: "Contar hasta 100", path: "../contar/contar.html"},
+            { name: "Juego de Múltiplos", path: "../multiplos/multiplos.html"},
+            { name: "Juego de Pares e Impares", path: "../pares_impares/pares_impares.html"},
+            { name: "Identifica el Color", path: "../colores/colores.html"}
+        ];
+        if (gamesDropdownButton && gamesDropdownMenu) {
+            gamesDropdownMenu.innerHTML = '';
+            games.forEach(game => {
+                const link = document.createElement('a');
+                link.href = game.path;
+                link.textContent = game.name;
+                link.className = 'block px-4 py-2 text-sm text-blue-800 hover:bg-sky-100 hover:text-blue-700';
+                gamesDropdownMenu.appendChild(link);
+            });
+            gamesDropdownButton.addEventListener('click', (event) => {
+                event.stopPropagation();
+                gamesDropdownMenu.classList.toggle('hidden');
+            });
+            document.addEventListener('click', (event) => {
+                if (!gamesDropdownMenu.classList.contains('hidden') && !gamesDropdownButton.contains(event.target) && !gamesDropdownMenu.contains(event.target)) {
+                    gamesDropdownMenu.classList.add('hidden');
+                }
+            });
+        }
+
+        // Iniciar todo
+        resizeCanvas();
+        gameLoop();
+    </script>
+</body>
+</html>
+
