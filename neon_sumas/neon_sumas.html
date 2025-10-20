@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sumas Contrarreloj - Juegos Didácticos Don Bosco</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Pacifico&display=swap" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            /* Mantengo el fondo oscuro para el juego, el header/footer tendrán su propio color */
+            background-color: #0d0d0d;
+        }
+        header {
+            background-color: #1E3A8A; /* Azul principal (oscuro) */
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            width: 100%;
+            z-index: 10;
+        }
+        .header-title-font {
+            font-family: 'Pacifico', cursive;
+        }
+        main {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+            font-family: 'Press Start 2P', cursive; /* Aplicar la fuente del juego al contenedor principal */
+        }
+        footer {
+            background-color: #1E3A8A; /* Azul principal (oscuro) */
+            color: white;
+            width: 100%;
+            font-family: 'Inter', sans-serif; /* Fuente estándar para el footer */
+        }
+        .dropdown-menu {
+            z-index: 50;
+        }
+
+        /* Estilos específicos del juego de sumas */
+        .game-area {
+            font-family: 'Press Start 2P', cursive;
+            color: #fff;
+            text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #00ff00, 0 0 20px #00ff00, 0 0 25px #00ff00, 0 0 30px #00ff00, 0 0 35px #00ff00;
+        }
+        .neon-border {
+            border: 3px solid #00ff00;
+            box-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00, 0 0 20px #00ff00, inset 0 0 5px #00ff00;
+        }
+        .neon-button {
+            background-color: #1a1a1a;
+            border: 2px solid #ff00ff;
+            color: #ff00ff;
+            text-shadow: 0 0 5px #ff00ff, 0 0 10px #ff00ff;
+            transition: all 0.3s ease;
+        }
+        .neon-button:hover {
+            background-color: #ff00ff;
+            color: #1a1a1a;
+            box-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff, 0 0 40px #ff00ff;
+            text-shadow: none;
+        }
+        .neon-input {
+            background-color: #1a1a1a;
+            border: 2px solid #00ffff;
+            color: #00ffff;
+            text-shadow: 0 0 5px #00ffff;
+            box-shadow: 0 0 5px #00ffff, inset 0 0 5px #00ffff;
+        }
+        .neon-input:focus {
+            outline: none;
+            box-shadow: 0 0 5px #00ffff, 0 0 10px #00ffff, 0 0 15px #00ffff, inset 0 0 5px #00ffff;
+        }
+        #timer-bar-inner {
+            transition: width 0.1s linear, background-color 0.5s linear;
+        }
+        canvas {
+            image-rendering: pixelated;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container mx-auto px-6 py-4 sm:py-6 flex flex-col sm:flex-row justify-between items-center">
+            <a href="../index.html" class="flex items-center hover:opacity-90 transition-opacity duration-200">
+                <img src="../logo.png" alt="Logo Don Bosco Pampahasi" class="h-12 w-12 sm:h-16 sm:w-16 mr-3 sm:mr-4 rounded-full bg-white p-1"
+                     onerror="this.onerror=null; this.src='https://placehold.co/64x64/FFFFFF/1E3A8A?text=Logo'; this.alt='Logo Don Bosco Pampahasi (Error)';">
+                <div>
+                    <h1 class="header-title-font text-2xl sm:text-4xl text-yellow-400">Juegos Didácticos</h1>
+                    <p class="text-sm sm:text-lg font-semibold">DON BOSCO PAMPAHASI</p>
+                </div>
+            </a>
+            <nav class="mt-4 sm:mt-0">
+                <div class="relative">
+                    <button id="games-dropdown-button" class="bg-yellow-400 text-blue-800 font-semibold py-2 px-4 rounded-lg hover:bg-yellow-300 transition-colors duration-200 flex items-center">
+                        Juegos
+                        <svg class="w-4 h-4 ml-2 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+                    </button>
+                    <div id="games-dropdown-menu" class="dropdown-menu absolute right-0 mt-2 w-56 bg-white rounded-md shadow-xl py-1 hidden">
+                        <a href="../animales/animales.html" class="block px-4 py-2 text-sm text-blue-800 hover:bg-sky-100 hover:text-blue-700">Adivina el Animal</a>
+                        <a href="../multiplicacion/multiplicacion.html" class="block px-4 py-2 text-sm text-blue-800 hover:bg-sky-100 hover:text-blue-700">Tablas de Multiplicar</a>
+                        <a href="../alimentos/alimentos.html" class="block px-4 py-2 text-sm text-blue-800 hover:bg-sky-100 hover:text-blue-700">Adivina el Alimento</a>
+                        <a href="../sumas/sumas.html" class="block px-4 py-2 text-sm text-blue-800 hover:bg-sky-100 hover:text-blue-700">Juego de Sumas</a>
+                        <a href="../restas/restas.html" class="block px-4 py-2 text-sm text-blue-800 hover:bg-sky-100 hover:text-blue-700">Juego de Restas</a>
+                        <!-- Añadir más juegos aquí -->
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="game-area">
+            <div id="start-screen" class="w-full max-w-md p-8 text-center">
+                <h1 class="text-4xl md:text-5xl mb-8 animate-pulse">Sumas Contrarreloj</h1>
+                <p class="mb-4 text-cyan-300">Ingresa tu nombre para empezar</p>
+                <input type="text" id="player-name-input" placeholder="JUGADOR 1" class="neon-input w-full p-4 mb-6 text-center text-xl uppercase tracking-widest">
+                <button id="start-button" class="neon-button text-2xl py-4 px-8 rounded-lg">¡EMPEZAR!</button>
+            </div>
+
+            <div id="game-screen" class="hidden w-full max-w-4xl p-4 md:p-8 text-center">
+                <div class="flex flex-col md:flex-row justify-between items-center mb-4 text-lg">
+                    <p>Jugador: <span id="player-name-display" class="text-yellow-300"></span></p>
+                    <p>Puntos: <span id="score" class="text-yellow-300">0</span></p>
+                </div>
+
+                <div id="timer-bar" class="w-full h-6 mb-6 neon-border rounded-full p-1">
+                    <div id="timer-bar-inner" class="h-full rounded-full bg-green-500" style="width: 100%;"></div>
+                </div>
+                
+                <div class="flex flex-col md:flex-row items-center justify-center gap-8">
+                    <div class="w-48 h-48 md:w-64 md:h-64 neon-border rounded-lg bg-black/50 flex items-center justify-center">
+                         <canvas id="cat-canvas" width="128" height="128"></canvas>
+                    </div>
+                   
+                    <div class="flex flex-col items-center">
+                        <p id="problem" class="text-5xl md:text-7xl mb-6 text-cyan-300"></p>
+                        <input type="number" id="answer-input" class="neon-input w-48 p-4 text-center text-4xl" autofocus>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="game-over-screen" class="hidden w-full max-w-md p-8 text-center">
+                <h2 class="text-5xl mb-4 text-red-500">¡TIEMPO!</h2>
+                <p class="text-2xl mb-2">Puntaje Final</p>
+                <p id="final-score" class="text-6xl text-yellow-300 mb-8"></p>
+                <button id="play-again-button" class="neon-button text-2xl py-4 px-8 rounded-lg">Jugar de Nuevo</button>
+            </div>
+        </div>
+    </main>
+    
+    <footer class="mt-auto py-6 sm:py-8 text-center">
+        <div class="container mx-auto px-6">
+            <p>&copy; 2025 Juegos Didácticos Don Bosco Pampahasi. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+
+    <script>
+        // --- Script para Dropdown del Header ---
+        const gamesDropdownButton = document.getElementById('games-dropdown-button');
+        const gamesDropdownMenu = document.getElementById('games-dropdown-menu');
+        if (gamesDropdownButton && gamesDropdownMenu) {
+            gamesDropdownButton.addEventListener('click', (event) => {
+                event.stopPropagation();
+                gamesDropdownMenu.classList.toggle('hidden');
+            });
+            document.addEventListener('click', (event) => {
+                if (!gamesDropdownMenu.classList.contains('hidden') && !gamesDropdownButton.contains(event.target) && !gamesDropdownMenu.contains(event.target)) {
+                    gamesDropdownMenu.classList.add('hidden');
+                }
+            });
+        }
+
+        // --- Elementos del DOM ---
+        const startScreen = document.getElementById('start-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const gameOverScreen = document.getElementById('game-over-screen');
+        
+        const playerNameInput = document.getElementById('player-name-input');
+        const startButton = document.getElementById('start-button');
+        
+        const playerNameDisplay = document.getElementById('player-name-display');
+        const scoreDisplay = document.getElementById('score');
+        const problemDisplay = document.getElementById('problem');
+        const answerInput = document.getElementById('answer-input');
+        const timerBarInner = document.getElementById('timer-bar-inner');
+
+        const finalScoreDisplay = document.getElementById('final-score');
+        const playAgainButton = document.getElementById('play-again-button');
+
+        const canvas = document.getElementById('cat-canvas');
+        const ctx = canvas.getContext('2d');
+
+        // --- Estado del Juego ---
+        let score = 0;
+        let currentProblem = { num1: 0, num2: 0, answer: 0 };
+        let timer;
+        let timeLeft = 100; // 100 = 10 segundos (100 * 100ms)
+        const MAX_TIME = 100;
+
+        let tearY = 0; // Posición de las lágrimas
+        let tearFrame = 0;
+
+        // --- Lógica de Dibujo del Gato ---
+        const pixelSize = 8;
+        
+        function drawPixel(x, y, color) {
+            ctx.fillStyle = color;
+            ctx.fillRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
+        }
+
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function drawCat(emotion = 'happy') {
+            clearCanvas();
+            // Orejas
+            drawPixel(4, 2, 'white'); drawPixel(5, 2, 'white');
+            drawPixel(10, 2, 'white'); drawPixel(11, 2, 'white');
+            drawPixel(4, 3, 'white'); drawPixel(11, 3, 'white');
+
+            // Cabeza
+            for (let y = 4; y <= 10; y++) {
+                for (let x = 3; x <= 12; x++) {
+                    if (y === 4 && (x < 4 || x > 11)) continue;
+                    if (y === 10 && (x < 4 || x > 11)) continue;
+                    drawPixel(x, y, 'white');
+                }
+            }
+            
+            // Nariz
+            drawPixel(7, 7, '#ffb6c1'); drawPixel(8, 7, '#ffb6c1');
+
+            if (emotion === 'happy') {
+                // Ojos felices
+                drawPixel(5, 5, 'black'); drawPixel(6, 5, 'black');
+                drawPixel(9, 5, 'black'); drawPixel(10, 5, 'black');
+                // Sonrisa
+                drawPixel(6, 8, 'black');
+                drawPixel(7, 9, 'black'); drawPixel(8, 9, 'black');
+                drawPixel(9, 8, 'black');
+            } else { // 'crying'
+                // Ojos tristes
+                drawPixel(5, 6, 'black'); drawPixel(6, 6, 'black');
+                drawPixel(9, 6, 'black'); drawPixel(10, 6, 'black');
+                
+                // Boca triste
+                drawPixel(7, 9, 'black');
+                drawPixel(6, 8, 'black'); drawPixel(8, 8, 'black');
+
+                // Lágrimas animadas
+                const tearColor = '#00ffff';
+                const currentTearY = 7 + tearY;
+                if (currentTearY < 13) {
+                     drawPixel(5, currentTearY, tearColor);
+                     drawPixel(10, currentTearY, tearColor);
+                }
+                if (currentTearY > 8 && currentTearY < 14) {
+                    drawPixel(5, currentTearY - 1, tearColor);
+                    drawPixel(10, currentTearY - 1, tearColor);
+                }
+            }
+        }
+        
+        // --- Lógica Principal del Juego ---
+        function generateProblem() {
+            const num1 = Math.floor(Math.random() * 90) + 10; // 10 a 99
+            const num2 = Math.floor(Math.random() * 90) + 1; // 1 a 90
+            currentProblem = {
+                num1,
+                num2,
+                answer: num1 + num2
+            };
+            problemDisplay.textContent = `${num1} + ${num2}`;
+            answerInput.value = '';
+        }
+
+        function checkAnswer() {
+            const userAnswer = parseInt(answerInput.value, 10);
+            if (userAnswer === currentProblem.answer) {
+                score++;
+                scoreDisplay.textContent = score;
+                timeLeft = MAX_TIME; // Reinicia el tiempo
+                generateProblem();
+            }
+        }
+        
+        function updateTimer() {
+            timeLeft--;
+            const percentage = (timeLeft / MAX_TIME) * 100;
+            timerBarInner.style.width = `${percentage}%`;
+
+            if (percentage > 60) {
+                timerBarInner.style.backgroundColor = '#22c55e'; // green-500
+                drawCat('happy');
+            } else if (percentage > 30) {
+                timerBarInner.style.backgroundColor = '#facc15'; // yellow-400
+                drawCat('happy');
+            } else {
+                timerBarInner.style.backgroundColor = '#ef4444'; // red-500
+                // Animar lágrimas
+                tearFrame++;
+                if (tearFrame % 5 === 0) { // Ralentiza la animación de las lágrimas
+                    tearY = (tearY + 1) % 6; // Ciclo de 0 a 5
+                }
+                drawCat('crying');
+            }
+            
+            if (timeLeft <= 0) {
+                endGame();
+            }
+        }
+
+        function startGame() {
+            const playerName = playerNameInput.value.trim().toUpperCase() || 'JUGADOR 1';
+            playerNameDisplay.textContent = playerName;
+            score = 0;
+            scoreDisplay.textContent = score;
+            timeLeft = MAX_TIME;
+            
+            startScreen.classList.add('hidden');
+            gameOverScreen.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+            
+            answerInput.focus();
+
+            generateProblem();
+            drawCat('happy');
+            timer = setInterval(updateTimer, 100);
+        }
+
+        function endGame() {
+            clearInterval(timer);
+            gameScreen.classList.add('hidden');
+            gameOverScreen.classList.remove('hidden');
+            finalScoreDisplay.textContent = score;
+        }
+
+        // --- Event Listeners ---
+        startButton.addEventListener('click', startGame);
+        playerNameInput.addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') {
+                startGame();
+            }
+        });
+
+        answerInput.addEventListener('input', checkAnswer);
+
+        playAgainButton.addEventListener('click', () => {
+             // En lugar de recargar, volvemos a la pantalla de inicio para una mejor experiencia
+            gameOverScreen.classList.add('hidden');
+            startScreen.classList.remove('hidden');
+            playerNameInput.value = '';
+        });
+
+    </script>
+</body>
+</html>
+
